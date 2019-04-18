@@ -1,7 +1,7 @@
 const shell = require('shelljs');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
-const utils = require('./mtl').Utils;
+const utils = require('./src').Utils;
 const debugList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',

@@ -4,7 +4,7 @@ const MTL_PLATFORM_ANDROID_TYPE = 2 ;
 const MTL_PLATFORM_WX_TYPE = 3 ;
 const MTL_PLATFORM_EAPP_TYPE = 4 ;
 const configFile = require('./config');
-const utils = require('./mtl').Utils;
+const utils = require('./src').Utils;
 const inquirer = require('inquirer');
 const buildList = [{
   type: 'list',

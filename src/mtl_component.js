@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const xml2js = require('xml2js');
-const utils = require('./mtl').Utils;
+const utils = require('./src').Utils;
 const shell = require('shelljs');
 
 const inquirer = require('inquirer');
@@ -81,7 +81,7 @@ function addImportToJson(projfile, name) {
     
     if(!tplItem) {
         console.log("无效的插件名称 - " + name);
-        console.log("您可以使用下面的命令查看支持的插件名称, 或者输入 mtl-native ac 进行选择添加。");
+        console.log("您可以使用下面的命令查看支持的插件名称, 或者输入 mtl ac 进行选择添加。");
         console.log("mtl plugin list");
         return ;
     }

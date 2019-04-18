@@ -3,7 +3,7 @@ const fs = require('fs-extra');// fs-extra 扩展包
 const xml2js = require('xml2js');
 const mtlGit = require("./mtl_git");
 
-const utils = require('./mtl').Utils;
+const utils = require('./src').Utils;
 const inquirer = require('inquirer');
 
 var path = require('path');
@@ -128,7 +128,7 @@ function updateConfig(appname) {
             let rs = changeTheAppName(projFile, appname); //x修改配置文件
             if(rs == SUCCESS) { 
                 console.log("更新配置success");
-                console.log("--本地创建完成--先执行 cd "+ appname +" 进入目标目录--然后执行 mtl-native pushRemote 上传远程流。--");
+                console.log("--本地创建完成--先执行 cd "+ appname +" 进入目标目录--然后执行 mtl pushRemote 上传远程流。--");
                 
             }
         }else {
