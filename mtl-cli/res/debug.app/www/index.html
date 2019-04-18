@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>dingding</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="./css/ratchet.css" rel="stylesheet">
+    <link href="./css/iconfont.css" rel="stylesheet">
+	<link rel="stylesheet" href="./css/index.css">
+  </head>
+<body>
+    <div id="wrap">	
+        <header id="header" class="bar">
+        	<h1 class="title" id="h-title"></h1>
+        </header> 
+        <div id="main" >
+            
+        </div>
+        <footer id="footer">
+        	<nav class="bar bar-tab" id = "nav">
+                <a class="tab-item main active" onclick="openTab('main','main','首页')">
+                    <span class="iconfont icons">&#xe607;</span>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a class="tab-item group" onclick="openTab('group','group','闪惠团购')">
+                    <span class="iconfont icons">&#xe94e;</span>
+                    <span class="tab-label">闪惠团购</span>
+                </a>
+                <a class="tab-item find" onclick="openTab('find','find','发现')">
+                    <span class="iconfont icons">&#xe62c;</span>
+                    <span class="tab-label">发现</span>
+                </a>
+                <a class="tab-item me" onclick="openTab('me','me','我的')">
+                    <span class="iconfont icons">&#xf0030;</span>
+                    <span class="tab-label">我的</span>
+                </a>
+            </nav>
+        </footer>
+    </div>
+
+<label class="um-switch1">
+	<input type="checkbox" value="on" checked="checked">
+	<div class="um-track">
+		<div class="um-handle">
+		</div>
+	</div>
+</label>
+</body>
+<script type="text/javascript" src="./js/summer.js"></script>
+<script type="text/javascript" src="./js/ratchet.js"></script>
+<script type="text/javascript" src="./js/index.js"></script>
+
+</html>

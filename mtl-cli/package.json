@@ -1,0 +1,41 @@
+{
+  "name": "mtl",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mtl",
+    "mtl-cli",
+    "cliProjectManger",
+    "clibuild",
+    "clibuildapp"
+  ],
+  "author": "xugang_hot",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "configstore": "^4.0.0",
+    "express": "^4.16.4",
+    "form-data": "^2.3.3",
+    "fs-extra": "^7.0.1",
+    "git-clone": "^0.1.0",
+    "git-clone-promise": "^1.0.0",
+    "inquirer": "^6.2.2",
+    "needle": "^2.2.4",
+    "path": "^0.12.7",
+    "react-native": "^0.59.1",
+    "readline-sync": "^1.4.9",
+    "request": "^2.88.0",
+    "shell": "^0.5.0",
+    "shelljs": "^0.8.3",
+    "tracer": "^0.9.8",
+    "xml2js": "^0.4.19"
+  },
+  "bin": {
+    "mtl": "./index.js"
+  },
+  "devDependencies": {},
+  "description": "mtl 多端统一开发工具"
+}
