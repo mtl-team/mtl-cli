@@ -37,5 +37,16 @@
     "mtl": "./index.js"
   },
   "devDependencies": {},
-  "description": "mtl 多端统一开发工具"
+  "description": "mtl 多端统一开发工具",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtl-team/mtl-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mtl-team/mtl-cli/issues"
+  },
+  "homepage": "https://github.com/mtl-team/mtl-cli#readme"
 }
