@@ -5,7 +5,7 @@ const MTL_UI_CARD_MODEL = 3 ; // 3 card:标准卡片页面
 const MTL_UI_LIST_MODEL = 4 ; //4 list:标准列表页面
 const MTL_UI_LOGIN_MODEL = 5 ; // 5 login:标准登录页面
 
-const utils = require('./src').Utils;
+const utils = require('./mtl').Utils;
 class mtlViewpage{
 
 static addViewPage( modelname, platform) {

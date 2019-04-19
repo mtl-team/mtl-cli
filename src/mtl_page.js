@@ -1,6 +1,6 @@
 const shell = require('shelljs');
 const fs = require('fs-extra');
-const utils = require('./src').Utils;
+const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
 
 const gitClone = "git clone ";

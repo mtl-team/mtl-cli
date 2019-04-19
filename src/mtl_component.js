@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const xml2js = require('xml2js');
-const utils = require('./src').Utils;
+const utils = require('./mtl').Utils;
 const shell = require('shelljs');
 
 const inquirer = require('inquirer');

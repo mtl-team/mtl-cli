@@ -3,7 +3,7 @@ const fs = require('fs-extra');// fs-extra 扩展包
 const xml2js = require('xml2js');
 const mtlGit = require("./mtl_git");
 
-const utils = require('./src').Utils;
+const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
 
 // exports.MTLCreate = MTLCreate;
