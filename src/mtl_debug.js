@@ -2,6 +2,8 @@ const shell = require('shelljs');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const utils = require('./mtl').Utils;
+const xml2js = require('xml2js');
+const configFile = require('./config');
 const debugList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',
@@ -94,24 +96,13 @@ function startIOS() {
 const debugPath = __dirname + "/../res/";
 
 function startAndroid() {
-    let path = getPathByPlatform(utils.Platform.ANDROID);
-    let objPath = "./" + path +"/";
-    console.log(objPath);
-    copyProjectToOutput(objPath,utils.Platform.ANDROID);
-    let debugApk = "./" + path + "/../debug.apk";
-    console.log(debugApk);
-    if(!fs.existsSync(debugApk)) {
-        let cmd = "cp -rf "+debugPath+"debug.apk " + debugApk;
-        console.log("准备安装debug.apk");
-        shell.exec(cmd);
-        shell.exec("adb install -r " + debugApk);
-        shell.exec(cmdRunDebugApk);
-        console.log("正在为第一次安装准备文件");
-        setTimeout(function() {
-            runDebugAndroid(objPath);
-        },5000);
-    } else {
-        runDebugAndroid(objPath);
+    let pwd = shell.pwd();
+    if(!fs.existsSync(pwd +"/output/debug/android/debug.apk")) {
+        updateConfigFileToDebug();
+        commitAndPushConfigFile();
+        cloudBuildAndUnzip("android");
+    }else{
+        copyAndInstallDebugAndroid(); 
     }
 }
 
@@ -128,6 +119,264 @@ function runDebugAndroid(objPath) {
     shell.exec(cmd);
     //console.log("push->" + cmd);
     shell.exec(cmdRunDebugApk);
+}
+
+function copyAndInstallDebugAndroid() {
+    let path = getPathByPlatform(utils.Platform.ANDROID);
+    let objPath = "./" + path +"/";
+    console.log(objPath);
+    copyProjectToOutput(objPath,utils.Platform.ANDROID);
+    let debugApk = "./" + path + "/../debug.apk";
+    console.log(debugApk);
+    if(!fs.existsSync(debugApk)) {
+        let pwd = shell.pwd();
+        let cloudDebugApkPath = pwd +"/output/debug/android/export/debug.apk";
+
+        let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
+        console.log("准备安装debug.apk");
+        shell.exec(cmd);
+        shell.exec("adb install -r " + debugApk);
+        shell.exec(cmdRunDebugApk);
+        console.log("正在为第一次安装准备文件");
+        setTimeout(function() {
+            runDebugAndroid(objPath);
+        },5000);
+    } else {
+        runDebugAndroid(objPath);
+    }
+}
+
+
+function cloudBuildAndUnzip(selectedPlatform){
+    // 接口请求
+    var FormData = require('form-data');
+    var http = require('http');
+    var form = new FormData();
+  
+    var file="project.json";
+    var result=JSON.parse(fs.readFileSync(file));
+    var projectName = result.config.projectName;
+    var gitUrl = result.config.gitUrl;
+  
+    form.append('userName','ump');
+    form.append('buildType',selectedPlatform);
+    // form.append('certName',certName); 
+    form.append('certName',''); 
+
+    // form.append('request', fs.createReadStream("./test.zip"));//'request'是服务器接受的key
+    form.append('projectName',projectName); 
+    form.append('gitUrl',gitUrl);
+    form.append('gitBranch','');
+    form.append('isDebug',"true");
+    var headers = form.getHeaders();//这个不能少
+    // headers.Cookie = cookie;//自己的headers属性在这里追加
+    var request = http.request({
+      method: 'POST',
+      host: configFile.CONFIG_BUILDSERVER_URL ,
+      port: configFile.CONFIG_BUILDSERVER_PORT , 
+      path: configFile.CONFIG_BUILDPROJECT_API ,
+      headers: headers
+    },(res) =>{
+              var outFile= selectedPlatform+'Debug.zip'
+              let ws = fs.createWriteStream(outFile,{
+                    highWaterMark:1
+                })
+  
+              res.on('data',(buffer) => {
+                ws.write(buffer) ;  
+              });
+              res.on('end',()=>{
+                
+                //文件下载结束
+                ws.end();
+                if(selectedPlatform=='android'){
+                  fs.exists("androidDebug.zip",function(exists){
+                    if(exists){                         
+                        // 删除已有的文件
+                        shell.exec("rm -rf  output/debug/android ");
+                        // 创建输出目录
+                        utils.mkDirsSync("./output/debug");
+                        // 开始解压文件
+                        shell.exec("unzip androidDebug.zip  -d output/debug/android");
+                        // 获取android 目录下的文件目录
+                        let pwd = shell.pwd();
+                        let filePath = pwd +"/output/debug/android";
+                        let filesDir= getFilesDir(filePath);
+                        //  验证android目录文件
+                        let len = filesDir.length;
+                        
+                        let apkPath;
+                        for (let i = 0; i < len; ++i) {
+                          
+                            if (filesDir[i].indexOf(".apk")>=0){
+                              apkPath=filesDir[i];
+                            }
+                        }
+                        if(apkPath!=null){
+                          let debugApkPath = filePath+'/export/debug.apk';
+                          fs.move(apkPath, debugApkPath, function(err) {
+                            if (err) return console.error(err)
+                            console.log('云端构建调试程序完成！');
+                            copyAndInstallDebugAndroid();
+                            });
+                        }else{
+                          console.log('云端构建调试程序失败');
+                        }
+                        
+                        shell.exec("rm -rf  androidDebug.zip ");
+                       
+                    }
+                       if(!exists){
+                          console.log("云端构建调试程序失败")
+                       }
+                    })
+  
+                }else{
+                  fs.exists("ios.zip",function(exists){
+                    if(exists){            
+                        
+                        // 删除已有的文件
+                        shell.exec("rm  -rf  output/release/ios");
+                        // 创建输出目录
+                        utils.mkDirsSync("./output/release");
+                        // 开始解压文件
+                        shell.exec("unzip ios.zip  -d output/release/ios");
+                        // 获取ios目录下的文件目录
+                        let pwd = shell.pwd();
+                        let filePath = pwd +"/output/release/ios";
+                        let filesDir= getFilesDir(filePath);
+                        //  验证iOS目录文件
+                        let len = filesDir.length;
+                        let logPath;
+                        let ipaPath;
+                        for (let i = 0; i < len; ++i) {
+                          if (filesDir[i].indexOf(".log")>=0){
+                            logPath=filesDir[i];
+                          }
+                          if (filesDir[i].indexOf(".ipa")>=0){
+                            ipaPath=filesDir[i];
+                          }
+                        }
+                        if(ipaPath!=null){
+                          console.log('工程编译完成,编译日志如下：');
+                        }else{
+                          console.log('工程编译失败,编译日志如下：');
+                        }
+                      
+                        let data = fs.readFileSync(logPath, 'utf8');
+                        console.log(data);
+                        shell.exec("rm  -rf  ios.zip");
+                        console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
+                        
+                    }
+                       if(!exists){
+                          console.log("ios.zip文件不存在")
+                       }
+                    })
+  
+                }
+            
+              });
+          
+    });
+  
+    request.on('error', (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+    form.pipe(request);  
+  }
+
+  function getFilesDir(filePath){
+    console.log('filePath:'+filePath);
+    var join = require('path').join;
+      let filesDir = [];
+      function findFile(path){
+          let files = fs.readdirSync(path);
+          files.forEach(function (item, index) {
+              let fPath = join(path,item);
+              let stat = fs.statSync(fPath);
+              if(stat.isDirectory() === true) {
+                  findFile(fPath);
+              }
+              if (stat.isFile() === true) { 
+                filesDir.push(fPath);
+              }
+          });
+      }
+      findFile(filePath);
+      console.log(filesDir);
+      return filesDir;
+  }
+
+function updateConfigFileToDebug() {
+    // 修改project.json  
+    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    proj.config.appName ="快速预览";
+    proj.config.packageName="com.yonyou.summer.preview";
+    proj.config.debuggerEnable="true";
+    fs.writeFileSync("./project.json", formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
+    //修改./app/config.xml
+    let xmlFile = "./app/config.xml";
+    var builder = new xml2js.Builder();
+    var xml = builder.buildObject(proj);
+    fs.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});    
+}
+
+/**
+ * MTL工程 提交远程仓库
+ * 
+ */
+function commitAndPushConfigFile() {
+    let pwd = shell.pwd();
+    console.log('当前路径：'+pwd);
+    if(!fs.existsSync(".git")) {
+        return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
+    }
+    //first commit
+    shell.exec("git add -A");
+    console.log('执行git commit');
+
+    shell.exec("git commit -m update  -q");
+    shell.exec("git push");
+    console.log("配置文件更新到云端");
+    return utils.SUCCESS;
+
+}
+
+
+
+/**
+ * 格式化输出JSON对象，返回String
+ * @param {JSON} data 
+ */
+function formatJson(data) {
+    let LN = "\r";
+    let TAB = "\t";
+    var rep = "~";
+    var jsonStr = JSON.stringify(data, null, rep)
+    var str = "";
+    for (var i = 0; i < jsonStr.length; i++) {
+        var text2 = jsonStr.charAt(i)
+        if (i > 1) {
+            var text = jsonStr.charAt(i - 1)
+            if (rep != text && rep == text2) {
+                str += LN
+            }
+        }
+        str += text2;
+    }
+    jsonStr = "";
+    for (var i = 0; i < str.length; i++) {
+        var text = str.charAt(i);
+        if (rep == text)
+            jsonStr += TAB;
+        else {
+            jsonStr += text;
+        }
+        if (i == str.length - 2)
+            jsonStr += LN
+    }
+    return jsonStr;
 }
 
 //开始调试微信Web小程序

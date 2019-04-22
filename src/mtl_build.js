@@ -156,6 +156,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
   form.append('projectName',projectName); 
   form.append('gitUrl',gitUrl);
   form.append('gitBranch','');
+  form.append('isDebug',"false");
   var headers = form.getHeaders();//这个不能少
   // headers.Cookie = cookie;//自己的headers属性在这里追加
   var request = http.request({
