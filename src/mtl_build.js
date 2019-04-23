@@ -6,6 +6,7 @@ const MTL_PLATFORM_EAPP_TYPE = 4 ;
 const configFile = require('./config');
 const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
+const xml2js = require('xml2js');
 const buildList = [{
   type: 'list',
   message: '请选择项目平台：1、iOS；2、Android , 用上下箭头选择平台:',
@@ -37,6 +38,10 @@ var certName = 'ump';
 class mtlBuild{
   static build(buildPlatform) 
   {
+    updateConfigFileToRelease();
+    if(commitAndPushConfigFile()== "error"){
+        return;
+    }
      if (buildPlatform== undefined){
           inquirer.prompt(buildList).then(answers => {
             console.log('选用平台：'+answers.platform); // 返回的结果
@@ -298,6 +303,73 @@ function getFilesDir(filePath){
     findJsonFile(filePath);
     console.log(filesDir);
     return filesDir;
+}
+
+
+function updateConfigFileToRelease() {
+    // 修改project.json  
+    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    proj.config.debuggerEnable="false";
+    fs.writeFileSync("./project.json", formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
+    //修改./app/config.xml
+    let xmlFile = "./app/config.xml";
+    var builder = new xml2js.Builder();
+    var xml = builder.buildObject(proj);
+    fs.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});    
+}
+
+/**
+ * MTL工程 提交远程仓库
+ * 
+ */
+function commitAndPushConfigFile() {
+    let pwd = shell.pwd();
+    console.log('当前路径：'+pwd);
+    if(!fs.existsSync(".git")) {
+        return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
+    }
+    //first commit
+    shell.exec("git add -A");
+    console.log('执行git commit');
+
+    shell.exec("git commit -m update  -q");
+    shell.exec("git push");
+    console.log("配置文件更新到云端");
+    return utils.SUCCESS;
+
+}
+/**
+ * 格式化输出JSON对象，返回String
+ * @param {JSON} data 
+ */
+function formatJson(data) {
+  let LN = "\r";
+  let TAB = "\t";
+  var rep = "~";
+  var jsonStr = JSON.stringify(data, null, rep)
+  var str = "";
+  for (var i = 0; i < jsonStr.length; i++) {
+      var text2 = jsonStr.charAt(i)
+      if (i > 1) {
+          var text = jsonStr.charAt(i - 1)
+          if (rep != text && rep == text2) {
+              str += LN
+          }
+      }
+      str += text2;
+  }
+  jsonStr = "";
+  for (var i = 0; i < str.length; i++) {
+      var text = str.charAt(i);
+      if (rep == text)
+          jsonStr += TAB;
+      else {
+          jsonStr += text;
+      }
+      if (i == str.length - 2)
+          jsonStr += LN
+  }
+  return jsonStr;
 }
 
 
