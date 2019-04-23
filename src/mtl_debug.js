@@ -99,7 +99,10 @@ function startAndroid() {
     let pwd = shell.pwd();
     if(!fs.existsSync(pwd +"/output/debug/android/debug.apk")) {
         updateConfigFileToDebug();
-        commitAndPushConfigFile();
+        if(commitAndPushConfigFile()== "error"){
+            return;
+        }
+
         cloudBuildAndUnzip("android");
     }else{
         copyAndInstallDebugAndroid(); 
