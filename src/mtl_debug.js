@@ -314,8 +314,8 @@ function cloudBuildAndUnzip(selectedPlatform){
 function updateConfigFileToDebug() {
     // 修改project.json  
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    proj.config.appName ="快速预览";
-    proj.config.packageName="com.yonyou.summer.preview";
+    // proj.config.appName ="快速预览";
+    // proj.config.packageName="com.yyiuap.summer.preview";
     proj.config.debuggerEnable="true";
     fs.writeFileSync("./project.json", formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
     //修改./app/config.xml
