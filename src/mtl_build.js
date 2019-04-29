@@ -3,6 +3,7 @@ const MTL_PLATFORM_IOS_TYPE = 1 ;
 const MTL_PLATFORM_ANDROID_TYPE = 2 ;
 const MTL_PLATFORM_WX_TYPE = 3 ;
 const MTL_PLATFORM_EAPP_TYPE = 4 ;
+
 const configFile = require('./config');
 const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
@@ -33,6 +34,8 @@ const startList = [{
 }];
 
 var fs=require('fs-extra');
+var unzip = require("unzip-stream");
+
 var selectedPlatform ='All';
 var certName = 'ump';
 class mtlBuild{
@@ -192,6 +195,11 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       utils.mkDirsSync("./output/release");
                       // 开始解压文件
                       shell.exec("unzip android.zip  -d output/release/android");
+                      //fs.removeSync('./output/release/android');
+                      //fs.createReadStream('android.zip').pipe(unzip.Extract({ path: './output/release/android' }));
+                      
+                      console.log("文件解压完成。");
+
                       // 获取android 目录下的文件目录
                       let pwd = shell.pwd();
                       let filePath = pwd +"/output/release/android";
@@ -238,6 +246,10 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       utils.mkDirsSync("./output/release");
                       // 开始解压文件
                       shell.exec("unzip ios.zip  -d output/release/ios");
+                      //fs.removeSync('./output/release/ios');
+                      //fs.createReadStream('ios.zip').pipe(unzip.Extract({ path: './output/release/ios' }));
+                      
+
                       // 获取ios目录下的文件目录
                       let pwd = shell.pwd();
                       let filePath = pwd +"/output/release/ios";
