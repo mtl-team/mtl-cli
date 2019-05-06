@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const utils = require('./mtl').Utils;
 const xml2js = require('xml2js');
 const configFile = require('./config');
+const os = require("os");
 const debugList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',
@@ -55,34 +56,19 @@ var start = function (platform) {
 }
 
 function startIOS() {
-    console.log("准备开始生成iOS工程...");
-    let path = getPathByPlatform(utils.Platform.IOS);
-    let objPath = "./" + path +"/";
-    copyProjectToOutput(objPath,utils.Platform.IOS);
-    
-    shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
-    let debugApp = "./" + path + "/../debug.app";
-    // if(!fs.existsSync(debugApp)) {
-        console.log("开始安装调试应用");
-        let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
-        shell.exec(cmd);
-        console.log("debugApp:"+debugApp);
-        let cmdInstallApp = "xcrun simctl install booted " + debugApp;
-        console.log("cmdInstallApp:"+cmdInstallApp);
-        shell.exec(cmdInstallApp);
-    // }
-    console.log("开始运行调试应用");
-    shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"")
 
-    let appJs = createAppJsFile(path);
-    if(fs.exists(appJs, function(exists) {
-        if(!exists) {
-            return utils.reportError("没有找到app.js");
+    let pwd = shell.pwd();
+    if(!fs.existsSync(pwd +"/output/debug/ios/debug.app")) {
+        updateConfigFileToDebug();
+        if(commitAndPushConfigFile()== "error"){
+            return;
         }
-        startNode(appJs);
-        
-    }))
-    return utils.SUCCESS;
+
+        cloudBuildAndUnzip("ios");
+    }else{
+        copyAndInstallDebugIOS(); 
+    }
+
 }
 
 // xcrun instruments -w 'iPhone 6 Plus'
@@ -123,6 +109,43 @@ function runDebugAndroid(objPath) {
     //console.log("push->" + cmd);
     shell.exec(cmdRunDebugApk);
 }
+
+function  copyAndInstallDebugIOS(){
+
+    console.log("准备开始生成iOS工程...");
+    let path = getPathByPlatform(utils.Platform.IOS);
+    let objPath = "./" + path +"/";
+    copyProjectToOutput(objPath,utils.Platform.IOS);
+    
+    shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
+    let debugApp = "./" + path + "/../debug.app";
+    // if(!fs.existsSync(debugApp)) {
+        console.log("开始安装调试应用");
+        // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
+        // shell.exec(cmd);
+        console.log("debugApp:"+debugApp);
+        let cmdInstallApp = "xcrun simctl install booted " + debugApp;
+        console.log("cmdInstallApp:"+cmdInstallApp);
+        shell.exec(cmdInstallApp);
+    // }
+    console.log("开始运行调试应用");
+    shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"")
+
+    let appJs = createAppJsFile(path);
+    if(fs.exists(appJs, function(exists) {
+        if(!exists) {
+            return utils.reportError("没有找到app.js");
+        }
+        startNode(appJs);
+        
+    }))
+    return utils.SUCCESS;
+
+}
+
+
+
+
 
 function copyAndInstallDebugAndroid() {
     let path = getPathByPlatform(utils.Platform.ANDROID);
@@ -230,50 +253,66 @@ function cloudBuildAndUnzip(selectedPlatform){
                        
                     }
                        if(!exists){
-                          console.log("云端构建调试程序失败")
+                          console.log("云端构建调试程序失败");
                        }
                     })
   
                 }else{
-                  fs.exists("ios.zip",function(exists){
+                  fs.exists("iosDebug.zip",function(exists){
                     if(exists){            
-                        
                         // 删除已有的文件
-                        shell.exec("rm  -rf  output/release/ios");
+                        shell.exec("rm  -rf  output/debug/ios");
                         // 创建输出目录
-                        utils.mkDirsSync("./output/release");
+                        utils.mkDirsSync("./output/debug");
                         // 开始解压文件
-                        shell.exec("unzip ios.zip  -d output/release/ios");
-                        // 获取ios目录下的文件目录
+                        shell.exec("unzip iosDebug.zip  -d output/debug/ios");
+                        // 删除zip 文件
+                        shell.exec("rm  -rf  iosDebug.zip");
+                        // 生成debug APP 程序
                         let pwd = shell.pwd();
-                        let filePath = pwd +"/output/release/ios";
-                        let filesDir= getFilesDir(filePath);
-                        //  验证iOS目录文件
-                        let len = filesDir.length;
-                        let logPath;
-                        let ipaPath;
+                        let projectDir = pwd +"/output/debug/ios/export";
+                
+                        let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
+
+                        let cmd = "xcodebuild -workspace " +workspaceDir +" -scheme " +projectName+ " -sdk iphonesimulator12.2";
+                        shell.exec(cmd);
+                        console.log('mac的主机名称：'+os.homedir());
+                        let derivedDataDir = os.homedir()+"/Library/Developer/Xcode/DerivedData/";
+
+                        // 获取DerivedData目录下的目录列表
+                        let components = []
+                        const files = fs.readdirSync(derivedDataDir)
+                        files.forEach(function (item, index) {
+                            let stat = fs.lstatSync(derivedDataDir+item)
+                            if (stat.isDirectory() === true) { 
+                              components.push(item)
+                            }
+                        })
+                        console.log(components);
+                        //  获取iOS debug.app 目录
+                        let len = components.length;
+                        var debugAppPath ;
                         for (let i = 0; i < len; ++i) {
-                          if (filesDir[i].indexOf(".log")>=0){
-                            logPath=filesDir[i];
-                          }
-                          if (filesDir[i].indexOf(".ipa")>=0){
-                            ipaPath=filesDir[i];
-                          }
-                        }
-                        if(ipaPath!=null){
-                          console.log('工程编译完成,编译日志如下：');
-                        }else{
-                          console.log('工程编译失败,编译日志如下：');
-                        }
-                      
-                        let data = fs.readFileSync(logPath, 'utf8');
-                        console.log(data);
-                        shell.exec("rm  -rf  ios.zip");
-                        console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
                         
+                          if (components[i].indexOf(projectName+"-")>=0){
+                            debugAppPath = derivedDataDir+components[i]+"/Build/Products/Debug-iphonesimulator/"+projectName+".app";
+                          }
+                        }
+                        // debug app  程序移动指定output 目录
+                        if(debugAppPath!=null){
+                            let pwd = shell.pwd();
+                            fs.move(debugAppPath, pwd +"/output/debug/ios/debug.app", function(err) {
+                              if (err) return console.error(err)
+                              // 执行 debug 程序
+                              copyAndInstallDebugIOS();
+                              });
+                          }else{
+                            console.log('云端ios构建调试程序失败');
+                          }
+                         
                     }
                        if(!exists){
-                          console.log("ios.zip文件不存在")
+                          console.log("云端构建调试程序失败");
                        }
                     })
   
