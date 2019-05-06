@@ -9,10 +9,10 @@
 
 ### 安装mtl
 
-+ 首先必须安装npm
++ 首先必须安装node.js、npm
 + 然后安装mtl
 ```
-npm -g install mtl
+npm -g install mtl-cli
 ```
 安装完成后，运行下面命令，检查是否安装成功
 ```
