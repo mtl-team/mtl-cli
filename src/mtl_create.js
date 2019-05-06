@@ -170,7 +170,7 @@ function updateConfig(appname, gitUrl) {
             let rs = changeTheAppName(projFile, appname, gitUrl); //x修改配置文件
             if(rs == SUCCESS) { 
                 console.log("更新配置success");
-                console.log("----4-开始提交git-----");
+                console.log("4、开始提交git");
                 commitAndPush(gitUrl, appname);
             }
         }else {
@@ -264,7 +264,7 @@ function loadConfigXml(sourcePath, callback) {
 //下载工程模版
 function downloadTemplate(appname, template) {
 
-    console.log("开始下载工程模板 - " + template);
+    console.log("1、开始下载工程模板 - " + template);
 	let tplLibs = require("../res/templates.json");
     let tplItem = tplLibs[template];
     let appDir = './'+template;
