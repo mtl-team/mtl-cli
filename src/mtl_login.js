@@ -3,7 +3,7 @@ const Configstore = require('configstore');
 const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
 const request = require("request");
 const utils = require('utility');
-let j = request.jar();
+// let j = request.jar();
 
 const httppost = function (postdata) {
   // 构建登录友户通目的为了获得ticket
@@ -12,7 +12,7 @@ const httppost = function (postdata) {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
     },
-    jar: j,
+    jar: true,
     form: postdata
   };
 
@@ -39,28 +39,41 @@ const httppost = function (postdata) {
         qs: {
           ticket
         },
+        jar: true,
         method: 'get',
         headers: {
-          'cookie': response.headers['set-cookie'],
+          // 'cookie': response.headers['set-cookie'],
           'Upgrade-Insecure-Requests': 1,
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
           'Referer': 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com:443/portal/sso/login.jsp'
         },
       }, function (err, res, body) {
         console.log(body);
+        // console.log(res.headers)
         // console.log(res.headers);
         // 最终测试
-        // request({
-        //   url: `https://package.yonyoucloud.com/npm/package/mypublish`,
-        //   method: 'get',
-        //   headers: {
-        //     'Cookie': res.headers['set-cookie']
-        //   }
-        // }, function (err, res, body) {
-        //   console.log(body);
-        //   console.log(res)
-        //   console.log(res.headers);
-        // });
+        request({
+          url: `https://developer.yonyoucloud.com/fe/fe-portal/index.html`,
+          method: 'get',
+          jar: true,
+        }, function (err, res, body) {
+          // console.log(body);
+          // console.log(res.request.headers)
+          // console.log(res.headers);
+          request({
+            url: `https://developer.yonyoucloud.com/portal/web/v1/menu/sidebarList`,
+            method: 'get',
+            jar: true,
+            headers: {
+              // 'cookie': response.headers['set-cookie'],
+              'Upgrade-Insecure-Requests': 1,
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+              'Referer': 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com:443/portal/sso/login.jsp'
+            }
+          }, function (err, res, body) {
+            console.log(body);
+          });
+        });
       });
 
       //mock.yonyoucloud.com/api/user/login_by_token
