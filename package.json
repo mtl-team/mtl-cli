@@ -32,6 +32,7 @@
     "shelljs": "^0.8.3",
     "tracer": "^0.9.8",
     "unzip-stream": "^0.3.0",
+    "utility": "^1.16.1",
     "xml2js": "^0.4.19"
   },
   "bin": {
