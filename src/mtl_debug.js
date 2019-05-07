@@ -27,7 +27,6 @@ var start = function (platform) {
         inquirer.prompt(debugList).then(answers => {
         console.log('选用平台：'+answers.platform); // 返回的结果
         
-        console.log("开始启动" + answers.platform + "...");
         switch(answers.platform) {
             case utils.Platform.IOS:
                 return startIOS();
@@ -40,7 +39,7 @@ var start = function (platform) {
         }
         });
     }else{
-        console.log("开始启动" + plat + "...");
+        console.log('选用平台：'+plat);
         switch(plat) {
             case utils.Platform.IOS:
                 return startIOS();
@@ -115,30 +114,25 @@ function runDebugAndroid(objPath) {
 }
 
 function  copyAndInstallDebugIOS(){
-
-    console.log("准备开始生成iOS工程...");
     let path = getPathByPlatform(utils.Platform.IOS);
     let objPath = "./" + path +"/";
     copyProjectToOutput(objPath,utils.Platform.IOS);
-    
     shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
     let debugApp = "./" + path + "/../debug.app";
     // if(!fs.existsSync(debugApp)) {
         console.log("开始安装调试应用");
         // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
         // shell.exec(cmd);
-        console.log("debugApp:"+debugApp);
         let cmdInstallApp = "xcrun simctl install booted " + debugApp;
-        console.log("cmdInstallApp:"+cmdInstallApp);
         shell.exec(cmdInstallApp);
     // }
     console.log("开始运行调试应用");
-    shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"")
+    shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"");
 
     let appJs = createAppJsFile(path);
     if(fs.exists(appJs, function(exists) {
         if(!exists) {
-            return utils.reportError("没有找到app.js");
+            return utils.reportError("没有找到app-node.js");
         }
         startNode(appJs);
         
@@ -147,25 +141,23 @@ function  copyAndInstallDebugIOS(){
 
 }
 
-
-
 function copyAndInstallDebugAndroid() {
     let path = getPathByPlatform(utils.Platform.ANDROID);
     let objPath = "./" + path +"/";
-    console.log(objPath);
+    
     copyProjectToOutput(objPath,utils.Platform.ANDROID);
     let debugApk = "./" + path + "/../debug.apk";
-    console.log(debugApk);
+    
     if(!fs.existsSync(debugApk)) {
         let pwd = shell.pwd();
         let cloudDebugApkPath = pwd +"/output/debug/android/export/debug.apk";
 
         let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
-        console.log("准备安装debug.apk");
+        console.log("开始安装debug 调试程序");
         shell.exec(cmd);
         shell.exec("adb install -r " + debugApk);
         shell.exec(cmdRunDebugApk);
-        console.log("正在为第一次安装准备文件");
+        // console.log("正在为第一次安装准备文件");
         setTimeout(function() {
             runDebugAndroid(objPath);
         },5000);
@@ -244,18 +236,18 @@ function cloudBuildAndUnzip(selectedPlatform){
                           let debugApkPath = filePath+'/export/debug.apk';
                           fs.move(apkPath, debugApkPath, function(err) {
                             if (err) return console.error(err)
-                            console.log('云端构建调试程序完成！');
+                            console.log('android 云端构建调试程序完成 🎉  🎉  🎉 ！');
                             copyAndInstallDebugAndroid();
                             });
                         }else{
-                          console.log('云端构建调试程序失败');
+                          console.log('android 云端构建调试程序失败 😢 😢 😢 !');
                         }
                         
                         shell.exec("rm -rf  androidDebug.zip ");
                        
                     }
                        if(!exists){
-                          console.log("云端构建调试程序失败");
+                          console.log("android 云端构建调试程序失败 😢 😢 😢 !");
                        }
                     })
   
@@ -278,26 +270,24 @@ function cloudBuildAndUnzip(selectedPlatform){
 
                         let cmd = "xcodebuild -workspace " +workspaceDir +" -scheme " +projectName+ " -sdk iphonesimulator12.2";
                         shell.exec(cmd);
-                        console.log('mac的主机名称：'+os.homedir());
                         let derivedDataDir = os.homedir()+"/Library/Developer/Xcode/DerivedData/";
 
                         // 获取DerivedData目录下的目录列表
-                        let components = []
-                        const files = fs.readdirSync(derivedDataDir)
+                        let  componentsList = [];
+                        const files = fs.readdirSync(derivedDataDir);
                         files.forEach(function (item, index) {
-                            let stat = fs.lstatSync(derivedDataDir+item)
+                            let stat = fs.lstatSync(derivedDataDir+item);
                             if (stat.isDirectory() === true) { 
-                              components.push(item)
+                                componentsList.push(item);
                             }
                         })
-                        console.log(components);
                         //  获取iOS debug.app 目录
-                        let len = components.length;
+                        let len = componentsList.length;
                         var debugAppPath ;
                         for (let i = 0; i < len; ++i) {
                         
-                          if (components[i].indexOf(projectName+"-")>=0){
-                            debugAppPath = derivedDataDir+components[i]+"/Build/Products/Debug-iphonesimulator/"+projectName+".app";
+                          if (componentsList[i].indexOf(projectName+"-")>=0){
+                            debugAppPath = derivedDataDir+componentsList[i]+"/Build/Products/Debug-iphonesimulator/"+projectName+".app";
                           }
                         }
                         // debug app  程序移动指定output 目录
@@ -331,7 +321,7 @@ function cloudBuildAndUnzip(selectedPlatform){
   }
 
   function getFilesDir(filePath){
-    console.log('filePath:'+filePath);
+    // console.log('filePath:'+filePath);
     var join = require('path').join;
       let filesDir = [];
       function findFile(path){
@@ -348,7 +338,7 @@ function cloudBuildAndUnzip(selectedPlatform){
           });
       }
       findFile(filePath);
-      console.log(filesDir);
+    //   console.log(filesDir);
       return filesDir;
   }
 
@@ -372,17 +362,15 @@ function updateConfigFileToDebug() {
  */
 function commitAndPushConfigFile() {
     let pwd = shell.pwd();
-    console.log('当前路径：'+pwd);
+    console.log('调试程序源码正在整理中，请稍候 🚀 🚀 🚀 ...');
     if(!fs.existsSync(".git")) {
         return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
     }
     //first commit
     shell.exec("git add -A");
-    console.log('执行git commit');
-
     shell.exec("git commit -m update  -q");
     shell.exec("git push");
-    console.log("配置文件更新到云端");
+    
     return utils.SUCCESS;
 
 }
@@ -431,7 +419,6 @@ function startWX() {
     let wxproj = objPath + "../proj/";
     if(!fs.existsSync(wxproj)) {
         shell.exec("mkdir -p " + wxproj);
-        console.log("mkdir -p " + wxproj);
     }
     // 拷贝 添加页面到 wx/proj  目录下
     let cmd = "cp -rf " + __dirname + "/../res/debug.wx/ " + wxproj;
@@ -483,8 +470,8 @@ function createAppJsFile(path) {
     let appJs = "./" + path+"/app-node.js";
     if(!fs.existsSync(appJs)) {
         //创建appJs
-        console.log("正在为第一次启动作准备……");
-        console.log(appJs);
+        // console.log("正在为第一次启动作准备……");
+        // console.log(appJs);
         var content = "const express = require('express');\r";
         content+="const app = express();\r";
         content+="app.use(express.static('"+ path +"'));\r";
