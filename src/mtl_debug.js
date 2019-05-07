@@ -57,6 +57,10 @@ var start = function (platform) {
 
 function startIOS() {
 
+    if(os.platform() != "darwin"){
+        console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
+        return;
+    }
     let pwd = shell.pwd();
     if(!fs.existsSync(pwd +"/output/debug/ios/debug.app")) {
         updateConfigFileToDebug();
@@ -79,7 +83,7 @@ function startIOS() {
 
 // 例如：xcrun simctl install booted /Users/xiexuemei/Downloads/DingTalk.app
 
-const debugPath = __dirname + "/../res/";
+// const debugPath = __dirname + "/../res/";
 
 function startAndroid() {
     let pwd = shell.pwd();
@@ -142,8 +146,6 @@ function  copyAndInstallDebugIOS(){
     return utils.SUCCESS;
 
 }
-
-
 
 
 
