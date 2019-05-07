@@ -48,7 +48,7 @@ class mtlBuild{
      if (buildPlatform== undefined){
           inquirer.prompt(buildList).then(answers => {
             console.log('选用平台：'+answers.platform); // 返回的结果
-            console.log(answers.platform+'项目工程编译中...');
+            console.log(answers.platform+'项目工程编译中，请稍候  🚀 🚀 🚀 ...');
             if(answers.platform =="ios"){
               cloudBuildAndUnzip(answers.platform,'UAPMOBILE_DIS_299');
             }else{
@@ -57,12 +57,12 @@ class mtlBuild{
           });
         } else if (utils.checkPlatform(buildPlatform)== "iOS".toLowerCase()) {
             
-            console.log('iOS 项目工程编译中...');
+            console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
             
             cloudBuildAndUnzip(buildPlatform.toLowerCase(),'UAPMOBILE_DIS_299');
         } else if ( utils.checkPlatform(buildPlatform)== "Android".toLowerCase()){
             
-            console.log('android 项目工程编译中...');
+            console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
             
             cloudBuildAndUnzip(buildPlatform.toLowerCase(),'ump');
         }else if (utils.checkPlatform(buildPlatform)== "WX".toLowerCase()){
@@ -72,7 +72,7 @@ class mtlBuild{
         }else {
             inquirer.prompt(buildList).then(answers => {
             console.log('选用平台：'+answers.platform); // 返回的结果
-            console.log(answers.platform+'项目工程编译中...');
+            console.log(answers.platform+'项目工程编译中，请稍候  🚀 🚀 🚀 ...');
             if(answers.platform =="ios"){  
               cloudBuildAndUnzip(answers.platform,'UAPMOBILE_DIS_299');
             }else{
@@ -225,6 +225,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       let data = fs.readFileSync(logPath, 'utf8');
                       console.log(data);
                       shell.exec("rm -rf  android.zip ");
+                      console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
                       console.log(' 构建包文件目录为: 当前工程目录/output/release/android');
                       console.log('可以通过  start 指令来完成云编译工程本地虚拟安装演示');
                       console.log('指令举例：mtl start         引导完成平台演示!');
@@ -275,6 +276,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       let data = fs.readFileSync(logPath, 'utf8');
                       console.log(data);
                       shell.exec("rm  -rf  ios.zip");
+                      console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
                       console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
                       
                   }
