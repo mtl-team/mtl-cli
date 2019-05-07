@@ -33,7 +33,10 @@ const httppost = function (postdata) {
       console.log("ticket", ticket);
 
       request({
-        url: `https://developer.yonyoucloud.com/portal/sso/login.jsp?ticket=${ticket}`,
+        url: `https://developer.yonyoucloud.com/portal/sso/login.jsp`,
+        qs:{
+          ticket
+        },
         method: 'get',
         headers: {
           'Cookie': cookie_string,
