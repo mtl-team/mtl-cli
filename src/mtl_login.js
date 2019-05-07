@@ -8,7 +8,7 @@ let j = request.jar();
 const httppost = function (postdata) {
   // 构建登录友户通目的为了获得ticket
   const options = {
-    url: 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com/portal/sso/login.jsp',
+    url: 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com:443/portal/sso/login.jsp',
     headers: {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36'
     },
@@ -20,7 +20,7 @@ const httppost = function (postdata) {
     // 是否登录成功
     const result = body.indexOf('?ticket=');
     if (result !== -1) {
-      let cookie_string = j.getCookieString(options.url);
+      // let cookie_string = j.getCookieString(options.url);
       // let cookies = j.getCookies(options.url);
       // 筛选出票据
       let ticket = body.split('?ticket=')[1].split('";')[0];
@@ -31,22 +31,24 @@ const httppost = function (postdata) {
       conf.set("username", postdata.username);
       conf.set('ticket', ticket);
       console.log("ticket", ticket);
+      // console.log(response.headers['set-cookie']);
+
 
       request({
-        url: `https://developer.yonyoucloud.com/portal/sso/login.jsp`,
-        qs:{
+        url: `https://developer.yonyoucloud.com:443/portal/sso/login.jsp`,
+        qs: {
           ticket
         },
         method: 'get',
         headers: {
-          'Cookie': cookie_string,
+          'cookie': response.headers['set-cookie'],
           'Upgrade-Insecure-Requests': 1,
-          'Referer': 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com/portal/sso/login.jsp'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
+          'Referer': 'https://euc.yonyoucloud.com/cas/login?sysid=developer&service=https://developer.yonyoucloud.com:443/portal/sso/login.jsp'
         },
       }, function (err, res, body) {
         console.log(body);
-        // console.log(res)
-        // console.log(res.headers['set-cookie']);
+        // console.log(res.headers);
         // 最终测试
         // request({
         //   url: `https://package.yonyoucloud.com/npm/package/mypublish`,
@@ -56,7 +58,7 @@ const httppost = function (postdata) {
         //   }
         // }, function (err, res, body) {
         //   console.log(body);
-        //   // console.log(res)
+        //   console.log(res)
         //   console.log(res.headers);
         // });
       });
