@@ -23,15 +23,15 @@ const getAutoUpdate = require('./src/update');
 program
   .version(require('./package').version)
 
-program
-  .command('create [appname] [template]').alias('c') // 命令简写
-  .description('根据模板创建项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
-  .action(function (appname,template) {
-    mCreate.createApp(appname,template);
-  });
+// program
+//   .command('create [appname] [template]').alias('c') // 命令简写
+//   .description('根据模板创建项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
+//   .action(function (appname,template) {
+//     mCreate.createApp(appname,template);
+//   });
 
 program
-  .command('localCreate [appname] [template]').alias('lc') // 命令简写
+  .command('create [appname] [template]').alias('c') // 命令简写
   .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
   .action(function (appname,template) {
     mLocalCreate.createApp(appname,template);

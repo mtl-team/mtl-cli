@@ -139,7 +139,7 @@ function androidInstall(){
   console.log('android 工程运行展示中，请先打开模拟器...');
   
   let pwd = shell.pwd();
- var runProjPath = pwd +"/output/release/android/export/"+projectName+".apk"
+ var runProjPath = pwd +"/output/android/release/export/"+projectName+".apk"
  console.log('apk地址:'+runProjPath);
   shell.exec("adb install -r  "+ runProjPath);
 }
@@ -190,11 +190,11 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                 fs.exists("android.zip",function(exists){
                   if(exists){                         
                       // 删除已有的文件
-                      shell.exec("rm -rf  output/release/android ");
+                      shell.exec("rm -rf  output/android/release ");
                       // 创建输出目录
-                      utils.mkDirsSync("./output/release");
+                      utils.mkDirsSync("./output/android/release");
                       // 开始解压文件
-                      shell.exec("unzip android.zip  -d output/release/android");
+                      shell.exec("unzip android.zip  -d output/android/release");
                       //fs.removeSync('./output/release/android');
                       //fs.createReadStream('android.zip').pipe(unzip.Extract({ path: './output/release/android' }));
                       
@@ -202,7 +202,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
 
                       // 获取android 目录下的文件目录
                       let pwd = shell.pwd();
-                      let filePath = pwd +"/output/release/android";
+                      let filePath = pwd +"/output/android/release";
                       let filesDir= getFilesDir(filePath);
                       //  验证android目录文件
                       let len = filesDir.length;
@@ -226,7 +226,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       console.log(data);
                       shell.exec("rm -rf  android.zip ");
                       console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
-                      console.log(' 构建包文件目录为: 当前工程目录/output/release/android');
+                      console.log(' 构建包文件目录为: 当前工程目录/output/android/release');
                       console.log('可以通过  start 指令来完成云编译工程本地虚拟安装演示');
                       console.log('指令举例：mtl start         引导完成平台演示!');
                       console.log('指令举例：mtl start 2       通过平台代号完成平台演示！');
@@ -242,18 +242,18 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                   if(exists){            
                       
                       // 删除已有的文件
-                      shell.exec("rm  -rf  output/release/ios");
+                      shell.exec("rm  -rf  output/ios/release");
                       // 创建输出目录
-                      utils.mkDirsSync("./output/release");
+                      utils.mkDirsSync("./output/ios/release");
                       // 开始解压文件
-                      shell.exec("unzip ios.zip  -d output/release/ios");
+                      shell.exec("unzip ios.zip  -d output/ios/release");
                       //fs.removeSync('./output/release/ios');
                       //fs.createReadStream('ios.zip').pipe(unzip.Extract({ path: './output/release/ios' }));
                       
 
                       // 获取ios目录下的文件目录
                       let pwd = shell.pwd();
-                      let filePath = pwd +"/output/release/ios";
+                      let filePath = pwd +"/output/ios/release";
                       let filesDir= getFilesDir(filePath);
                       //  验证iOS目录文件
                       let len = filesDir.length;
@@ -277,7 +277,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                       console.log(data);
                       shell.exec("rm  -rf  ios.zip");
                       console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
-                      console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
+                      console.log(' 构建包文件目录为: 当前工程目录/output/ios/release');
                       
                   }
                      if(!exists){
