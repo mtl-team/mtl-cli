@@ -20,8 +20,7 @@ const debugList = [{
     }
   }];
 var start = function (platform) {
-    startWX();
-    return;
+
     if(!utils.isProject()) {
         return utils.reportError("不是MTL工程目录")
     }
