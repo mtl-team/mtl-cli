@@ -153,11 +153,11 @@ function copyAndInstallDebugAndroid() {
     
     if(!fs.existsSync(debugApk)) {
         let pwd = shell.pwd().split(path.sep).join('/');
-        // let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
+        let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
         // let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
         fs.copySync(cloudDebugApkPath, debugApk);
         console.log("开始安装debug 调试程序");
-        shell.exec(cmd);
+        //shell.exec(cmd);
         shell.exec("adb install -r " + debugApk);
         shell.exec(cmdRunDebugApk);
         // console.log("正在为第一次安装准备文件");
