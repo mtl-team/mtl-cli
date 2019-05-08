@@ -1,5 +1,6 @@
 const shell = require('shelljs');
 const fs = require('fs-extra');
+const path = require('path');
 const inquirer = require('inquirer');
 const utils = require('./mtl').Utils;
 const xml2js = require('xml2js');
@@ -60,7 +61,7 @@ function startIOS() {
         console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
         return;
     }
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
@@ -85,7 +86,7 @@ function startIOS() {
 // const debugPath = __dirname + "/../res/";
 
 function startAndroid() {
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
@@ -149,7 +150,7 @@ function copyAndInstallDebugAndroid() {
     let debugApk = "./" + path + "/../debug.apk";
     
     if(!fs.existsSync(debugApk)) {
-        let pwd = shell.pwd();
+        let pwd = shell.pwd().split(path.sep).join('/');
         let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
         let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
         console.log("开始安装debug 调试程序");
@@ -218,7 +219,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                         // 开始解压文件
                         shell.exec("unzip androidDebug.zip  -d output/android/debug");
                         // 获取android 目录下的文件目录
-                        let pwd = shell.pwd();
+                        let pwd = shell.pwd().split(path.sep).join('/');
                         let filePath = pwd +"/output/android/debug";
                         let filesDir= getFilesDir(filePath);
                         //  验证android目录文件
@@ -262,7 +263,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                         // 删除zip 文件
                         shell.exec("rm  -rf  iosDebug.zip");
                         // 生成debug APP 程序
-                        let pwd = shell.pwd();
+                        let pwd = shell.pwd().split(path.sep).join('/');
                         let projectDir = pwd +"/output/ios/debug/export";
                 
                         let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
@@ -291,7 +292,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                         }
                         // debug app  程序移动指定output 目录
                         if(debugAppPath!=null){
-                            let pwd = shell.pwd();
+                            let pwd = shell.pwd().split(path.sep).join('/');
                             fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
                               if (err) return console.error(err)
                               // 执行 debug 程序
@@ -360,7 +361,7 @@ function updateConfigFileToDebug() {
  * 
  */
 function commitAndPushConfigFile() {
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     console.log('调试程序源码正在整理中，请稍候 🚀 🚀 🚀 ...');
     if(!fs.existsSync(".git")) {
         return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
