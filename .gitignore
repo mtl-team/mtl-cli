@@ -1,3 +1,4 @@
 .DS_Store
 mtl-cli/node_modules/
 node_modules
+package-lock.json
