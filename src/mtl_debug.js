@@ -61,7 +61,7 @@ function startIOS() {
         return;
     }
     let pwd = shell.pwd();
-    if(!fs.existsSync(pwd +"/output/debug/ios/debug.app")) {
+    if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
             return;
@@ -86,7 +86,7 @@ function startIOS() {
 
 function startAndroid() {
     let pwd = shell.pwd();
-    if(!fs.existsSync(pwd +"/output/debug/android/debug.apk")) {
+    if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
             return;
@@ -150,8 +150,7 @@ function copyAndInstallDebugAndroid() {
     
     if(!fs.existsSync(debugApk)) {
         let pwd = shell.pwd();
-        let cloudDebugApkPath = pwd +"/output/debug/android/export/debug.apk";
-
+        let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
         let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
         console.log("开始安装debug 调试程序");
         shell.exec(cmd);
@@ -213,14 +212,14 @@ function cloudBuildAndUnzip(selectedPlatform){
                   fs.exists("androidDebug.zip",function(exists){
                     if(exists){                         
                         // 删除已有的文件
-                        shell.exec("rm -rf  output/debug/android ");
+                        shell.exec("rm -rf  output/android/debug ");
                         // 创建输出目录
-                        utils.mkDirsSync("./output/debug");
+                        utils.mkDirsSync("./output/android/debug");
                         // 开始解压文件
-                        shell.exec("unzip androidDebug.zip  -d output/debug/android");
+                        shell.exec("unzip androidDebug.zip  -d output/android/debug");
                         // 获取android 目录下的文件目录
                         let pwd = shell.pwd();
-                        let filePath = pwd +"/output/debug/android";
+                        let filePath = pwd +"/output/android/debug";
                         let filesDir= getFilesDir(filePath);
                         //  验证android目录文件
                         let len = filesDir.length;
@@ -255,16 +254,16 @@ function cloudBuildAndUnzip(selectedPlatform){
                   fs.exists("iosDebug.zip",function(exists){
                     if(exists){            
                         // 删除已有的文件
-                        shell.exec("rm  -rf  output/debug/ios");
+                        shell.exec("rm  -rf  output/ios/debug");
                         // 创建输出目录
-                        utils.mkDirsSync("./output/debug");
+                        utils.mkDirsSync("./output/ios/debug");
                         // 开始解压文件
-                        shell.exec("unzip iosDebug.zip  -d output/debug/ios");
+                        shell.exec("unzip iosDebug.zip  -d output/ios/debug");
                         // 删除zip 文件
                         shell.exec("rm  -rf  iosDebug.zip");
                         // 生成debug APP 程序
                         let pwd = shell.pwd();
-                        let projectDir = pwd +"/output/debug/ios/export";
+                        let projectDir = pwd +"/output/ios/debug/export";
                 
                         let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
 
@@ -293,7 +292,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                         // debug app  程序移动指定output 目录
                         if(debugAppPath!=null){
                             let pwd = shell.pwd();
-                            fs.move(debugAppPath, pwd +"/output/debug/ios/debug.app", function(err) {
+                            fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
                               if (err) return console.error(err)
                               // 执行 debug 程序
                               copyAndInstallDebugIOS();
@@ -423,14 +422,12 @@ function startWX() {
     // 拷贝 添加页面到 wx/proj  目录下
     let cmd = "cp -rf " + __dirname + "/../res/debug.wx/ " + wxproj;
     shell.exec(cmd); //复制wx测试工程
-    let projPath = "output/debug/" + utils.Platform.WEIXIN + "/proj/";
+    let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     fs.ensureDirSync(projPath);
     if(fs.existsSync("./wx/")) {
         shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
     }
     
-   
-
 
     copyProjectToOutput(objPath,utils.Platform.WEIXIN);
     let appJs = createAppJsFile(path);
@@ -445,7 +442,7 @@ function startWX() {
 }
 
 function getPathByPlatform(platform) {
-    return "output/debug/" + platform + "/app";
+    return "output/" + platform + "/debug/app";
 }
 
 function copyProjectToOutput(objPath, platform) {
