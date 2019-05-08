@@ -1,8 +1,9 @@
 const shell = require('shelljs');
-const MTL_PLATFORM_IOS_TYPE = 1 ;
-const MTL_PLATFORM_ANDROID_TYPE = 2 ;
-const MTL_PLATFORM_WX_TYPE = 3 ;
-const MTL_PLATFORM_EAPP_TYPE = 4 ;
+const path = require('path');
+
+var fs=require('fs-extra');
+var unzip = require("unzip-stream");
+
 
 const configFile = require('./config');
 const utils = require('./mtl').Utils;
@@ -33,11 +34,6 @@ const startList = [{
   }
 }];
 
-var fs=require('fs-extra');
-var unzip = require("unzip-stream");
-
-var selectedPlatform ='All';
-var certName = 'ump';
 class mtlBuild{
   static build(buildPlatform) 
   {
@@ -190,47 +186,49 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                 fs.exists("android.zip",function(exists){
                   if(exists){                         
                       // 删除已有的文件
-                      shell.exec("rm -rf  output/android/release ");
-                      // 创建输出目录
-                      utils.mkDirsSync("./output/android/release");
-                      // 开始解压文件
-                      shell.exec("unzip android.zip  -d output/android/release");
-                      //fs.removeSync('./output/release/android');
-                      //fs.createReadStream('android.zip').pipe(unzip.Extract({ path: './output/release/android' }));
-                      
-                      console.log("文件解压完成。");
+                      fs.removeSync('./output/android/release');
 
-                      // 获取android 目录下的文件目录
-                      let pwd = shell.pwd();
-                      let filePath = pwd +"/output/android/release";
-                      let filesDir= getFilesDir(filePath);
-                      //  验证android目录文件
-                      let len = filesDir.length;
-                      let logPath;
-                      let apkPath;
-                      for (let i = 0; i < len; ++i) {
-                          if (filesDir[i].indexOf(".log")>=0){
-                            logPath=filesDir[i];
+                      (async function () {
+                        try {
+                          await unzipSync('android.zip','./output/android/release');
+                          fs.removeSync('android.zip');
+                          console.log("文件解压完成。");
+
+                          // 获取android 目录下的文件目录
+                          let pwd = shell.pwd().split(path.sep).join('/');
+                          let filePath = pwd +"/output/android/release";
+                          let filesDir= getFilesDir(filePath);
+                          //  验证android目录文件
+                          let len = filesDir.length;
+                          let logPath;
+                          let apkPath;
+                          for (let i = 0; i < len; ++i) {
+                              if (filesDir[i].indexOf(".log")>=0){
+                                logPath=filesDir[i];
+                              }
+                              if (filesDir[i].indexOf(".apk")>=0){
+                                apkPath=filesDir[i];
+                              }
                           }
-                          if (filesDir[i].indexOf(".apk")>=0){
-                            apkPath=filesDir[i];
+                          if(apkPath!=null){
+                            console.log('工程编译完成,编译日志如下：');
+                          }else{
+                            console.log('工程编译失败,编译日志如下：');
                           }
+                          
+                          let data = fs.readFileSync(logPath, 'utf8');
+                          console.log(data);
+                          
+                          console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
+                          console.log(' 构建包文件目录为: 当前工程目录/output/android/release');
+                          console.log('可以通过  start 指令来完成云编译工程本地虚拟安装演示');
+                          console.log('指令举例：mtl start         引导完成平台演示!');
+                          console.log('指令举例：mtl start 2       通过平台代号完成平台演示！');
+                          console.log('指令举例：mtl start Android 通过平台名称完成平台演示！');
+                        } catch (e) {
+                          console.log(e)
                       }
-                      if(apkPath!=null){
-                        console.log('工程编译完成,编译日志如下：');
-                      }else{
-                        console.log('工程编译失败,编译日志如下：');
-                      }
-                      
-                      let data = fs.readFileSync(logPath, 'utf8');
-                      console.log(data);
-                      shell.exec("rm -rf  android.zip ");
-                      console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
-                      console.log(' 构建包文件目录为: 当前工程目录/output/android/release');
-                      console.log('可以通过  start 指令来完成云编译工程本地虚拟安装演示');
-                      console.log('指令举例：mtl start         引导完成平台演示!');
-                      console.log('指令举例：mtl start 2       通过平台代号完成平台演示！');
-                      console.log('指令举例：mtl start Android 通过平台名称完成平台演示！');
+                    })();
                   }
                      if(!exists){
                         console.log("android.zip文件不存在")
@@ -241,44 +239,41 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                 fs.exists("ios.zip",function(exists){
                   if(exists){            
                       
-                      // 删除已有的文件
-                      shell.exec("rm  -rf  output/ios/release");
-                      // 创建输出目录
-                      utils.mkDirsSync("./output/ios/release");
-                      // 开始解压文件
-                      shell.exec("unzip ios.zip  -d output/ios/release");
-                      //fs.removeSync('./output/release/ios');
-                      //fs.createReadStream('ios.zip').pipe(unzip.Extract({ path: './output/release/ios' }));
-                      
-
-                      // 获取ios目录下的文件目录
-                      let pwd = shell.pwd();
-                      let filePath = pwd +"/output/ios/release";
-                      let filesDir= getFilesDir(filePath);
-                      //  验证iOS目录文件
-                      let len = filesDir.length;
-                      let logPath;
-                      let ipaPath;
-                      for (let i = 0; i < len; ++i) {
-                        if (filesDir[i].indexOf(".log")>=0){
-                          logPath=filesDir[i];
+                  fs.removeSync('./output/release/ios');
+                  (async function () {
+                    try {
+                        await unzipSync('ios.zip','./output/release/ios');
+                        fs.removeSync('ios.zip');
+                        let pwd = shell.pwd().split(path.sep).join('/');
+                        let filePath = pwd +"/output/release/ios";
+                        let filesDir= getFilesDir(filePath);
+                        //  验证iOS目录文件
+                        let len = filesDir.length;
+                        console.log(len);
+                        let logPath;
+                        let ipaPath;
+                        for (let i = 0; i < len; ++i) {
+                          if (filesDir[i].indexOf(".log")>=0){
+                            logPath=filesDir[i];
+                          }
+                          if (filesDir[i].indexOf(".ipa")>=0){
+                            ipaPath=filesDir[i];
+                          }
                         }
-                        if (filesDir[i].indexOf(".ipa")>=0){
-                          ipaPath=filesDir[i];
+                        if(ipaPath!=null){
+                          console.log('工程编译完成,编译日志如下：');
+                        }else{
+                          console.log('工程编译失败,编译日志如下：');
                         }
-                      }
-                      if(ipaPath!=null){
-                        console.log('工程编译完成,编译日志如下：');
-                      }else{
-                        console.log('工程编译失败,编译日志如下：');
-                      }
-                    
-                      let data = fs.readFileSync(logPath, 'utf8');
-                      console.log(data);
-                      shell.exec("rm  -rf  ios.zip");
-                      console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
-                      console.log(' 构建包文件目录为: 当前工程目录/output/ios/release');
                       
+                        let data = fs.readFileSync(logPath, 'utf8');
+                        console.log(data);
+                        console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
+                        console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
+                    } catch (e) {
+                        console.log(e)
+                    }
+                  })();
                   }
                      if(!exists){
                         console.log("ios.zip文件不存在")
@@ -352,6 +347,25 @@ function commitAndPushConfigFile() {
     return utils.SUCCESS;
 
 }
+
+/**
+ * 格式化输出JSON对象，返回String
+ * @param {String} fileName 
+ * @param {String} mbDir 
+ */
+function unzipSync(fileName,mbDir) {
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(fileName).pipe(unzip.Extract({ path: mbDir 
+      })).on('close', () => {
+          console.log('stream close')
+          resolve()
+      }).on('error', (err) => {
+          reject(err)
+      })
+  })
+}
+
+
 /**
  * 格式化输出JSON对象，返回String
  * @param {JSON} data 
