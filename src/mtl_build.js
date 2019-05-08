@@ -134,7 +134,7 @@ function androidInstall(){
   
   console.log('android 工程运行展示中，请先打开模拟器...');
   
-  let pwd = shell.pwd();
+  let pwd = shell.pwd().split(path.sep).join('/');
  var runProjPath = pwd +"/output/android/release/export/"+projectName+".apk"
  console.log('apk地址:'+runProjPath);
   shell.exec("adb install -r  "+ runProjPath);

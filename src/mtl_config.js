@@ -96,13 +96,10 @@ const getValidateTicketDevelop = async function ({ ticket }) {
     return resultJSON
 }
 
-const sendGet = async function (options) {
+const send = async function (options) {
     let opts = {
         jar: true,
         method: 'get',
-        qs: {
-
-        },
         headers: {
             'Upgrade-Insecure-Requests': 1,
             'User-Agent': configFile.DEVELOP_HTTP_HEADER_UA,
@@ -111,11 +108,11 @@ const sendGet = async function (options) {
     }
     opts = { ...opts, ...options };
     let result = await rp(opts);
-    console.log(result)
+    // console.log(result)
     return result;
 }
 
 exports.config = config;
 exports.getYhtTicket = getYhtTicket;
 exports.getValidateTicketDevelop = getValidateTicketDevelop;
-exports.sendGet = sendGet;
+exports.send = send;

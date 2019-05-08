@@ -1,5 +1,6 @@
 const shell = require('shelljs');
 const fs = require('fs-extra');
+const path = require('path');
 const inquirer = require('inquirer');
 const utils = require('./mtl').Utils;
 const xml2js = require('xml2js');
@@ -60,7 +61,7 @@ function startIOS() {
         console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
         return;
     }
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
@@ -85,7 +86,7 @@ function startIOS() {
 // const debugPath = __dirname + "/../res/";
 
 function startAndroid() {
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
         updateConfigFileToDebug();
         if(commitAndPushConfigFile()== "error"){
@@ -149,7 +150,7 @@ function copyAndInstallDebugAndroid() {
     let debugApk = "./" + path + "/../debug.apk";
     
     if(!fs.existsSync(debugApk)) {
-        let pwd = shell.pwd();
+        let pwd = shell.pwd().split(path.sep).join('/');
         let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
         let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
         console.log("开始安装debug 调试程序");
@@ -212,38 +213,40 @@ function cloudBuildAndUnzip(selectedPlatform){
                   fs.exists("androidDebug.zip",function(exists){
                     if(exists){                         
                         // 删除已有的文件
-                        shell.exec("rm -rf  output/android/debug ");
-                        // 创建输出目录
-                        utils.mkDirsSync("./output/android/debug");
-                        // 开始解压文件
-                        shell.exec("unzip androidDebug.zip  -d output/android/debug");
-                        // 获取android 目录下的文件目录
-                        let pwd = shell.pwd();
-                        let filePath = pwd +"/output/android/debug";
-                        let filesDir= getFilesDir(filePath);
-                        //  验证android目录文件
-                        let len = filesDir.length;
-                        
-                        let apkPath;
-                        for (let i = 0; i < len; ++i) {
-                          
-                            if (filesDir[i].indexOf(".apk")>=0){
-                              apkPath=filesDir[i];
+                        fs.removeSync('./output/android/debug');
+                        (async function () {
+                        try {
+                            await unzipSync('androidDebug.zip','./output/android/debug')
+                            // 获取android 目录下的文件目录
+                            let pwd = shell.pwd().split(path.sep).join('/');
+                            let filePath = pwd +"/output/android/debug";
+                            let filesDir= getFilesDir(filePath);
+                            //  验证android目录文件
+                            let len = filesDir.length;
+                            
+                            let apkPath;
+                            for (let i = 0; i < len; ++i) {
+                            
+                                if (filesDir[i].indexOf(".apk")>=0){
+                                apkPath=filesDir[i];
+                                }
                             }
+                            if(apkPath!=null){
+                            let debugApkPath = filePath+'/export/debug.apk';
+                            fs.move(apkPath, debugApkPath, function(err) {
+                                if (err) return console.error(err)
+                                console.log('android 云端构建调试程序完成 🎉  🎉  🎉 ！');
+                                copyAndInstallDebugAndroid();
+                                });
+                            }else{
+                            console.log('android 云端构建调试程序失败 😢 😢 😢 !');
+                            }
+                            
+                        } catch (e) {
+                              console.log(e)
                         }
-                        if(apkPath!=null){
-                          let debugApkPath = filePath+'/export/debug.apk';
-                          fs.move(apkPath, debugApkPath, function(err) {
-                            if (err) return console.error(err)
-                            console.log('android 云端构建调试程序完成 🎉  🎉  🎉 ！');
-                            copyAndInstallDebugAndroid();
-                            });
-                        }else{
-                          console.log('android 云端构建调试程序失败 😢 😢 😢 !');
-                        }
-                        
-                        shell.exec("rm -rf  androidDebug.zip ");
-                       
+                        })();
+                        fs.removeSync('androidDebug.zip');
                     }
                        if(!exists){
                           console.log("android 云端构建调试程序失败 😢 😢 😢 !");
@@ -254,52 +257,55 @@ function cloudBuildAndUnzip(selectedPlatform){
                   fs.exists("iosDebug.zip",function(exists){
                     if(exists){            
                         // 删除已有的文件
-                        shell.exec("rm  -rf  output/ios/debug");
-                        // 创建输出目录
-                        utils.mkDirsSync("./output/ios/debug");
-                        // 开始解压文件
-                        shell.exec("unzip iosDebug.zip  -d output/ios/debug");
-                        // 删除zip 文件
-                        shell.exec("rm  -rf  iosDebug.zip");
-                        // 生成debug APP 程序
-                        let pwd = shell.pwd();
-                        let projectDir = pwd +"/output/ios/debug/export";
-                
-                        let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
-
-                        let cmd = "xcodebuild -workspace " +workspaceDir +" -scheme " +projectName+ " -sdk iphonesimulator12.2";
-                        shell.exec(cmd);
-                        let derivedDataDir = os.homedir()+"/Library/Developer/Xcode/DerivedData/";
-
-                        // 获取DerivedData目录下的目录列表
-                        let  componentsList = [];
-                        const files = fs.readdirSync(derivedDataDir);
-                        files.forEach(function (item, index) {
-                            let stat = fs.lstatSync(derivedDataDir+item);
-                            if (stat.isDirectory() === true) { 
-                                componentsList.push(item);
-                            }
-                        })
-                        //  获取iOS debug.app 目录
-                        let len = componentsList.length;
-                        var debugAppPath ;
-                        for (let i = 0; i < len; ++i) {
+                        fs.removeSync('output/ios/debug');
+                        (async function () {
+                            try {
+                                await unzipSync('iosDebug.zip','./output/ios/debug')
+                                // 生成debug APP 程序
+                                let pwd = shell.pwd().split(path.sep).join('/');
+                                let projectDir = pwd +"/output/ios/debug/export";
                         
-                          if (componentsList[i].indexOf(projectName+"-")>=0){
-                            debugAppPath = derivedDataDir+componentsList[i]+"/Build/Products/Debug-iphonesimulator/"+projectName+".app";
-                          }
-                        }
-                        // debug app  程序移动指定output 目录
-                        if(debugAppPath!=null){
-                            let pwd = shell.pwd();
-                            fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
-                              if (err) return console.error(err)
-                              // 执行 debug 程序
-                              copyAndInstallDebugIOS();
-                              });
-                          }else{
-                            console.log('云端ios构建调试程序失败');
-                          }
+                                let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
+
+                                let cmd = "xcodebuild -workspace " +workspaceDir +" -scheme " +projectName+ " -sdk iphonesimulator12.2";
+                                shell.exec(cmd);
+                                let derivedDataDir = os.homedir()+"/Library/Developer/Xcode/DerivedData/";
+
+                                // 获取DerivedData目录下的目录列表
+                                let  componentsList = [];
+                                const files = fs.readdirSync(derivedDataDir);
+                                files.forEach(function (item, index) {
+                                    let stat = fs.lstatSync(derivedDataDir+item);
+                                    if (stat.isDirectory() === true) { 
+                                        componentsList.push(item);
+                                    }
+                                })
+                                //  获取iOS debug.app 目录
+                                let len = componentsList.length;
+                                var debugAppPath ;
+                                for (let i = 0; i < len; ++i) {
+                                
+                                if (componentsList[i].indexOf(projectName+"-")>=0){
+                                    debugAppPath = derivedDataDir+componentsList[i]+"/Build/Products/Debug-iphonesimulator/"+projectName+".app";
+                                }
+                                }
+                                // debug app  程序移动指定output 目录
+                                if(debugAppPath!=null){
+                                    let pwd = shell.pwd().split(path.sep).join('/');
+                                    fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
+                                    if (err) return console.error(err)
+                                    // 执行 debug 程序
+                                    copyAndInstallDebugIOS();
+                                    });
+                                }else{
+                                    console.log('云端ios构建调试程序失败');
+                                }
+                                
+                            } catch (e) {
+                                  console.log(e)
+                            }
+                            })();
+                            fs.removeSync('iosDebug.zip');
                          
                     }
                        if(!exists){
@@ -317,6 +323,23 @@ function cloudBuildAndUnzip(selectedPlatform){
       console.log(`problem with request: ${e.message}`);
     });
     form.pipe(request);  
+  }
+
+  /**
+ * 格式化输出JSON对象，返回String
+ * @param {String} fileName 
+ * @param {String} mbDir 
+ */
+function unzipSync(fileName,mbDir) {
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(fileName).pipe(unzip.Extract({ path: mbDir 
+        })).on('close', () => {
+            console.log('stream close')
+            resolve()
+        }).on('error', (err) => {
+            reject(err)
+        })
+    })
   }
 
   function getFilesDir(filePath){
@@ -360,7 +383,7 @@ function updateConfigFileToDebug() {
  * 
  */
 function commitAndPushConfigFile() {
-    let pwd = shell.pwd();
+    let pwd = shell.pwd().split(path.sep).join('/');
     console.log('调试程序源码正在整理中，请稍候 🚀 🚀 🚀 ...');
     if(!fs.existsSync(".git")) {
         return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
