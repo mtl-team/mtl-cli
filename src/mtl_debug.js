@@ -20,6 +20,8 @@ const debugList = [{
     }
   }];
 var start = function (platform) {
+    startWX();
+    return;
     if(!utils.isProject()) {
         return utils.reportError("不是MTL工程目录")
     }
@@ -151,8 +153,9 @@ function copyAndInstallDebugAndroid() {
     
     if(!fs.existsSync(debugApk)) {
         let pwd = shell.pwd().split(path.sep).join('/');
-        let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
-        let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
+        // let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
+        // let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
+        fs.copySync(cloudDebugApkPath, debugApk);
         console.log("开始安装debug 调试程序");
         shell.exec(cmd);
         shell.exec("adb install -r " + debugApk);
@@ -439,18 +442,15 @@ function startWX() {
     let path = getPathByPlatform(utils.Platform.WEIXIN);
     let objPath = "./" + path +"/";
     let wxproj = objPath + "../proj/";
-    if(!fs.existsSync(wxproj)) {
-        shell.exec("mkdir -p " + wxproj);
-    }
     // 拷贝 添加页面到 wx/proj  目录下
-    let cmd = "cp -rf " + __dirname + "/../res/debug.wx/ " + wxproj;
-    shell.exec(cmd); //复制wx测试工程
+    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
+
     let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     fs.ensureDirSync(projPath);
     if(fs.existsSync("./wx/")) {
-        shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
+        //shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
+        fs.copySync('./wx/', projPath);
     }
-    
 
     copyProjectToOutput(objPath,utils.Platform.WEIXIN);
     let appJs = createAppJsFile(path);
@@ -470,14 +470,13 @@ function getPathByPlatform(platform) {
 
 function copyProjectToOutput(objPath, platform) {
     //开始复制文件
-    shell.exec("mkdir -p " + objPath); //创建输出目录
-    shell.exec("cp -rf ./app/* " + objPath);
+    fs.copySync('./app/', objPath);
     let pltPath = "./" + platform + "/";
     if(fs.existsSync(pltPath)) {
-        console.log("cp -rf "+pltPath+"* " + objPath);
-        shell.exec("cp -rf "+pltPath+"* " + objPath);
+        fs.copySync(pltPath, objPath);
     }
-    shell.exec("cp -rf ./project.json " + objPath);
+    
+    fs.copySync('project.json', objPath+'/project.json');
 }
 
 function startNode(appJs) {
