@@ -239,13 +239,13 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                 fs.exists("ios.zip",function(exists){
                   if(exists){            
                       
-                  fs.removeSync('./output/release/ios');
+                  fs.removeSync('./output/ios/release');
                   (async function () {
                     try {
-                        await unzipSync('ios.zip','./output/release/ios');
+                        await unzipSync('ios.zip','./output/ios/release');
                         fs.removeSync('ios.zip');
                         let pwd = shell.pwd().split(path.sep).join('/');
-                        let filePath = pwd +"/output/release/ios";
+                        let filePath = pwd +"/output/ios/release";
                         let filesDir= getFilesDir(filePath);
                         //  验证iOS目录文件
                         let len = filesDir.length;
@@ -269,7 +269,7 @@ function cloudBuildAndUnzip(selectedPlatform,certName){
                         let data = fs.readFileSync(logPath, 'utf8');
                         console.log(data);
                         console.log(' 云构建打包完成 🎉  🎉  🎉 ！');
-                        console.log(' 构建包文件目录为: 当前工程目录/output/release/ios');
+                        console.log(' 构建包文件目录为: 当前工程目录/output/ios/release');
                     } catch (e) {
                         console.log(e)
                     }
