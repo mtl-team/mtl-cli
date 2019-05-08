@@ -93,7 +93,11 @@ const getValidateTicketDevelop = async function ({ ticket }) {
     } else {
         resultJSON['success'] = false;
     }
-    return resultJSON
+    // 读取完整的Cookies
+    rp(options, function (err, res, body) {
+        console.log(res.request.req.getHeader('cookie'))
+    });
+    return resultJSON;
 }
 
 const send = async function (options) {
