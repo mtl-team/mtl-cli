@@ -117,8 +117,8 @@ const login = async function (username, password) {
     // 去开发者中心验票获得登录授权
     let validate_ticket = await mtlConfig.getValidateTicketDevelop({ ticket: yht_ticket.ticket });
     // console.log(validate_ticket);
-    let resultA = await mtlConfig.sendGet({ url: 'https://developer.yonyoucloud.com/portal/web/v1/menu/sidebarList' });
-    console.log(resultA)
+    let sendResult = await mtlConfig.send({ url: 'https://developer.yonyoucloud.com/confcenter/api/env/list.do', method: 'get' });
+    console.log(sendResult);
   } else {
     console.log("login failed. please try again.");
   }
