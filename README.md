@@ -79,6 +79,8 @@ mtl login
 登录后，会在~/.mtl/目录下创建一个login.cfg的文件，记录用户信息。
 > 如果是公共电脑后，请在使用完毕后，删除这个文件
 
+![登录逻辑](http://iuap-design-cdn.oss-cn-beijing.aliyuncs.com/static/mtl/screenshot/mtl_login.png)
+
 ### 设置环境变量
 ```
 mtl config key value

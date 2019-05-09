@@ -45,6 +45,10 @@ const getYhtTicket = async function ({ username, password }) {
         method: 'post',
         form: formData
     };
+    conf.set('username',username);
+    conf.set('shaPassword',utils.sha1(password));
+    conf.set('md5Password',utils.md5(password));
+    
     let resultJSON = {};
     let yht_ticket_data = await rp(options);
     let result = yht_ticket_data.indexOf('?ticket=');
@@ -55,6 +59,7 @@ const getYhtTicket = async function ({ username, password }) {
         resultJSON['success'] = true;
         // 写票
         resultJSON['ticket'] = ticket;
+        conf.set('ticket', ticket);
         // 返回原始body
         resultJSON['body'] = yht_ticket_data;
     } else {
@@ -95,7 +100,12 @@ const getValidateTicketDevelop = async function ({ ticket }) {
     }
     // 读取完整的Cookies
     rp(options, function (err, res, body) {
-        console.log(res.request.req.getHeader('cookie'))
+        if (body.indexOf('/fe/fe-portal/index.html') !== -1) {
+            let devcookie = res.request.req.getHeader('cookie');
+            conf.set('cookie', devcookie);
+            // console.log(devcookie);
+        }
+
     });
     return resultJSON;
 }
