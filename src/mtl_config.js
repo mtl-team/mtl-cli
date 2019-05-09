@@ -45,10 +45,10 @@ const getYhtTicket = async function ({ username, password }) {
         method: 'post',
         form: formData
     };
-    conf.set('username',username);
-    conf.set('shaPassword',utils.sha1(password));
-    conf.set('md5Password',utils.md5(password));
-    
+    conf.set('username', username);
+    conf.set('shaPassword', utils.sha1(password));
+    conf.set('md5Password', utils.md5(password));
+
     let resultJSON = {};
     let yht_ticket_data = await rp(options);
     let result = yht_ticket_data.indexOf('?ticket=');
@@ -115,6 +115,7 @@ const send = async function (options) {
         jar: true,
         method: 'get',
         headers: {
+            'cookie': conf.get('cookie'),
             'Upgrade-Insecure-Requests': 1,
             'User-Agent': configFile.DEVELOP_HTTP_HEADER_UA,
             'Referer': configFile.DEVELOP_HTTP_HEADER_REFERER

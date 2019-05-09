@@ -20,7 +20,9 @@ const login = async function (username, password) {
     // 去开发者中心验票获得登录授权
     let validate_ticket = await mtlConfig.getValidateTicketDevelop({ ticket: yht_ticket.ticket });
     // console.log(validate_ticket);
-    let sendResult = await mtlConfig.send({ url: 'https://developer.yonyoucloud.com/confcenter/api/env/list.do', method: 'get' });
+    let sendResult = await mtlConfig.send({
+      url: 'http://codingcloud5.dev.app.yyuap.com/codingcloud/gentplrepweb/list/mtl'
+    });
     console.log(sendResult);
   } else {
     console.log("login failed. please try again.");
