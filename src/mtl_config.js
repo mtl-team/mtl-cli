@@ -3,6 +3,8 @@ const utils = require('utility');
 const configFile = require('./config');
 const Configstore = require('configstore');
 const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
+const fse = require('fs-extra');
+const path = require('path');
 
 const config = function (key, value) {
     if (key == null || value == null) {
@@ -127,7 +129,31 @@ const send = async function (options) {
     return result;
 }
 
+const download = async function (options, filename) {
+    let opts = {
+        method: 'get',
+        headers: {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
+            'Connection': 'keep-alive',
+            'Cookie': conf.get('cookie'),
+            'Upgrade-Insecure-Requests': 1,
+            'User-Agent': configFile.DEVELOP_HTTP_HEADER_UA,
+            'Referer': configFile.DEVELOP_HTTP_HEADER_REFERER
+        }
+    }
+    opts = { ...opts, ...options };
+    // 获得文件夹路径
+    let fileFolder = path.dirname(filename);
+    // 创建文件夹
+    fse.ensureDirSync(fileFolder);
+    // 开始下载无需返回
+    return await rp(opts).pipe(fse.createWriteStream(filename));
+}
+
 exports.config = config;
 exports.getYhtTicket = getYhtTicket;
 exports.getValidateTicketDevelop = getValidateTicketDevelop;
 exports.send = send;
+exports.download = download;
