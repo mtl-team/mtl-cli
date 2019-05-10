@@ -6,6 +6,7 @@ const utils = require('./mtl').Utils;
 const xml2js = require('xml2js');
 const configFile = require('./config');
 const os = require("os");
+var unzip = require("unzip-stream");
 const debugList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',
@@ -441,6 +442,9 @@ function startWX() {
     let path = getPathByPlatform(utils.Platform.WEIXIN);
     let objPath = "./" + path +"/";
     let wxproj = objPath + "../proj/";
+    fs.ensureDirSync(objPath);
+    fs.ensureDirSync(wxproj);
+   
     // 拷贝 添加页面到 wx/proj  目录下
     fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
 
