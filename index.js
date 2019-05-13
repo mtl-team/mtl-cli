@@ -90,10 +90,10 @@ program
   });
 
 program
-  .command('add-component [componentname]').alias('ac') // 命令简写
-  .description('添加组件。\ncomponentname: 组件名称；\n\r使用mtl plugin list查看组件')
-  .action(function (componentname) {
-    mComponent.addComponent(componentname);
+  .command('add-plugin [pluginName]').alias('aplugin') // 命令简写
+  .description('添加插件。\npluginName: 插件名称；\n\r使用mtl plugin list查看插件')
+  .action(function (pluginName) {
+    mComponent.addComponent(pluginName);
   });
   
 program
