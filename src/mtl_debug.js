@@ -62,39 +62,37 @@ var start = function (platform) {
 }
 
 
-function  chokidarWatch(){
+function chokidarWatch() {
 
-    let dir = shell.pwd()+"/app/";
-  // Initialize watcher.
-const watcher = chokidar.watch(dir, {
-    ignored: /(^|[\/\\])\../,
-    persistent: true
-  });
-   
-// Something to use when events are received.
-const log = console.log.bind(console);
-// Add event listeners.
-   
-  watcher
-    .on('add', function(path) { 
-        // log('File', path, 'has been added');
-        // copyAndInstallDebugIOS(false);
- })
-    .on('addDir', function(path) { 
-        // log('Directory', path, 'has been added'); 
-        // copyAndInstallDebugIOS(false);
-     })
-    .on('change', function(path) { 
-        log('File', path, 'has been changed'); 
+    let dir = shell.pwd() + "/app/";
+    // Initialize watcher.
+    const watcher = chokidar.watch(dir, {
+        ignored: /(^|[\/\\])\../,
+        persistent: true
+    });
 
-        if(fs.existsSync(shell.pwd() +"/output/ios/debug/debug.app")) {
-            copyAndInstallDebugIOS(false); 
-        }
-        
-        if(fs.existsSync(shell.pwd() +"output/" + utils.Platform.WEIXIN + "/debug/proj/")) {
-            copyAndDebugWeixin(false); 
-        }
-    })
+    // Something to use when events are received.
+    const log = console.log.bind(console);
+    // Add event listeners.
+
+    watcher
+        .on('add', function (path) {
+            // log('File', path, 'has been added');
+           
+        })
+        .on('addDir', function (path) {
+            // log('Directory', path, 'has been added'); 
+           
+        })
+        .on('change', function (path) {
+            log('File', path, 'has been changed');
+            if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
+                copyAndDebugWeixin("false");
+            }
+            if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
+                copyAndInstallDebugIOS("false");
+            }
+        })
 
 }
 
@@ -116,7 +114,7 @@ function startIOS() {
 
         cloudBuildAndUnzip("ios");
     }else{
-        copyAndInstallDebugIOS(true); 
+        copyAndInstallDebugIOS("true"); 
     }
 
 }
@@ -185,6 +183,8 @@ function  copyAndInstallDebugIOS(isStartNode){
             
         }));
 
+    }else{
+        console.log("请到iOS模拟器刷新进行调试");  
     }
     return utils.SUCCESS;
 
@@ -243,6 +243,8 @@ function copyAndDebugWeixin(isStartNode) {
             }
             startNode(appJs);
         }));
+    }else{
+        console.log("请到微信小程序工具刷新进行调试");  
     }
 }
 
@@ -376,7 +378,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                                     fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
                                     if (err) return console.error(err)
                                     // 执行 debug 程序
-                                    copyAndInstallDebugIOS(true);
+                                    copyAndInstallDebugIOS("true");
                                     });
                                 }else{
                                     console.log('云端ios构建调试程序失败');
@@ -544,7 +546,7 @@ function startWX() {
     // }))
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    copyAndDebugWeixin(true);
+    copyAndDebugWeixin("true");
     return utils.SUCCESS;
 }
 
