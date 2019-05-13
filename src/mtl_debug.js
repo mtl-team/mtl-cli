@@ -7,6 +7,10 @@ const xml2js = require('xml2js');
 const configFile = require('./config');
 const os = require("os");
 var unzip = require("unzip-stream");
+// var crypto = require('crypto');
+// var md5 = crypto.createHash('md5');
+const chokidar = require('chokidar');
+const {spawn} = require('child_process');
 const debugList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',
@@ -57,12 +61,52 @@ var start = function (platform) {
     return utils.SUCCESS;
 }
 
-function startIOS() {
 
+function  chokidarWatch(){
+
+    let dir = shell.pwd()+"/app/";
+  // Initialize watcher.
+const watcher = chokidar.watch(dir, {
+    ignored: /(^|[\/\\])\../,
+    persistent: true
+  });
+   
+// Something to use when events are received.
+const log = console.log.bind(console);
+// Add event listeners.
+   
+  watcher
+    .on('add', function(path) { 
+        // log('File', path, 'has been added');
+        // copyAndInstallDebugIOS(false);
+ })
+    .on('addDir', function(path) { 
+        // log('Directory', path, 'has been added'); 
+        // copyAndInstallDebugIOS(false);
+     })
+    .on('change', function(path) { 
+        log('File', path, 'has been changed'); 
+
+        if(fs.existsSync(shell.pwd() +"/output/ios/debug/debug.app")) {
+            copyAndInstallDebugIOS(false); 
+        }
+        
+        if(fs.existsSync(shell.pwd() +"output/" + utils.Platform.WEIXIN + "/debug/proj/")) {
+            copyAndDebugWeixin(false); 
+        }
+    })
+
+}
+
+
+function startIOS() {
     if(os.platform() != "darwin"){
         console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
         return;
     }
+    //  监听工程源码 ，给debug 实时更新
+    chokidarWatch();
+    // 启动debug 程序
     let pwd = shell.pwd().split(path.sep).join('/');
     if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
         updateConfigFileToDebug();
@@ -72,7 +116,7 @@ function startIOS() {
 
         cloudBuildAndUnzip("ios");
     }else{
-        copyAndInstallDebugIOS(); 
+        copyAndInstallDebugIOS(true); 
     }
 
 }
@@ -116,7 +160,7 @@ function runDebugAndroid(objPath) {
     shell.exec(cmdRunDebugApk);
 }
 
-function  copyAndInstallDebugIOS(){
+function  copyAndInstallDebugIOS(isStartNode){
     let path = getPathByPlatform(utils.Platform.IOS);
     let objPath = "./" + path +"/";
     copyProjectToOutput(objPath,utils.Platform.IOS);
@@ -131,15 +175,17 @@ function  copyAndInstallDebugIOS(){
     // }
     console.log("开始运行调试应用");
     shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"");
+    if(isStartNode=="true"){
+        let appJs = createAppJsFile(path);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app-node.js");
+            }
+            startNode(appJs);
+            
+        }));
 
-    let appJs = createAppJsFile(path);
-    if(fs.exists(appJs, function(exists) {
-        if(!exists) {
-            return utils.reportError("没有找到app-node.js");
-        }
-        startNode(appJs);
-        
-    }))
+    }
     return utils.SUCCESS;
 
 }
@@ -168,6 +214,38 @@ function copyAndInstallDebugAndroid() {
         runDebugAndroid(objPath);
     }
 }
+
+function copyAndDebugWeixin(isStartNode) {
+    console.log("准备开始生成微信工程...");
+    let path = getPathByPlatform(utils.Platform.WEIXIN);
+    let objPath = "./" + path +"/";
+    let wxproj = objPath + "../proj/";
+    fs.ensureDirSync(objPath);
+    fs.ensureDirSync(wxproj);
+   
+    // 拷贝 添加页面到 wx/proj  目录下
+    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
+
+    let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
+    fs.ensureDirSync(projPath);
+    if(fs.existsSync("./wx/")) {
+        //shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
+        fs.copySync('./wx/', projPath);
+    }
+
+    copyProjectToOutput(objPath,utils.Platform.WEIXIN);
+    if(isStartNode=="true"){
+        let appJs = createAppJsFile(path);
+        // console.log(appJs);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app.js");
+            }
+            startNode(appJs);
+        }));
+    }
+}
+
 
 
 function cloudBuildAndUnzip(selectedPlatform){
@@ -298,7 +376,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                                     fs.move(debugAppPath, pwd +"/output/ios/debug/debug.app", function(err) {
                                     if (err) return console.error(err)
                                     // 执行 debug 程序
-                                    copyAndInstallDebugIOS();
+                                    copyAndInstallDebugIOS(true);
                                     });
                                 }else{
                                     console.log('云端ios构建调试程序失败');
@@ -438,32 +516,35 @@ function formatJson(data) {
 
 //开始调试微信Web小程序
 function startWX() {
-    console.log("准备开始生成微信工程...");
-    let path = getPathByPlatform(utils.Platform.WEIXIN);
-    let objPath = "./" + path +"/";
-    let wxproj = objPath + "../proj/";
-    fs.ensureDirSync(objPath);
-    fs.ensureDirSync(wxproj);
+    // console.log("准备开始生成微信工程...");
+    // let path = getPathByPlatform(utils.Platform.WEIXIN);
+    // let objPath = "./" + path +"/";
+    // let wxproj = objPath + "../proj/";
+    // fs.ensureDirSync(objPath);
+    // fs.ensureDirSync(wxproj);
    
-    // 拷贝 添加页面到 wx/proj  目录下
-    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
+    // // 拷贝 添加页面到 wx/proj  目录下
+    // fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
 
-    let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
-    fs.ensureDirSync(projPath);
-    if(fs.existsSync("./wx/")) {
-        //shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
-        fs.copySync('./wx/', projPath);
-    }
+    // let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
+    // fs.ensureDirSync(projPath);
+    // if(fs.existsSync("./wx/")) {
+    //     //shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
+    //     fs.copySync('./wx/', projPath);
+    // }
 
-    copyProjectToOutput(objPath,utils.Platform.WEIXIN);
-    let appJs = createAppJsFile(path);
-    // console.log(appJs);
-    if(fs.exists(appJs, function(exists) {
-        if(!exists) {
-            return utils.reportError("没有找到app.js");
-        }
-        startNode(appJs);
-    }))
+    // copyProjectToOutput(objPath,utils.Platform.WEIXIN);
+    // let appJs = createAppJsFile(path);
+    // // console.log(appJs);
+    // if(fs.exists(appJs, function(exists) {
+    //     if(!exists) {
+    //         return utils.reportError("没有找到app.js");
+    //     }
+    //     startNode(appJs);
+    // }))
+    //  监听工程源码 ，给debug 实时更新
+    chokidarWatch();
+    copyAndDebugWeixin(true);
     return utils.SUCCESS;
 }
 
@@ -485,7 +566,15 @@ function copyProjectToOutput(objPath, platform) {
 function startNode(appJs) {
     console.log("开始启动node");
     shell.exec("npm --save install express")
-    shell.exec("node " + appJs);
+    // shell.exec("node " + appJs);
+
+    let cp1 = spawn('node', [appJs], {
+        cwd: process.cwd(),
+        env: process.env,
+        stdio: ['pipe', process.stdout, 'pipe'],
+        detached: true
+    });
+
 }
 
 function createAppJsFile(path) {

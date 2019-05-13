@@ -39,7 +39,9 @@
   "bin": {
     "mtl": "./index.js"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chokidar": "^3.0.0"
+  },
   "description": "mtl 多端统一开发工具",
   "directories": {
     "test": "test"
