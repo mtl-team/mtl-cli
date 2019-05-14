@@ -1,27 +1,22 @@
 const shell = require('shelljs');
-const fs = require('fs-extra');// fs-extra 扩展包
+const fse = require('fs-extra');// fs-extra 扩展包
 const xml2js = require('xml2js');
 const mtlGit = require("./mtl_git");
-
 const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
+var path = require('path');
+
+const configFile = require('./config');
+const Configstore = require('configstore');
+const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
+const mtlConfig = require('./mtl_config');
+var unzip = require("unzip-stream");
 
 // exports.MTLCreate = MTLCreate;
 const gitClone = "git clone ";
 const SUCCESS = "success";
-const INIT = "init";
 const PROJECT_FILE="project.json";
 const CONFIG_XML="config.xml";
-
-const promptName = [{
-    type: 'input',
-    message: '给你的新工程起一个名字:',
-    name: 'name',
-    default: "默认:testMtl" ,// 默认值
-    filter: function (val) { // 使用filter将回答变为小写
-        return val.toLowerCase();
-    }
-}];
 
 const tplLibs = require("../res/templates.json");
 
@@ -41,28 +36,178 @@ const promptList = [{
 
 //an == appname
 //tl = template name
-var createApp = function (an,tl) {
+var createApp = async function (an,tl) {
+
     if(!an) {
         console.log("必须录入工程名称")
-        return utils.reportError("mtl create appname");
+        return utils.reportError("mtl lc appname");
     }
-    promptList[0].choices = tplLibs.names;
-    console.log("创建工程 - "+an);
-    if(tl){
-        console.log('选用模板名称 - '+ tl);
-        //创建应用
-        createBegin(an,template);
+    if(fse.existsSync(an)){
+        console.log("本地已存在- "+ an +" -工程名称")
+        return utils.reportError("执行： dir 查看目录文件夹信息。");
+    }
+    if(conf.get('username')){
+        //开发者中心
+        let tempNameList = await getTempList();
+        // console.log('tempNameList:'+tempNameList);
+        promptList[0].choices = tempNameList;
+
+        let template = '';
+        let appname = an;
+        console.log("创建工程 - "+appname);
+        if(tl){
+            template = tl;
+            //判断模板是否存在
+            if(tempNameList.indexOf(template) === -1) {
+                console.log("无效的模板名称 - " + template);
+                return utils.reportError();
+            }
+
+            console.log('选用模板名称'+template);
+            //创建应用
+            downloadDevTemp(appname,template);
+        }else{
+            //命令行获取
+            inquirer.prompt(promptList).then(answers => {
+                console.log('选用模板名称：'+ answers.name); // 返回的结果
+                template = answers.name;
+                downloadDevTemp(appname,template);
+
+            });
+        }
+
+        return;
+
     }else{
-        //命令行获取
-        inquirer.prompt(promptList).then(answers => {
-            console.log('选用模板名称 - '+ answers.name); // 返回的结果
-            createBegin(an,answers.name);
-        });
+        //轻量级
+        promptList[0].choices = tplLibs.names;
+        let template = '';
+        let appname = an;
+        console.log("创建工程 - "+appname);
+        if(tl){
+            template = tl;
+            console.log('选用模板名称'+template);
+            //创建应用
+            createBegin(appname,template);
+        }else{
+            //命令行获取
+            inquirer.prompt(promptList).then(answers => {
+                console.log('选用模板名称：'+ answers.name); // 返回的结果
+                template = answers.name;
+                createBegin(appname,template);
+            });
+        }
     }
+
 }
 
+/**
+ * MTL工程 开发者中心版  创建工程前准备
+ * @param {String} appname 
+ * @param {String} template 
+ * 
+ */
+var downloadDevTemp = async function (appname,template) {
+
+    console.log("开始创建名称为 - " + appname + " - 的工程");
+
+    if(fse.existsSync(template+ "/project.json")){
+        console.log('本地存在 '+ template +' 模板....');
+        
+    }else{
+
+        if(fse.existsSync(template)){
+            console.log('error: 当前位置存在 '+template+' 目录，与模板名称冲突,请检查本地文件。');
+            return;
+        }
+        // 开始下载
+        await mtlConfig.download({
+            url: 'http://cloudcoding.dev.app.yyuap.com/codingcloud/genweb/downloadIuapFe?projectCode='+ template
+            }, function(){
+                // console.log('1111');
+                (async function (){
+
+                    await fse.createReadStream(template+'.zip').pipe(unzip.Extract({ path: './' 
+                    })).on('close', () => {
+                        console.log('解压完成...')
+                        fse.removeSync(template+'.zip');
+                        createDevPro(appname, template);
+                    }).on('error', (err) => {
+                        console.log(err);
+                    })
+                })()
+                
+            },template+'.zip');
+        console.log('下载完成');
+        
+        return;
+    }
+    createDevPro(appname,template);
+}
+
+/**
+ * MTL工程 开发者中心版  创建工程
+ * @param {String} appname 
+ * @param {String} template 
+ * 
+ */
+var createDevPro = function (appname,template) {
+
+    //创建文件夹
+    fse.ensureDirSync(appname);
+    //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+    //需要这些文件和目录存在
+    fse.copySync('./'+template+ '/app', appname +'/app');
+    fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
+    console.log('拷贝文件 success');
+
+    console.log("3、开始修改本地配置 - " + appname);
+    updateConfig(appname);
+
+}
+
+/**
+ * MTL工程 更新配置
+ * @param {String} projfile 
+ * @param {String} gitUrl 
+ * 注：用户自己上传代码，不提供代码托管。
+ */
+
+var configGitUrl = function (gitUrl) {
+    
+    if(!gitUrl){
+        console.log('输入gitUrl, eg: mtl gitUrl https://gogs.yonyoucloud.com/caiyi/mtl.git');
+        return;       
+    }
+
+    if(fse.existsSync("./project.json")){
+        let projfile = './project.json';
+        let result = changeTheGit(projfile, gitUrl);
+        if(result === utils.SUCCESS){
+
+            console.log('修改url 成功！');
+        }
+    }else{
+
+        console.log('未找到project.json，请执行cd命令进入工程目录。');
+        return;
+    };
+
+}
+
+var hasTemplet = function (template) {
+    return fse.existsSync(template+ "/project.json");
+}
+
+/**
+ * MTL工程 个人版  创建工程前准备
+ * @param {String} appname 
+ * @param {String} template 
+ * 
+ */
 var createBegin = function (appname,template) {
     //判断模板是否存在
+
     let tplItem = tplLibs[template];
     if(!tplItem) {
         console.log("无效的模板名称 - " + template);
@@ -84,7 +229,7 @@ var createBegin = function (appname,template) {
         
     }else{
 
-        if(fs.existsSync(template)){
+        if(fse.existsSync(template)){
             console.log('error: 当前位置存在 '+template+' 目录，与模板名称冲突,请检查本地文件。');
             console.log('创建工程失败。');
             return;
@@ -95,63 +240,18 @@ var createBegin = function (appname,template) {
         }
     }
 
-    console.log("2、开始创建远程仓库 - " + appname);
+    //创建文件夹
+    fse.ensureDirSync(appname);
+    //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+    //需要这些文件和目录存在
+    fse.copySync('./'+template+ '/app', appname +'/app');
+    //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
+    fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
+    console.log('拷贝文件 success');
 
-    mtlGit.repo(appname,'readme',function(gitUrl) {
-        //console.log("--mtl_creat:-success-"+gitUrl);
-        if(!gitUrl) {
-            utils.reportError("远程仓库创建失败，可能已存在该工程导致，请检查git 是否存在项目： "+ appname +' 建议更换工程名重新创建。');
-            //createApp();
-            inquirer.prompt(promptName).then(app => {
-                console.log('创建工程名称：'+app.name); // 返回的结果
-                let reName = app.name;
-                createBegin(reName,template);
-            });
+    console.log("3、开始修改本地配置 - " + appname);
+    updateConfig(appname);
 
-        }else{
-
-            shell.exec(gitClone + gitUrl);
-            //复制模板文件到工程   fs.copySync('/tmp/myfile', '/tmp/mynewfile');
-            //需要这些文件和目录存在
-            fs.copySync('./'+template+ '/app', appname +'/app');
-            //fs.copySync('./'+template+ '/.debug', appname +'/.debug');
-            fs.copySync('./'+template+ '/project.json', appname+'/project.json' );
-            console.log('拷贝文件 success');
-
-            console.log("3、开始修改本地配置 - " + appname);
-            updateConfig(appname, gitUrl);
-        }
-    });
-}
-
-var hasTemplet = function (template) {
-    return fs.existsSync(template+ "/project.json");
-}
-
-/**
- * 从Summer应用转为MTL工程
- * @param {String} appname 
- * @param {*} sourcePath 
- */
-var importApp = function(appname, sourcePath) {
-    let projPath = "./" + appname + "/"
-    let cmd = "yes | cp -rf " + sourcePath + " " + projPath;
-    console.log("开始导入工程 - " + sourcePath);
-    console.log("请耐心等待……");
-    shell.exec(cmd);    //复制工程到本地
-    loadConfigXml(sourcePath, function(data) {
-        let projFile = projPath + PROJECT_FILE;
-        console.log(projFile);
-        fs.writeFile(projFile, JSON.stringify(data), function(err) {
-            if(err) {
-                return utils.reportError(err);
-            }
-            let rs = changeTheAppName(projFile, appname);
-            if(rs == SUCCESS) {
-                console.log("导入工程成功");
-            }
-        });
-    })
 }
 
 /**
@@ -160,18 +260,18 @@ var importApp = function(appname, sourcePath) {
  * @param {String} gitUrl 
  * 
  */
-function updateConfig(appname, gitUrl) {
+function updateConfig(appname) {
 
-    fs.exists(appname,function (exists) {
+    fse.exists(appname,function (exists) {
         if(exists){
 
             shell.cd(appname);   //进入工程目录操作
             let projFile = "./" + PROJECT_FILE;
-            let rs = changeTheAppName(projFile, appname, gitUrl); //x修改配置文件
+            let rs = changeTheAppName(projFile, appname); //x修改配置文件
             if(rs == SUCCESS) { 
                 console.log("更新配置success");
-                console.log("4、开始提交git");
-                commitAndPush(gitUrl, appname);
+                console.log("--本地创建完成--先执行 cd "+ appname +" 进入目标目录--");
+                
             }
         }else {
             return utils.reportError("模板下载失败，请检查您的网络是否正常");
@@ -187,8 +287,8 @@ function updateConfig(appname, gitUrl) {
  * 
  */
 
-function changeTheAppName(projfile, appname, gitUrl) {
-    var proj = JSON.parse(fs.readFileSync(projfile).toString());
+function changeTheAppName(projfile, appname) {
+    var proj = JSON.parse(fse.readFileSync(projfile).toString());
     var app =proj["config"];
     if(!app) app = {};
     //处理基本属性
@@ -197,12 +297,10 @@ function changeTheAppName(projfile, appname, gitUrl) {
     app["packageName"]= "com.yonyou."+packageName;
     app["projectName"]=appname;
 
-    if(!gitUrl) return utils.reportError("未找到远程仓库git - " + gitUrl);
-    app.gitUrl= gitUrl;
     //回写
     proj["config"] = app;
 
-    fs.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
+    fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
     
     //修改config.xml
     let xmlFile = "./app/" + CONFIG_XML;
@@ -210,61 +308,14 @@ function changeTheAppName(projfile, appname, gitUrl) {
     var builder = new xml2js.Builder();
     var xml = builder.buildObject(proj);
 
-    fs.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
+    fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
     return utils.SUCCESS;
-}
-
-/**
- * MTL工程 提交远程仓库
- * @param {String} gitUrl 
- * 
- */
-function commitAndPush(gitUrl, appname) {
-
-    let pwd = shell.pwd();
-    console.log('当前路径：'+pwd);
-    if(!gitUrl) return utils.reportError("未找到远程仓库git - " + gitUrl);
-
-    //first commit
-    shell.exec("git add -A");
-    console.log('执行git commit');
-    let message = 'firstcommit';
-    //shell.exec("git status");
-    shell.exec("git commit -m " + message +' -q');
-
-    shell.exec("git push");
-
-    console.log("初始化完成，本地创建成功");
-    console.log("请执行 cd "+ appname +" 命令进入工程目录,开发此移动工程。");
-    return SUCCESS;
-}
-
-function loadConfigXml(sourcePath, callback) {
-    let option = { 
-        "explicitArray" : false,
-        "attrkey" :"props",
-        "charkey" :"content",
-        "trim":true,
-        "ignoreAttrs" : false };
-    fs.readFile(sourcePath + '/config.xml', function(err, data) {
-        if(err) {
-            return utils.reportError(sourcePath + "不是一个Summer工程");
-        }
-        var parseString = require('xml2js').parseString;
-        parseString(data, option, function (err, result) {
-            if(err) {
-                return utils.reportError(err);
-            } else {
-                callback(result);
-            }
-        });
-    });
 }
 
 //下载工程模版
 function downloadTemplate(appname, template) {
 
-    console.log("1、开始下载工程模板 - " + template);
+    console.log("开始下载工程模板 - " + template);
 	let tplLibs = require("../res/templates.json");
     let tplItem = tplLibs[template];
     let appDir = './'+template;
@@ -308,5 +359,167 @@ function formatJson(data) {
     return jsonStr;
 }
 
+/**
+ * 
+ * @param {String} appname 
+ */
+var pushRemote = function() {
+
+    let appname = '';
+    let pwd = shell.pwd();
+    let index = pwd.split(path.sep).join('/').lastIndexOf("\/"); 
+    appname = pwd.substring(index + 1, pwd.length);
+    console.log('开始执行 pushRemote  - appname： '+ appname);
+
+    if(!appname){
+        utils.reportError("项目名称： "+ appname +' ，请输入项目名。');
+        return;
+    }
+    if(!fse.existsSync("project.json")){
+        console.log('请进入要提交的工程目录进行操作，执行 cd appname');
+        return;
+    }
+    if(fse.existsSync(".git")){
+        console.log('本地存在仓库，请检查git');
+        return;
+    }
+
+    mtlGit.repo(appname,'readme',function(gitUrl) {
+        //console.log("--mtl_creat:-success-"+gitUrl);
+        if(!gitUrl) {
+            utils.reportError("远程仓库创建失败，可能已存在该工程导致，请检查git 是否存在项目： "+ appname +' 建议更换工程名重新创建。');
+            return;
+
+        }else{
+            //创建完成后  下载。
+            console.log(gitUrl);
+            
+            shell.exec(gitClone + gitUrl + " --progress tempDir");
+            //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+            //需要这些文件和目录存在
+            if(!fse.existsSync("tempDir/.git")){
+                console.log('gitClone 失败，请检查。');
+            }
+
+            fse.copySync('tempDir/.git', './.git');
+            console.log('拷贝文件 success');
+
+            fse.removeSync('tempDir');   //移除
+			
+			let projFile = "./" + PROJECT_FILE;
+            let rs = changeTheGit(projFile, gitUrl); //x修改配置文件
+            if(rs == SUCCESS) { 
+                console.log("git地址写入配置success");
+                
+            };
+            console.log("开始上传更新 - " + appname);
+            commitAndPush(gitUrl,appname);
+        }
+    });
+    
+}
+
+/**
+ * MTL工程 更新配置
+ * @param {String} projfile 
+ * @param {String} gitUrl 
+ * 
+ */
+
+function changeTheGit(projfile, gitUrl) {
+    var proj = JSON.parse(fse.readFileSync(projfile).toString());
+    var app =proj["config"];
+    if(!app) app = {};
+   
+    if(!gitUrl) return utils.reportError("未找到远程仓库git - " + gitUrl);
+    app.gitUrl= gitUrl;
+    //回写
+    proj["config"] = app;
+
+    fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
+    
+    //修改config.xml
+    let xmlFile = "./app/" + CONFIG_XML;
+
+    var builder = new xml2js.Builder();
+    var xml = builder.buildObject(proj);
+
+    fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
+    return utils.SUCCESS;
+}
+
+/**
+ * MTL工程 提交远程仓库
+ * @param {String} gitUrl 
+ * @param {String} appname
+ */
+function commitAndPush(gitUrl, appname) {
+
+    let pwd = shell.pwd();
+    console.log('当前路径：'+pwd);
+    if(!gitUrl) return utils.reportError("未找到远程仓库git - " + gitUrl);
+
+    //first commit
+    shell.exec("git add -A");
+    console.log('执行git commit');
+    let message = 'firstcommit';
+    //shell.exec("git status");
+    shell.exec("git commit -m " + message +' -q');
+
+    shell.exec("git push");
+
+    console.log("初始化完成，本地工程提交成功，代码托管。");
+	console.log("具体查看git ： "+ gitUrl);
+    return SUCCESS;
+}
+
+/**
+ * MTL工程 多人协同
+ * @param {String} url 
+ * 
+ */
+var pullRemote = function (url) {
+    if(!url) {
+        console.log("必须输入gitUrl");
+        return utils.reportError("mtl open gitUrl");
+    }
+    
+    let index = url.split(path.sep).join('/').lastIndexOf("\/"); 
+    appnameGit = url.substring(index + 1, url.length);
+    appname = appnameGit.substring(0,appnameGit.length-4); //去掉git
+    console.log('appname： '+ appname);
+
+    if(fse.existsSync(appname)) {    //截取工程目录
+        console.log("本地已存在目录："+ appname +"，请检查目录。");
+        return utils.reportError("执行： dir 查看：");
+    }
+
+    console.log("开始执行...");
+    shell.exec(gitClone + url);
+    console.log("操作完成...");
+    console.log("执行 cd 工程名  进入工程目录");
+}
+
+async function  getTempList(){
+    console.log('w');
+    let sendResultList = await mtlConfig.send({ url: 'http://cloudcoding.dev.app.yyuap.com/codingcloud/gentplrepweb/list/mtl', method: 'get' });
+    sendResultList = JSON.parse(sendResultList);
+    let tempInfo = sendResultList.detailMsg.data.content;
+    var tempNameList = [];
+    if(tempInfo.length){
+        for(var i=0;i<tempInfo.length;i++){
+            tempNameList.push(tempInfo[i].tplRepName);
+
+        }
+        // console.log(tempNameList);
+        return tempNameList;
+    }else{
+
+        return [];
+    }
+
+}
+
 exports.createApp = createApp
-exports.importApp = importApp
+exports.pushRemote = pushRemote
+exports.configGitUrl = configGitUrl

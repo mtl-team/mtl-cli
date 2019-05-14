@@ -30,6 +30,22 @@ program
 //     mCreate.createApp(appname,template);
 //   });
 
+
+  // create 开发者中心   nc
+  program
+  .command('newCreate [appname] [template]').alias('nc') // 命令简写
+  .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
+  .action(function (appname,template) {
+    mCreate.createApp(appname,template);
+  });
+
+program
+  .command('setGitUrl [gitURL]').alias('sgu') // 命令简写
+  .description('修改gitUrl。')
+  .action(function (gitURL) {
+    mCreate.configGitUrl(gitURL);
+  }); 
+
 program
   .command('create [appname] [template]').alias('c') // 命令简写
   .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')

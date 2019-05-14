@@ -129,7 +129,7 @@ const send = async function (options) {
     return result;
 }
 
-const download = async function (options, filename) {
+const download = async function (options, callback, filename) {
     let opts = {
         method: 'get',
         headers: {
@@ -149,7 +149,7 @@ const download = async function (options, filename) {
     // 创建文件夹
     fse.ensureDirSync(fileFolder);
     // 开始下载无需返回
-    return await rp(opts).pipe(fse.createWriteStream(filename));
+    return await rp(opts).pipe(fse.createWriteStream(filename)).on('close', callback);
 }
 
 exports.config = config;
