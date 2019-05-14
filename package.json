@@ -40,7 +40,8 @@
     "mtl": "./index.js"
   },
   "devDependencies": {
-    "chokidar": "^3.0.0"
+    "chokidar": "^3.0.0",
+    "cross-port-killer": "^1.1.1"
   },
   "description": "mtl 多端统一开发工具",
   "directories": {

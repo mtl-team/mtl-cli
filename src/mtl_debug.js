@@ -7,6 +7,8 @@ const xml2js = require('xml2js');
 const configFile = require('./config');
 const os = require("os");
 var unzip = require("unzip-stream");
+const PORT = 3000; // long-running process running on this, e.g. a web-server.
+const {kill}=require("cross-port-killer");
 // var crypto = require('crypto');
 // var md5 = crypto.createHash('md5');
 const chokidar = require('chokidar');
@@ -94,6 +96,30 @@ function chokidarWatch() {
             }
         })
 
+
+        const watcherProjectJson = chokidar.watch(shell.pwd() +"/project.json" , {
+            ignored: /(^|[\/\\])\../,
+            persistent: true
+        });
+
+        watcherProjectJson
+        .on('add', function (path) {
+            // log('File', path, 'has been added');
+           
+        })
+        .on('addDir', function (path) {
+            // log('Directory', path, 'has been added'); 
+           
+        })
+        .on('change', function (path) {
+            log('File', path, 'has been changed');
+            if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
+                copyAndDebugWeixin("false");
+            }
+            if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
+                copyAndInstallDebugIOS("false");
+            }
+        })
 }
 
 
@@ -564,19 +590,36 @@ function copyProjectToOutput(objPath, platform) {
     
     fs.copySync('project.json', objPath+'/project.json');
 }
+var cp1 ;
+async function startNode(appJs) {
 
-function startNode(appJs) {
-    console.log("开始启动node");
-    shell.exec("npm --save install express")
-    // shell.exec("node " + appJs);
-
-    let cp1 = spawn('node', [appJs], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: ['pipe', process.stdout, 'pipe'],
-        detached: true
-    });
-
+    kill(PORT).then(pids => {
+      console.log(pids);
+      console.log("开始启动node");
+      shell.exec("npm --save install express")
+      // shell.exec("node " + appJs);
+  
+       cp1 = spawn('node', [appJs], {
+          cwd: process.cwd(),
+          env: process.env,
+         
+          detached: true,
+          silent:true
+      });
+  
+      cp1.stdout.on('data', (data) => {
+          console.log(`stdout: ${data}`);
+        });
+        
+        cp1.stderr.on('data', (data) => {
+          console.log(`stderr: ${data}`);
+        });
+        
+        cp1.on('close', (code) => {
+          console.log(`child process exited with code ${code}`);
+        });
+    })
+   
 }
 
 function createAppJsFile(path) {
