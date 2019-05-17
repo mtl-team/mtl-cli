@@ -17,7 +17,7 @@
   "dependencies": {
     "commander": "^2.19.0",
     "configstore": "^4.0.0",
-    "express": "^4.16.4",
+    "express": "^4.17.0",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
     "git-clone": "^0.1.0",
@@ -31,6 +31,7 @@
     "request-promise": "^4.2.4",
     "shell": "^0.5.0",
     "shelljs": "^0.8.3",
+    "simple-plist": "^1.0.0",
     "tracer": "^0.9.8",
     "unzip-stream": "^0.3.0",
     "utility": "^1.16.1",

@@ -122,12 +122,27 @@ function chokidarWatch() {
         })
 }
 
+function updateIosPlistFile(plistDir) {
 
+    var plist = require('simple-plist');
+ 
+    // var data = plist.readFileSync(plistDir);
+    var data = JSON.parse(JSON.stringify(plist.readFileSync(plistDir)));
+    
+
+    data.CFBundleIdentifier="com.yonyou.mtl.debugger";
+    console.log(" data.CFBundleIdentifier:"+ data.CFBundleIdentifier);
+    console.log("end:::::readFileSync data:"+JSON.stringify(data));
+
+    // Write data to a plist file (synchronous)
+    plist.writeFileSync(plistDir, data);
+}
 function startIOS() {
     if(os.platform() != "darwin"){
         console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
         return;
     }
+
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
     // 启动debug 程序
@@ -168,6 +183,8 @@ function startAndroid() {
         copyAndInstallDebugAndroid(); 
     }
 }
+
+
 
 const cmdRunDebugApk = "adb shell am start -S com.yyiuap.summer.preview/com.yyuap.summer.core2.SummerWelcomeActivity";
 const adrAppPath="/sdcard/Android/data/com.yyiuap.summer.preview/preview_android/";
@@ -373,7 +390,11 @@ function cloudBuildAndUnzip(selectedPlatform){
                                 // 生成debug APP 程序
                                 let pwd = shell.pwd().split(path.sep).join('/');
                                 let projectDir = pwd +"/output/ios/debug/export";
-                        
+                                updateIosPlistFile(projectDir+"/"+projectName+"/"+projectName+"-info.plist");
+                                // 在npm 包res/ios目录中copy AppDelegate.m ViewController.m 到调试程序中 
+                                
+                                fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/ios/', projectDir+"/"+projectName+"/Classes/");
+                                // xcodebuild debug 工程
                                 let workspaceDir=projectDir+"/"+projectName+".xcworkspace";
 
                                 let cmd = "xcodebuild -workspace " +workspaceDir +" -scheme " +projectName+ " -sdk iphonesimulator12.2";
@@ -479,6 +500,7 @@ function updateConfigFileToDebug() {
     // proj.config.appName ="快速预览";
     // proj.config.packageName="com.yyiuap.summer.preview";
     proj.config.debuggerEnable="true";
+    // proj.config.packageName ="com.yonyou.mtl.debugger";
     fs.writeFileSync("./project.json", formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
     //修改./app/config.xml
     let xmlFile = "./app/config.xml";
