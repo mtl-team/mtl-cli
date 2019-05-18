@@ -15,12 +15,13 @@ const chokidar = require('chokidar');
 const {spawn} = require('child_process');
 const debugList = [{
     type: 'list',
-    message: '请选择项目平台：1、iOS；2、Android ；3、WX , 用上下箭头选择平台:',
+    message: '请选择项目平台：1、iOS；2、Android ；3、WX ;4、DD, 用上下箭头选择平台:',
     name: 'platform',
     choices: [
         "iOS",
         "android",
-        "WX"
+        "WX",
+        "DD"
     ],
     filter: function (val) { // 使用filter将回答变为小写
         return val.toLowerCase();
@@ -43,8 +44,8 @@ var start = function (platform) {
                 return startAndroid();
             case utils.Platform.WEIXIN:
                 return startWX();
-            case utils.Platform.E_APP:
-                return utils.ERROR;
+            case utils.Platform.DingDing:
+                return startDD();
         }
         });
     }else{
@@ -56,8 +57,8 @@ var start = function (platform) {
                 return startAndroid();
             case utils.Platform.WEIXIN:
                 return startWX();
-            case utils.Platform.E_APP:
-                return utils.ERROR;
+            case utils.Platform.DingDing:
+                return startDD();
         }
     } 
     return utils.SUCCESS;
@@ -94,6 +95,10 @@ function chokidarWatch() {
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
             }
+            if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
+                copyAndDebugDD("false");
+            }
+
         })
 
 
@@ -118,6 +123,9 @@ function chokidarWatch() {
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
+            }
+            if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
+                copyAndDebugDD("false");
             }
         })
 }
@@ -291,6 +299,39 @@ function copyAndDebugWeixin(isStartNode) {
     }
 }
 
+
+function copyAndDebugDD(isStartNode) {
+    console.log("准备开始生成微信工程...");
+    let path = getPathByPlatform(utils.Platform.DingDing);
+    let objPath = "./" + path +"/";
+    let ddproj = objPath + "../proj/";
+    fs.ensureDirSync(objPath);
+    fs.ensureDirSync(ddproj);
+   
+    // 拷贝 添加页面到 wx/proj  目录下
+    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.dd/', ddproj);
+
+    let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
+    fs.ensureDirSync(projPath);
+    if(fs.existsSync("./dd/")) {
+        //复制dd 页面到工程
+        fs.copySync('./dd/', projPath);
+    }
+
+    copyProjectToOutput(objPath,utils.Platform.DingDing);
+    if(isStartNode=="true"){
+        let appJs = createAppJsFile(path);
+        // console.log(appJs);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app.js");
+            }
+            startNode(appJs);
+        }));
+    }else{
+        console.log("请到微信小程序工具刷新进行调试");  
+    }
+}
 
 
 function cloudBuildAndUnzip(selectedPlatform){
@@ -597,6 +638,17 @@ function startWX() {
     copyAndDebugWeixin("true");
     return utils.SUCCESS;
 }
+
+
+//开始调试钉钉Web小程序
+function startDD() {
+  
+    //  监听工程源码 ，给debug 实时更新
+    chokidarWatch();
+    copyAndDebugDD("true");
+    return utils.SUCCESS;
+}
+
 
 function getPathByPlatform(platform) {
     return "output/" + platform + "/debug/app";

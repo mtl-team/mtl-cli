@@ -34,7 +34,7 @@ var Utils = function () {
         "IOS":"ios",
         "WEIXIN":"wx",
         "ANDROID":"android",
-        "E_APP":"eapp"
+        "DingDing":"dd"
     },
     // this.Platform.IOS = "iOS",
     // this.Platform.ANDROID = "Android",
