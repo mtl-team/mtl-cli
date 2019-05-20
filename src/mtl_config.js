@@ -101,13 +101,12 @@ const getValidateTicketDevelop = async function ({ ticket }) {
         resultJSON['success'] = false;
     }
     // 读取完整的Cookies
-    rp(options, function (err, res, body) {
+    await rp(options, function (err, res, body) {
         if (body.indexOf('/fe/fe-portal/index.html') !== -1) {
             let devcookie = res.request.req.getHeader('cookie');
             conf.set('cookie', devcookie);
             // console.log(devcookie);
         }
-
     });
     return resultJSON;
 }
