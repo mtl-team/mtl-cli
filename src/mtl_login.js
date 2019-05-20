@@ -25,9 +25,9 @@ const login = async function (username, password) {
     });
     console.log(sendResult);
     // 开始下载
-    await mtlConfig.download({
-      url: 'http://codingcloud5.dev.app.yyuap.com/codingcloud/genweb/downloadIuapFe?projectCode=mtl'
-    }, 'mtl.zip');
+    // await mtlConfig.download({
+    //   url: 'http://codingcloud5.dev.app.yyuap.com/codingcloud/genweb/downloadIuapFe?projectCode=mtl'
+    // }, 'mtl.zip');
   } else {
     console.log("login failed. please try again.");
   }
