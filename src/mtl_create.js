@@ -503,13 +503,13 @@ var pullRemote = function (url) {
 async function  getTempList(){
     console.log('w');
     let sendResultList = await mtlConfig.send({ url: 'http://cloudcoding.dev.app.yyuap.com/codingcloud/gentplrepweb/list/mtl', method: 'get' });
+    //console.log(sendResultList);
     sendResultList = JSON.parse(sendResultList);
     let tempInfo = sendResultList.detailMsg.data.content;
     var tempNameList = [];
     if(tempInfo.length){
         for(var i=0;i<tempInfo.length;i++){
             tempNameList.push(tempInfo[i].tplRepName);
-
         }
         // console.log(tempNameList);
         return tempNameList;
@@ -519,6 +519,7 @@ async function  getTempList(){
     }
 
 }
+//createApp("xxxx","");
 
 exports.createApp = createApp
 exports.pushRemote = pushRemote

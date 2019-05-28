@@ -66,6 +66,8 @@ const getYhtTicket = async function ({ username, password }) {
         resultJSON['body'] = yht_ticket_data;
     } else {
         resultJSON['success'] = false;
+        conf.delete('username');
+        console.log("取票失败，清除用户本地登录信息，此时创建工程将会读取本地工程或页面模板！");
     }
     return resultJSON;
 }
@@ -99,6 +101,8 @@ const getValidateTicketDevelop = async function ({ ticket }) {
         resultJSON['body'] = yht_validate_ticket_data;
     } else {
         resultJSON['success'] = false;
+        conf.delete('username');
+        return utils.reportError("验票失败，清除用户本地登录信息，此时创建工程将会读取本地工程或页面模板！");
     }
     // 读取完整的Cookies
     await rp(options, function (err, res, body) {
@@ -123,8 +127,12 @@ const send = async function (options) {
         }
     }
     opts = { ...opts, ...options };
-    let result = await rp(opts);
-    // console.log(result)
+    let result = await rp(opts)
+    .catch(function (err) {
+        console.log("请求失败，请重新登录了！");
+        return utils.reportError("或清除用户信息，取本地模板！");
+    });
+     //console.log(result)
     return result;
 }
 
@@ -150,9 +158,16 @@ const download = async function (options, callback, filename) {
     // 开始下载无需返回
     return await rp(opts).pipe(fse.createWriteStream(filename)).on('close', callback);
 }
-
+/**
+ * 清除用户信息 xyc
+ */
+const clearUserInfo = function (){
+    conf.delete('username');
+    console.log("用户信息清除完毕！");
+}
 exports.config = config;
 exports.getYhtTicket = getYhtTicket;
 exports.getValidateTicketDevelop = getValidateTicketDevelop;
 exports.send = send;
 exports.download = download;
+exports.clearUserInfo = clearUserInfo;

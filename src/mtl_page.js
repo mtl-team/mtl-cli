@@ -3,11 +3,16 @@ const fs = require('fs-extra');
 const utils = require('./mtl').Utils;
 const inquirer = require('inquirer');
 
+const configFile = require('./config');
+const Configstore = require('configstore');
+const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
+const mtlConfig = require('./mtl_config');
+
 const gitClone = "git clone ";
 const TPL_NAME = "__template_name";
 const tplCachePath = "../tpl_caches";
 const UPDATE_TEMPLATE = "update-template";
-
+var unzip = require("unzip-stream");
 var promptList = [{
     type: 'list',
     message: '请选择页面模板:',
@@ -23,7 +28,7 @@ var promptList = [{
     }
 }];
 
-var addView = function (name,tplname) {
+var addView = async function (name,tplname) {
     console.log("添加页面");
     if(!utils.isProject()) {
         return utils.reportError("添加失败，请执行: cd 工程目录名 进入工程目录操作。");
@@ -32,26 +37,51 @@ var addView = function (name,tplname) {
         console.log("必须输入添加页面的名称")
         return utils.reportError("mtl add-page name [template_name]");
     }
-    if(name==UPDATE_TEMPLATE) {
-        return downloadPageTemplate(true);
-    } else {
-        downloadPageTemplate(false);
+
+    if(conf.get('username')){
+        //开发者中心
+        if(!tplname) {
+            let tempNameList = await getTempList();
+            promptList[0].choices = tempNameList;
+            inquirer.prompt(promptList).then(answers => {
+                downloadDevPageTemp(name, answers.name);
+            });
+        } else {
+            downloadDevPageTemp(name, tplname);
+        }
+    }else{
+        //本地模板list，从gogs下载模板页面
+        if(name==UPDATE_TEMPLATE) {
+            return downloadPageTemplate(true);
+        } else {
+            downloadPageTemplate(false);
+        }
+        if(!tplname) {
+            let tpls = fs.readdirSync(tplCachePath);
+            promptList[0].choices = tpls;
+            inquirer.prompt(promptList).then(answers => {
+                addPage(name, answers.name);
+            });
+        } else {
+            addPage(name,tplname);
+        }
     }
-    if(!tplname) {
-        let tpls = fs.readdirSync(tplCachePath);
-        promptList[0].choices = tpls;
-        inquirer.prompt(promptList).then(answers => {
-            addPage(name, answers.name);
-        });
-    } else {
-        addPage(name,tplname);
-    }
+    
 }
 
 //开始根据模版添加页面
 function addPage(name, tplname) {
-    let tplPath = tplCachePath + "/"+ tplname;
+    let tplPath;
+    if(conf.get('username')){
+        //开发者中心
+        tplPath = "tpl_cache/"+ tplname;
+    }else{
+        tplPath = tplCachePath + "/"+ tplname;
+    }
+
+    
     if(!fs.existsSync(tplPath)) {
+        console.log("页面路径 - " + tplPath);
         return utils.reportError("模版 " + tplname + " 没有找到");
     }
     console.log("开始添加模版 - " + tplname);
@@ -143,4 +173,60 @@ function downloadPageTemplate(isUpdate) {
     return utils.SUCCESS;
 }
 
+async function  getTempList(){
+    console.log('w');
+    let sendResultList = await mtlConfig.send({ url: 'http://codingcloud5.dev.app.yyuap.com/codingcloud/gentplrepweb/getStyles?fkGenTplRep=01bbd5b4-248b-49d7-a257-932134e2447d', method: 'get' });
+    sendResultList = JSON.parse(sendResultList);
+    console.log(sendResultList);
+    let tempInfo = sendResultList.detailMsg.data.data;
+    var tempNameList = [];
+    if(tempInfo.length){
+        for(var i=0;i<tempInfo.length;i++){
+            tempNameList.push(tempInfo[i].styleName);
+
+        }
+        // console.log(tempNameList);
+        return tempNameList;
+    }else{
+
+        return [];
+    }
+
+}
+/**
+ * MTL工程 开发者中心版  下载模板
+ * @param {String} template //页面模板
+ * 
+ */
+var downloadDevPageTemp = async function (name, template) {
+
+    console.log("开始下载名称为 - " + template + " - 的页面");
+
+    if(fs.existsSync(template)){
+        console.log('error: 当前位置存在 '+template+' 目录，与模板名称冲突,请检查本地文件。');
+        return;
+    }
+    // 开始下载
+    await mtlConfig.download({
+        url: 'http://codingcloud5.dev.app.yyuap.com/codingcloud/genweb/downloadPageTemplate?styleCode='+ template
+        }, function(){
+            // console.log('1111');
+            (async function (){
+
+                await fs.createReadStream('./'+template+'.zip').pipe(unzip.Extract({ path: './tpl_cache/' 
+                })).on('close', () => {
+                    console.log('解压完成...')
+                    fs.removeSync(template+'.zip');
+                    addPage(name, template);
+                    return;
+                }).on('error', (err) => {
+                    console.log(err);
+                })
+            })()
+            
+        },template+'.zip');
+    console.log('下载完成');
+    
+}
+//addView("xcv",null);
 exports.addView = addView

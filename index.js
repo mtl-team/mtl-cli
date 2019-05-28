@@ -2,7 +2,6 @@
 
 const program = require('commander');
 
-var mLocalCreate = require('./src/mtl_localCreate');
 var mCreate = require('./src/mtl_create');
 var mLogin =  require('./src/mtl_login');
 var mConfig = require('./src/mtl_config');
@@ -31,9 +30,9 @@ program
 //   });
 
 
-  // create 开发者中心   nc
+  // create 开发者中心   c
   program
-  .command('newCreate [appname] [template]').alias('nc') // 命令简写
+  .command('create [appname] [template]').alias('c') // 命令简写
   .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
   .action(function (appname,template) {
     mCreate.createApp(appname,template);
@@ -44,14 +43,7 @@ program
   .description('修改gitUrl。')
   .action(function (gitURL) {
     mCreate.configGitUrl(gitURL);
-  }); 
-
-program
-  .command('create [appname] [template]').alias('c') // 命令简写
-  .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
-  .action(function (appname,template) {
-    mLocalCreate.createApp(appname,template);
-  });  
+  });   
 
 program
   .command('pushRemote').alias('psr') // 命令简写
@@ -146,6 +138,14 @@ program
   .description('运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 EApp 。')
   .action(function (platform) { // 执行命令的的函数
     mDebug.start(platform);
+  })
+
+program
+  .command('clearUserInfo') // 清除用户信息
+  .alias('cuinfo') // 命令简写
+  .description('清除用户信息 。')
+  .action(function () { // 执行命令的的函数
+    mConfig.clearUserInfo();
   })
 
 program.parse(process.argv)
