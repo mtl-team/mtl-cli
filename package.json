@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,15 +15,19 @@
   "author": "xugang_hot",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^3.0.0",
     "commander": "^2.19.0",
     "configstore": "^4.0.0",
-    "express": "^4.17.0",
+    "express": "^4.17.1",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
     "git-clone": "^0.1.0",
     "git-clone-promise": "^1.0.0",
+    "https": "^1.0.0",
+    "https-request": "^1.1.0",
     "inquirer": "^6.2.2",
     "needle": "^2.2.4",
+    "openbrowser": "^1.0.2",
     "path": "^0.12.7",
     "react-native": "^0.59.1",
     "readline-sync": "^1.4.9",
@@ -32,6 +36,7 @@
     "shell": "^0.5.0",
     "shelljs": "^0.8.3",
     "simple-plist": "^1.0.0",
+    "tar": "^4.4.8",
     "tracer": "^0.9.8",
     "unzip-stream": "^0.3.0",
     "utility": "^1.16.1",

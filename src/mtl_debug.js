@@ -7,6 +7,8 @@ const xml2js = require('xml2js');
 const configFile = require('./config');
 const os = require("os");
 var unzip = require("unzip-stream");
+
+
 const PORT = 3000; // long-running process running on this, e.g. a web-server.
 const {kill}=require("cross-port-killer");
 // var crypto = require('crypto');
@@ -95,12 +97,15 @@ function chokidarWatch() {
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
             }
+            if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
+                copyAndInstallDebugAndroid("false");
+            }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
                 copyAndDebugDD("false");
             }
-
+            //  更新云端工程文件
+            uploadFileToCloud(path,"false");
         })
-
 
         const watcherProjectJson = chokidar.watch(shell.pwd() +"/project.json" , {
             ignored: /(^|[\/\\])\../,
@@ -120,15 +125,68 @@ function chokidarWatch() {
             log('File', path, 'has been changed');
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
                 copyAndDebugWeixin("false");
+                
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
             }
+            if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
+                copyAndInstallDebugAndroid("false");
+            }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
                 copyAndDebugDD("false");
             }
+            //  更新云端project.json 文件
+            uploadFileToCloud(path,"true");
         })
 }
+
+function chokidarWatchOutputDebugDir(platform) {
+    var dir = null;
+    console.log("chokidarWatchOutputDebugDir_platform=="+platform);
+    switch(platform) {
+        case utils.Platform.IOS:
+            dir = shell.pwd() + "/output/ios/debug/app/";
+            break;
+        case utils.Platform.ANDROID:
+            dir = shell.pwd() + "/output/android/debug/app/";
+            break;
+        case utils.Platform.WEIXIN:
+            dir = shell.pwd() + "/output/wx/debug/app/";
+            break;
+        case utils.Platform.DingDing:
+            dir = shell.pwd() + "/output/dd/debug/app/";
+            break;
+    }
+
+
+    // Initialize watcher.
+    const watcher = chokidar.watch(dir, {
+        ignored: /(^|[\/\\])\../,
+        persistent: true
+    });
+
+    // Something to use when events are received.
+    const log = console.log.bind(console);
+    // Add event listeners.
+
+    watcher
+        .on('add', function (path) {
+            // log('File', path, 'has been added');
+           
+        })
+        .on('addDir', function (path) {
+            // log('Directory', path, 'has been added'); 
+           
+        })
+        .on('change', function (path) {
+            log('outputFile', path, 'has been changed');
+           
+
+        })
+
+}
+
 
 function updateIosPlistFile(plistDir) {
 
@@ -138,7 +196,7 @@ function updateIosPlistFile(plistDir) {
     var data = JSON.parse(JSON.stringify(plist.readFileSync(plistDir)));
     
 
-    data.CFBundleIdentifier="com.yonyou.mtl.debugger";
+    data.CFBundleIdentifier="com.cscec3.mdmpush";
     console.log(" data.CFBundleIdentifier:"+ data.CFBundleIdentifier);
     console.log("end:::::readFileSync data:"+JSON.stringify(data));
 
@@ -154,17 +212,20 @@ function startIOS() {
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
     // 启动debug 程序
+    // 临时530演示使用debug.app add begin
     let pwd = shell.pwd().split(path.sep).join('/');
-    if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
-        updateConfigFileToDebug();
-        if(commitAndPushConfigFile()== "error"){
-            return;
-        }
+    // if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
+    //     updateConfigFileToDebug();
+    //     if(commitAndPushConfigFile()== "error"){
+    //         return;
+    //     }
 
-        cloudBuildAndUnzip("ios");
-    }else{
+    //     cloudBuildAndUnzip("ios");
+    // }else{
+        fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/ios/debug.app', pwd +"/output/ios/debug/debug.app");
+        // 临时530演示使用debug.app end
         copyAndInstallDebugIOS("true"); 
-    }
+    // }
 
 }
 
@@ -180,22 +241,29 @@ function startIOS() {
 
 function startAndroid() {
     let pwd = shell.pwd().split(path.sep).join('/');
-    if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
-        updateConfigFileToDebug();
-        if(commitAndPushConfigFile()== "error"){
-            return;
-        }
 
-        cloudBuildAndUnzip("android");
-    }else{
-        copyAndInstallDebugAndroid(); 
-    }
+     // 临时530演示使用debug.app add begin
+    // if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
+    //     updateConfigFileToDebug();
+    //     if(commitAndPushConfigFile()== "error"){
+    //         return;
+    //     }
+
+    //     cloudBuildAndUnzip("android");
+    // }else{
+       // 临时530演示使用debug.app end
+       chokidarWatch();
+        copyAndInstallDebugAndroid("true"); 
+    // }
 }
 
 
 
-const cmdRunDebugApk = "adb shell am start -S com.yyiuap.summer.preview/com.yyuap.summer.core2.SummerWelcomeActivity";
-const adrAppPath="/sdcard/Android/data/com.yyiuap.summer.preview/preview_android/";
+// const cmdRunDebugApk = "adb shell am start -S com.yyiuap.summer.preview/com.yyuap.summer.core2.SummerWelcomeActivity";
+// const adrAppPath="/sdcard/Android/data/com.yyiuap.summer.preview/preview_android/";
+
+const cmdRunDebugApk = "adb shell am start -S com.yonyou.mtlandroid/com.yonyou.myapis.DebugActivity";
+const adrAppPath="/sdcard/Android/data/com.yonyou.mtlandroid/preview_android/";
 // var cmd = "adb install -r " + debugApk;
 //     shell.exec(cmd);
 function runDebugAndroid(objPath) {
@@ -213,35 +281,39 @@ function  copyAndInstallDebugIOS(isStartNode){
     let path = getPathByPlatform(utils.Platform.IOS);
     let objPath = "./" + path +"/";
     copyProjectToOutput(objPath,utils.Platform.IOS);
-    shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
-    let debugApp = "./" + path + "/../debug.app";
-    // if(!fs.existsSync(debugApp)) {
-        console.log("开始安装调试应用");
-        // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
-        // shell.exec(cmd);
-        let cmdInstallApp = "xcrun simctl install booted " + debugApp;
-        shell.exec(cmdInstallApp);
-    // }
-    console.log("开始运行调试应用");
-    shell.exec("xcrun simctl launch booted \"com.yonyou.mtl.debugger\"");
     if(isStartNode=="true"){
-        let appJs = createAppJsFile(path);
-        if(fs.exists(appJs, function(exists) {
-            if(!exists) {
-                return utils.reportError("没有找到app-node.js");
-            }
-            startNode(appJs);
+        shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
+        let debugApp = "./" + path + "/../debug.app";
+        // if(!fs.existsSync(debugApp)) {
+            console.log("开始安装调试应用");
+            // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
+            // shell.exec(cmd);
+            let cmdInstallApp = "xcrun simctl install booted " + debugApp;
+            shell.exec(cmdInstallApp);
+        // }
+        console.log("开始运行调试应用");
+        shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
+        zipAndUploadcloud("ios");
+        // let appJs = createAppJsFile(path);
+        // if(fs.exists(appJs, function(exists) {
+        //     if(!exists) {
+        //         return utils.reportError("没有找到app-node.js");
+        //     }
+        //     startNode(appJs);
             
-        }));
+        // }));
 
     }else{
         console.log("请到iOS模拟器刷新进行调试");  
     }
+
+
+
     return utils.SUCCESS;
 
 }
 
-function copyAndInstallDebugAndroid() {
+function copyAndInstallDebugAndroid(isStartNode) {
     let path = getPathByPlatform(utils.Platform.ANDROID);
     let objPath = "./" + path +"/";
     
@@ -252,17 +324,36 @@ function copyAndInstallDebugAndroid() {
         let pwd = shell.pwd().split(path.sep).join('/');
         let cloudDebugApkPath = pwd +"/output/android/debug/export/debug.apk";
         // let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
-        fs.copySync(cloudDebugApkPath, debugApk);
+
+        // fs.copySync(cloudDebugApkPath, debugApk);
+        fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/android/debug.apk', debugApk);
+       
+
         console.log("开始安装debug 调试程序");
         //shell.exec(cmd);
         shell.exec("adb install -r " + debugApk);
-        shell.exec(cmdRunDebugApk);
+        // shell.exec(cmdRunDebugApk);
         // console.log("正在为第一次安装准备文件");
-        setTimeout(function() {
-            runDebugAndroid(objPath);
-        },5000);
-    } else {
-        runDebugAndroid(objPath);
+        // setTimeout(function() {
+        //     runDebugAndroid(objPath);
+        // },5000);
+
+    
+    // } else {
+    //     // runDebugAndroid(objPath);
+    }
+    if(isStartNode=="true"){
+        // let appJs = createAppJsFile(path);
+        //     if(fs.exists(appJs, function(exists) {
+        //         if(!exists) {
+        //             return utils.reportError("没有找到app-node.js");
+        //         }
+        //         startNode(appJs);
+                
+        //     }));
+        zipAndUploadcloud("android");
+    }else{
+        console.log("请到android刷新进行调试");  
     }
 }
 
@@ -286,29 +377,40 @@ function copyAndDebugWeixin(isStartNode) {
 
     copyProjectToOutput(objPath,utils.Platform.WEIXIN);
     if(isStartNode=="true"){
-        let appJs = createAppJsFile(path);
-        // console.log(appJs);
-        if(fs.exists(appJs, function(exists) {
-            if(!exists) {
-                return utils.reportError("没有找到app.js");
-            }
-            startNode(appJs);
-        }));
+        zipAndUploadcloud("wx");
     }else{
         console.log("请到微信小程序工具刷新进行调试");  
     }
+
+    // if(isStartNode=="true"){
+    //     let appJs = createAppJsFile(path);
+    //     // console.log(appJs);
+    //     if(fs.exists(appJs, function(exists) {
+    //         if(!exists) {
+    //             return utils.reportError("没有找到app.js");
+    //         }
+    //         startNode(appJs);
+    //     }));
+    // }else{
+    //     console.log("请到微信小程序工具刷新进行调试");  
+    // }
+
+// 开始上传云端  10.3.13.7 服务器debugger
+
+
+
 }
 
 
 function copyAndDebugDD(isStartNode) {
-    console.log("准备开始生成微信工程...");
+    console.log("准备开始生成钉钉工程...");
     let path = getPathByPlatform(utils.Platform.DingDing);
     let objPath = "./" + path +"/";
     let ddproj = objPath + "../proj/";
     fs.ensureDirSync(objPath);
     fs.ensureDirSync(ddproj);
    
-    // 拷贝 添加页面到 wx/proj  目录下
+    // 拷贝 添加页面到 dd/proj  目录下
     fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.dd/', ddproj);
 
     let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
@@ -320,18 +422,212 @@ function copyAndDebugDD(isStartNode) {
 
     copyProjectToOutput(objPath,utils.Platform.DingDing);
     if(isStartNode=="true"){
-        let appJs = createAppJsFile(path);
-        // console.log(appJs);
-        if(fs.exists(appJs, function(exists) {
-            if(!exists) {
-                return utils.reportError("没有找到app.js");
-            }
-            startNode(appJs);
-        }));
+        // let appJs = createAppJsFile(path);
+        // // console.log(appJs);
+        // if(fs.exists(appJs, function(exists) {
+        //     if(!exists) {
+        //         return utils.reportError("没有找到app.js");
+        //     }
+        //     startNode(appJs);
+        // }));
+        zipAndUploadcloud("dd");
+
     }else{
-        console.log("请到微信小程序工具刷新进行调试");  
+        console.log("请到钉钉小程序工具刷新进行调试");  
     }
 }
+function zipDir(platform){
+    var archiver = require('archiver');
+    var output = fs.createWriteStream('app.zip');
+   
+    let archive = archiver('zip', {
+        zlib: { level: 9 } // 设置压缩级别
+      })
+ 
+// 存档警告
+archive.on('warning', function(err) {
+    if (err.code === 'ENOENT') {
+      console.warn('stat故障和其他非阻塞错误')
+    } else {
+      throw err
+    }
+  })
+  // listen for all archive data to be written 
+output.on('close', function() {
+    console.log(archive.pointer() + ' total bytes');
+    console.log('archiver has been finalized and the output file descriptor has closed.');
+    uploadAppCloud(platform);
+});
+  // 存档出错
+  archive.on('error', function(err) {
+    throw err
+  })
+    archive.pipe(output);
+ 
+    // 从子目录追加文件并将其命名为“新子dir”在存档中
+
+
+    var dir = null;
+    switch(platform) {
+        case utils.Platform.IOS:
+            dir =  "./output/ios/debug/app/";
+            break;
+        case utils.Platform.ANDROID:
+            dir = "./output/android/debug/app/";
+            break;
+        case utils.Platform.WEIXIN:
+            dir = "./output/wx/debug/app/";
+            break;
+        case utils.Platform.DingDing:
+            dir = "./output/dd/debug/app/";
+            break;
+    }
+
+
+    archive.directory(dir, 'app')
+    archive.finalize();
+    
+}
+
+
+function uploadFileToCloud(filePath,isProjectJson){
+
+
+
+      var FormData = require('form-data');
+      var http = require('https');
+      var form = new FormData();
+      var file="project.json";
+      var result=JSON.parse(fs.readFileSync(file));
+      var projectName = result.config.projectName;
+    //   var startPage = result.config.startPage;
+      var gitUrl = result.config.gitUrl;
+      form.append('appId',projectName); 
+ // 处理文件目录
+ if(isProjectJson == "true"){
+    // 处理projectjson 文件
+    
+    form.append('path',"/app/");
+    }else{
+    // 工程源码文件
+    let end = filePath.lastIndexOf("/",filePath.length-1);
+    let start = filePath.indexOf("/app/");
+    console.log("文件目录起始位置："+start); 
+    console.log("文件目录结束位置："+end); 
+    let cloudFilePath =filePath.substring(start,end+1);
+    console.log("云端调试文件路径："+cloudFilePath); 
+    form.append('path',cloudFilePath);
+    }
+
+      
+      // form.append('startPage',projectName+"/app/"+startPage);
+      form.append('file', fs.createReadStream(filePath));
+      form.append("Content-Type","application/x-www-form-urlencoded");
+      var headers = form.getHeaders();//这个不能少
+      var request = http.request({
+        method: 'POST',
+          hostname: 'mdoctor.yonyoucloud.com',
+          path: '/mtldebugger/mtl/file/upload',
+        headers: headers
+      },(res) =>{
+                res.on('data',(buffer) => {
+                  console.log("data="+buffer); 
+  
+                //   var responseResult=JSON.parse(buffer);
+                //   if(responseResult.msg="success"){
+                    
+                //   }
+              });
+                res.on('end',()=>{
+                  console.log("end"); 
+                });   
+      });
+    
+      request.on('error', (e) => {
+        console.log(`problem with request: ${e.message}`);
+      });
+      form.pipe(request);  
+  }
+
+
+
+function uploadAppCloud(platform){
+  //  var FormData = require('form-data');
+    //   var https = require('https');
+    //  var form = new FormData();
+    // var file="project.json";
+    // var result=JSON.parse(fs.readFileSync(file));
+    // var projectName = result.config.projectName;
+    // form.append('file', fs.createReadStream("./app.zip",{encoding:"utf8"}));
+    // form.append('appid',projectName); 
+    // form.append('path',"sdfsdaf");
+    // var headers = form.getHeaders();//这个不能少
+    // var httpsRequest = require('https-request');
+    // var options = {
+    //     hostname: 'mdoctor.yonyoucloud.com',
+    //     path: '/mtldebugger/mtl/file/upload'
+    // };
+    // var request = httpsRequest(options, headers, form, function(err, data){
+    //     if(!err){
+    //         console.log(data);
+    //     }else{
+    //         console.log(err);
+    //     }
+    // });
+    var FormData = require('form-data');
+    var http = require('https');
+    var form = new FormData();
+    var file="project.json";
+    var result=JSON.parse(fs.readFileSync(file));
+    var projectName = result.config.projectName;
+    var startPage = result.config.startPage;
+    var gitUrl = result.config.gitUrl;
+    form.append('appId',projectName); 
+    form.append('path',projectName+"/app");
+    // form.append('startPage',projectName+"/app/"+startPage);
+    form.append('file', fs.createReadStream("./app.zip"));
+    form.append("Content-Type","application/x-www-form-urlencoded");
+    var headers = form.getHeaders();//这个不能少
+    var request = http.request({
+      method: 'POST',
+        hostname: 'mdoctor.yonyoucloud.com',
+        path: '/mtldebugger/mtl/file/uploadApp',
+      headers: headers
+    },(res) =>{
+              res.on('data',(buffer) => {
+                console.log("data="+buffer); 
+
+                var responseResult=JSON.parse(buffer);
+                if(responseResult.msg="success"){
+                    // 打开浏览器 ，形成二维码
+                    var openbrowser = require('openbrowser');
+                    openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/"+startPage);
+                    // 开始监听output debug 工程
+                    // chokidarWatchOutputDebugDir(platform);
+                }
+            });
+              res.on('end',()=>{
+                console.log("end"); 
+              });   
+    });
+  
+    request.on('error', (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+    form.pipe(request);  
+}
+function zipAndUploadcloud(selectedPlatform){
+    // 接口请求
+    (async function () {
+        try {
+            await zipDir(selectedPlatform);
+        }catch (e) {
+            console.log(e)
+      }
+      })();
+  }
+
+
 
 
 function cloudBuildAndUnzip(selectedPlatform){
@@ -403,7 +699,7 @@ function cloudBuildAndUnzip(selectedPlatform){
                             fs.move(apkPath, debugApkPath, function(err) {
                                 if (err) return console.error(err)
                                 console.log('android 云端构建调试程序完成 🎉  🎉  🎉 ！');
-                                copyAndInstallDebugAndroid();
+                                copyAndInstallDebugAndroid("true");
                                 });
                             }else{
                             console.log('android 云端构建调试程序失败 😢 😢 😢 !');
@@ -607,7 +903,7 @@ function formatJson(data) {
 
 //开始调试微信Web小程序
 function startWX() {
-    // console.log("准备开始生成微信工程...");
+    console.log("准备开始生成微信工程...");
     // let path = getPathByPlatform(utils.Platform.WEIXIN);
     // let objPath = "./" + path +"/";
     // let wxproj = objPath + "../proj/";
