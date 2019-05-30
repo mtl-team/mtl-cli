@@ -578,7 +578,7 @@ function uploadFileToCloud(filePath,isProjectJson){
       var request = http.request({
         method: 'POST',
           hostname: 'mdoctor.yonyoucloud.com',
-          path: '/mtldebugger/mtl/file/upload',
+          path: '/mtldebugger/mtl/file/uploadZip',
         headers: headers
       },(res) =>{
                 res.on('data',(buffer) => {
