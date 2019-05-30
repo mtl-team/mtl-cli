@@ -141,8 +141,8 @@ program
   })
 
 program
-  .command('clearUserInfo') // 清除用户信息
-  .alias('cuinfo') // 命令简写
+  .command('clearUser') // 清除用户信息
+  .alias('cu') // 命令简写
   .description('清除用户信息 。')
   .action(function () { // 执行命令的的函数
     mConfig.clearUserInfo();

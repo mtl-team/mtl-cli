@@ -104,7 +104,9 @@ function chokidarWatch() {
                 copyAndDebugDD("false");
             }
             //  更新云端工程文件
-            uploadFileToCloud(path,"false");
+            
+            zipFileAndUploadcloud(path,"false");
+            // uploadFileToCloud(path,"false");
         })
 
         const watcherProjectJson = chokidar.watch(shell.pwd() +"/project.json" , {
@@ -137,7 +139,9 @@ function chokidarWatch() {
                 copyAndDebugDD("false");
             }
             //  更新云端project.json 文件
-            uploadFileToCloud(path,"true");
+            
+            zipFileAndUploadcloud(path,"true");
+            // uploadFileToCloud(path,"true");
         })
 }
 
@@ -490,9 +494,54 @@ output.on('close', function() {
 }
 
 
+function zipFile(filePath,isProjectJson){
+    var archiver = require('archiver');
+    var output = fs.createWriteStream('file.zip');
+   
+    let archive = archiver('zip', {
+        zlib: { level: 9 } // 设置压缩级别
+      })
+ 
+// 存档警告
+archive.on('warning', function(err) {
+    if (err.code === 'ENOENT') {
+      console.warn('stat故障和其他非阻塞错误')
+    } else {
+      throw err
+    }
+  })
+  // listen for all archive data to be written 
+output.on('close', function() {
+    console.log(archive.pointer() + ' total bytes');
+    console.log('archiver has been finalized and the output file descriptor has closed.');
+ 
+
+ 
+  uploadFileToCloud(filePath,isProjectJson);
+
+});
+  // 存档出错
+  archive.on('error', function(err) {
+    throw err
+  })
+    archive.pipe(output);
+ 
+    let FileNameStart = filePath.lastIndexOf("/",filePath.length-1);
+   
+    let FileName =filePath.substring(FileNameStart+1);
+    console.log("文件名称："+FileName); 
+
+    archive.file(filePath,{ name: FileName });
+    
+    archive.finalize();
+    
+}
+
+
+
+
+
 function uploadFileToCloud(filePath,isProjectJson){
-
-
 
       var FormData = require('form-data');
       var http = require('https');
@@ -521,7 +570,9 @@ function uploadFileToCloud(filePath,isProjectJson){
 
       
       // form.append('startPage',projectName+"/app/"+startPage);
-      form.append('file', fs.createReadStream(filePath));
+      form.append('file', fs.createReadStream("./file.zip"));  //大文件时读取不全。
+     
+      
       form.append("Content-Type","application/x-www-form-urlencoded");
       var headers = form.getHeaders();//这个不能少
       var request = http.request({
@@ -617,7 +668,7 @@ function uploadAppCloud(platform){
     form.pipe(request);  
 }
 function zipAndUploadcloud(selectedPlatform){
-    // 接口请求
+    
     (async function () {
         try {
             await zipDir(selectedPlatform);
@@ -628,6 +679,17 @@ function zipAndUploadcloud(selectedPlatform){
   }
 
 
+  function zipFileAndUploadcloud(filePath,isProjectJson){
+    
+    (async function () {
+        try {
+            await zipFile(filePath,isProjectJson);
+        }catch (e) {
+            console.log(e)
+      }
+      })();
+  }
+  
 
 
 function cloudBuildAndUnzip(selectedPlatform){
