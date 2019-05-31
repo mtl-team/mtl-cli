@@ -580,7 +580,8 @@ function uploadFileToCloud(filePath,isProjectJson){
       },(res) =>{
                 res.on('data',(buffer) => {
                   console.log("data="+buffer); 
-  
+                // 删除压缩文件
+                fs.removeSync('file.zip');
                 //   var responseResult=JSON.parse(buffer);
                 //   if(responseResult.msg="success"){
                     
@@ -652,6 +653,8 @@ function uploadAppCloud(platform){
                     openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/"+startPage);
                     // 开始监听output debug 工程
                     // chokidarWatchOutputDebugDir(platform);
+                    // 删除压缩文件
+                    fs.removeSync('file.zip');
                 }
             });
               res.on('end',()=>{
