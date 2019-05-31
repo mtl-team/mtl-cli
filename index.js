@@ -50,14 +50,14 @@ program
   .command('pushRemote').alias('psr') // 命令简写
   .description('本地工程，提交远程。')
   .action(function () {
-    mLocalCreate.pushRemote();
+    mCreate.pushRemote();
   });
 
 program
   .command('pullRemote [gitURL]').alias('plr') // 命令简写
   .description('根据gitUrl下载工程')
   .action(function (gitURL) {
-    mLocalCreate.pullRemote(gitURL);
+    mCreate.pullRemote(gitURL);
   }); 
 
 program
