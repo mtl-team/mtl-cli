@@ -249,6 +249,9 @@ var createBegin = function (appname,template) {
     fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
     console.log('拷贝文件 success');
 
+    // 删除模板文件
+    fse.removeSync(template);
+
     console.log("3、开始修改本地配置 - " + appname);
     updateConfig(appname);
 
