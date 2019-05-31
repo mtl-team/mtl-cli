@@ -398,10 +398,7 @@ function copyAndDebugWeixin(isStartNode) {
     }else{
         console.log("请到微信小程序工具刷新进行调试");  
     }
-
 // 开始上传云端  10.3.13.7 服务器debugger
-
-
 
 }
 
