@@ -4,7 +4,8 @@ let app = getApp();
 
 Page({
   data: {
-    url: 'http://littlemeaning.gz01.bdysite.com',
+    // url: 'https://mdoctor.yonyoucloud.com/debugger/ssssss/app/example.html'
+    // url: 'http://littlemeaning.gz01.bdysite.com',
     // url:'http://172.20.4.61:8080/mobile/#/login'
     // url: 'http://jetyonyou.vaiwan.com/example.html',
   },
@@ -14,19 +15,22 @@ Page({
      this.webViewContext = dd.createWebViewContext('web-view-1');
   },
   onReady() {
+    let _this = this;
     console.log("ready");
     mtl.getStartPage({
       success: res => {
-        console.log(JSON.stringify(res))
-        this.setData({
+        console.log('res', res.pageUrl)
+        _this.setData({
           url: res.pageUrl,
         })
+        console.log('url=', _this.data.url);
       },
       
     })
   },
   onShow() {
     // 页面显示
+    console.log('url=', this.data.url);
   },
   onHide() {
     // 页面隐藏

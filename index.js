@@ -11,6 +11,7 @@ var mComponent = require('./src/mtl_component');
 var mViewpage = require('./src/mtl_viewpage');
 var mBuild = require('./src/mtl_build');
 var mDebug = require('./src/mtl_debug');
+var mPreview= require('./src/mtl_preview');
 var mPlugin = require('./src/mtl_plugin');
 
 const getAutoUpdate = require('./src/update');
@@ -135,10 +136,20 @@ program
 program
   .command('debug [platform]') // iOS | Android | WX | EApp 。
   .alias('d') // 命令简写
-  .description('运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 EApp 。')
+  .description('运行调试MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd 。')
   .action(function (platform) { // 执行命令的的函数
     mDebug.start(platform);
   })
+
+
+  program
+  .command('preview [platform]') // iOS | Android | WX | dd 。
+  .alias('p') // 命令简写
+  .description('运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd 。')
+  .action(function (platform) { // 执行命令的的函数
+    mPreview.start(platform);
+  })
+
 
 program
   .command('clearUser') // 清除用户信息

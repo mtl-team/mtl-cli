@@ -105,7 +105,7 @@ function chokidarWatch() {
             }
             //  更新云端工程文件
             
-            zipFileAndUploadcloud(path,"false");
+            // zipFileAndUploadcloud(path,"false");
             // uploadFileToCloud(path,"false");
         })
 
@@ -140,7 +140,7 @@ function chokidarWatch() {
             }
             //  更新云端project.json 文件
             
-            zipFileAndUploadcloud(path,"true");
+            // zipFileAndUploadcloud(path,"true");
             // uploadFileToCloud(path,"true");
         })
 }
@@ -297,15 +297,15 @@ function  copyAndInstallDebugIOS(isStartNode){
         // }
         console.log("开始运行调试应用");
         shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
-        zipAndUploadcloud("ios");
-        // let appJs = createAppJsFile(path);
-        // if(fs.exists(appJs, function(exists) {
-        //     if(!exists) {
-        //         return utils.reportError("没有找到app-node.js");
-        //     }
-        //     startNode(appJs);
+        // zipAndUploadcloud("ios");
+        let appJs = createAppJsFile(path);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app-node.js");
+            }
+            startNode(appJs);
             
-        // }));
+        }));
 
     }else{
         console.log("请到iOS模拟器刷新进行调试");  
@@ -347,15 +347,15 @@ function copyAndInstallDebugAndroid(isStartNode) {
     //     // runDebugAndroid(objPath);
     }
     if(isStartNode=="true"){
-        // let appJs = createAppJsFile(path);
-        //     if(fs.exists(appJs, function(exists) {
-        //         if(!exists) {
-        //             return utils.reportError("没有找到app-node.js");
-        //         }
-        //         startNode(appJs);
+        let appJs = createAppJsFile(path);
+            if(fs.exists(appJs, function(exists) {
+                if(!exists) {
+                    return utils.reportError("没有找到app-node.js");
+                }
+                startNode(appJs);
                 
-        //     }));
-        zipAndUploadcloud("android");
+            }));
+        // zipAndUploadcloud("android");
     }else{
         console.log("请到android刷新进行调试");  
     }
@@ -380,24 +380,24 @@ function copyAndDebugWeixin(isStartNode) {
     }
 
     copyProjectToOutput(objPath,utils.Platform.WEIXIN);
-    if(isStartNode=="true"){
-        zipAndUploadcloud("wx");
-    }else{
-        console.log("请到微信小程序工具刷新进行调试");  
-    }
-
     // if(isStartNode=="true"){
-    //     let appJs = createAppJsFile(path);
-    //     // console.log(appJs);
-    //     if(fs.exists(appJs, function(exists) {
-    //         if(!exists) {
-    //             return utils.reportError("没有找到app.js");
-    //         }
-    //         startNode(appJs);
-    //     }));
+    //     zipAndUploadcloud("wx");
     // }else{
     //     console.log("请到微信小程序工具刷新进行调试");  
     // }
+
+    if(isStartNode=="true"){
+        let appJs = createAppJsFile(path);
+        // console.log(appJs);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app.js");
+            }
+            startNode(appJs);
+        }));
+    }else{
+        console.log("请到微信小程序工具刷新进行调试");  
+    }
 
 // 开始上传云端  10.3.13.7 服务器debugger
 
@@ -426,15 +426,15 @@ function copyAndDebugDD(isStartNode) {
 
     copyProjectToOutput(objPath,utils.Platform.DingDing);
     if(isStartNode=="true"){
-        // let appJs = createAppJsFile(path);
-        // // console.log(appJs);
-        // if(fs.exists(appJs, function(exists) {
-        //     if(!exists) {
-        //         return utils.reportError("没有找到app.js");
-        //     }
-        //     startNode(appJs);
-        // }));
-        zipAndUploadcloud("dd");
+        let appJs = createAppJsFile(path);
+        // console.log(appJs);
+        if(fs.exists(appJs, function(exists) {
+            if(!exists) {
+                return utils.reportError("没有找到app.js");
+            }
+            startNode(appJs);
+        }));
+        // zipAndUploadcloud("dd");
 
     }else{
         console.log("请到钉钉小程序工具刷新进行调试");  

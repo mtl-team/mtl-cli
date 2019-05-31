@@ -6,7 +6,7 @@
 	<dict>
 		<key>AipOcrSdk.storyboardc/AipGeneralVC.nib</key>
 		<data>
-		t5X5uS2ow/t+V0P0CmoqWUPVug0=
+		YKmcbyu4BfhddcBbGo0i+EEBzLo=
 		</data>
 		<key>AipOcrSdk.storyboardc/Info.plist</key>
 		<data>
@@ -14,7 +14,7 @@
 		</data>
 		<key>AipOcrSdk.storyboardc/qVB-bS-VcD-view-pEK-B6-uAC.nib</key>
 		<data>
-		c2AWgnrWbxlHwX74kQ6LUsyxYZI=
+		/Wr7hU+cJSt/ftVlkw01oY/Mk9k=
 		</data>
 		<key>AppIcon29x29.png</key>
 		<data>
@@ -98,11 +98,11 @@
 		</data>
 		<key>Assets.car</key>
 		<data>
-		9qii6E1QBLrSDKeEbc9lalne2Qg=
+		AVxe/eoa72r2Qm5JleNin01M/48=
 		</data>
 		<key>CDVLaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib</key>
 		<data>
-		8HiXOP1U32vg+/k53XwqYlBrXq4=
+		E/4NMNYEiw7wl4fVMmptBPuM1Ls=
 		</data>
 		<key>CDVLaunchScreen.storyboardc/Info.plist</key>
 		<data>
@@ -110,7 +110,7 @@
 		</data>
 		<key>CDVLaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib</key>
 		<data>
-		x75IZswiC7QbChUvFg7n7qex5yo=
+		i1xTrcnjV9VB7YDnbVPBeHFWzvA=
 		</data>
 		<key>Frameworks/AFNetworking.framework/AFNetworking</key>
 		<data>
@@ -234,7 +234,11 @@
 		</data>
 		<key>MainViewController.nib</key>
 		<data>
-		nKaOZBcJqr60JGZ5f0HClDLDFyg=
+		NsfAaQsL+Ki837vHLp/zGderDLg=
+		</data>
+		<key>PkgInfo</key>
+		<data>
+		n57qDP4tZfLD1rCS43W0B4LQjzE=
 		</data>
 		<key>TZImagePickerController.bundle/MMVideoPreviewPlay@2x.png</key>
 		<data>
@@ -346,31 +350,31 @@
 		</data>
 		<key>XYNewsTableViewCell.nib</key>
 		<data>
-		aqqLf3odSikIc7kgqMZtMhM+kfw=
+		AizMdMU8uPTK6j6rQ5ye38VOm0c=
 		</data>
 		<key>XYResultContactCell.nib</key>
 		<data>
-		6LjYaJyXMkuWeSR2Ta/tuTbLRDw=
+		HgtzntQP10nLMtlNgjkAhXLMHmM=
 		</data>
 		<key>XYResultMenuCell.nib/objects-11.0+.nib</key>
 		<data>
-		I/4Irzk1689ESkoJlw5JZ95ZD34=
+		gku2IXvXQvD+KL6nzWfBXidCnY4=
 		</data>
 		<key>XYResultMenuCell.nib/runtime.nib</key>
 		<data>
-		aSgBKvFW+FK+D83IxgJbruBTsuo=
+		RaRnrOjvCQJOEk/X0HGKb2EKw08=
 		</data>
 		<key>XYResultNewsCell.nib/objects-11.0+.nib</key>
 		<data>
-		AfKkQtVSNB0+EnHa+xpJLmGianI=
+		sZCQLb4n1yTKgTK2EItoG937doQ=
 		</data>
 		<key>XYResultNewsCell.nib/runtime.nib</key>
 		<data>
-		caU0MPrP581XifDxh2LeyIXyA+k=
+		aCMINnXuN2oM0o1w2UB4aORy3QM=
 		</data>
 		<key>XYResultWeatherCell.nib</key>
 		<data>
-		/Q5NzZFqptvf4a8f/4jaqf8AeDk=
+		gtrAv7twTuYljmz0OMI0BZEj4h4=
 		</data>
 		<key>XiaoYouConfig.json</key>
 		<data>
@@ -543,11 +547,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			t5X5uS2ow/t+V0P0CmoqWUPVug0=
+			YKmcbyu4BfhddcBbGo0i+EEBzLo=
 			</data>
 			<key>hash2</key>
 			<data>
-			gdaS0QpBhmozOXEhc1tOLDtxMMpap3g/0JMklKrmwDk=
+			2b4fmWz4cd/yL9eMr2GKSlGJJuq3v8zfJQM/+ZjlNKg=
 			</data>
 		</dict>
 		<key>AipOcrSdk.storyboardc/Info.plist</key>
@@ -565,11 +569,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			c2AWgnrWbxlHwX74kQ6LUsyxYZI=
+			/Wr7hU+cJSt/ftVlkw01oY/Mk9k=
 			</data>
 			<key>hash2</key>
 			<data>
-			7VQkL/92yM++E75goToD6rqQtJFz+1sUKzeOuAYm9/s=
+			wQX/WKUFDG+z33SoJXeQlwiKRlGqFyliJrSGyDYZWxo=
 			</data>
 		</dict>
 		<key>AppIcon29x29.png</key>
@@ -796,22 +800,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			9qii6E1QBLrSDKeEbc9lalne2Qg=
+			AVxe/eoa72r2Qm5JleNin01M/48=
 			</data>
 			<key>hash2</key>
 			<data>
-			+nqnGm2iqWc3yN+BKxYHtE9s53uOifbqa1L7vqOe3Qo=
+			2LSgZWCcW6gd1AdBOjKvlCdlAbrkh8ZwWqLf7JNQkcQ=
 			</data>
 		</dict>
 		<key>CDVLaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			8HiXOP1U32vg+/k53XwqYlBrXq4=
+			E/4NMNYEiw7wl4fVMmptBPuM1Ls=
 			</data>
 			<key>hash2</key>
 			<data>
-			yjQS9OnvIUWCJyv4VoiU4cnsi4OdyfNB55RU0/E69AM=
+			k9n9dzalOyLoOwAS6zbexntUmNt48A6Y+TF3HeERU7o=
 			</data>
 		</dict>
 		<key>CDVLaunchScreen.storyboardc/Info.plist</key>
@@ -829,11 +833,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			x75IZswiC7QbChUvFg7n7qex5yo=
+			i1xTrcnjV9VB7YDnbVPBeHFWzvA=
 			</data>
 			<key>hash2</key>
 			<data>
-			Jog3pkz3P1sZL+Z24ahWYYZOeeTUcsVKV+5BeTldEyY=
+			EK5uLHk30RzP/0El8vRtlfPW0/HHZRkmc3qoXkjZC/Q=
 			</data>
 		</dict>
 		<key>Frameworks/AFNetworking.framework/AFNetworking</key>
@@ -1159,11 +1163,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			nKaOZBcJqr60JGZ5f0HClDLDFyg=
+			NsfAaQsL+Ki837vHLp/zGderDLg=
 			</data>
 			<key>hash2</key>
 			<data>
-			S4tPUCiE0AQ3E7/dU7WaL+v+XRgBPrndYmXRuz87TU0=
+			bIqtXMdD+gjyIO676mq8T9VyDP1WI6sC12VouSlz5JI=
 			</data>
 		</dict>
 		<key>TZImagePickerController.bundle/MMVideoPreviewPlay@2x.png</key>
@@ -1420,77 +1424,77 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			aqqLf3odSikIc7kgqMZtMhM+kfw=
+			AizMdMU8uPTK6j6rQ5ye38VOm0c=
 			</data>
 			<key>hash2</key>
 			<data>
-			SvJmmPh3mdcYWQIITkPb1A7ItUiUaEBKxot+MuO/PuE=
+			17JGYFVVxB6WBwnYK6GfUD01P4rHo2AaRfWBwPhuaw0=
 			</data>
 		</dict>
 		<key>XYResultContactCell.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			6LjYaJyXMkuWeSR2Ta/tuTbLRDw=
+			HgtzntQP10nLMtlNgjkAhXLMHmM=
 			</data>
 			<key>hash2</key>
 			<data>
-			p8nOsH1cK0dyPFddXXEz9JljVFels6QS+hbqcpAZKlA=
+			KkCVdMWsS04fK+lOc7a79QFK9+XvL3ntrpPFY3g/VIw=
 			</data>
 		</dict>
 		<key>XYResultMenuCell.nib/objects-11.0+.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			I/4Irzk1689ESkoJlw5JZ95ZD34=
+			gku2IXvXQvD+KL6nzWfBXidCnY4=
 			</data>
 			<key>hash2</key>
 			<data>
-			PKDvlpE1UUkh3b242ztxDnkQnkaKZeoOp9m65dX4L8Q=
+			alB4NnfXALQicIIsx62QcfEYCLwwhFTN9MOvLBmNZ0s=
 			</data>
 		</dict>
 		<key>XYResultMenuCell.nib/runtime.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			aSgBKvFW+FK+D83IxgJbruBTsuo=
+			RaRnrOjvCQJOEk/X0HGKb2EKw08=
 			</data>
 			<key>hash2</key>
 			<data>
-			rFfGen4qg8bX7iR9Uh7fi1dsDWOns9bw2GKOj3T/F4c=
+			Jw1hibPw1TMzYWfjBHpvG3+7FQzM/xoH36XZm4gxNw8=
 			</data>
 		</dict>
 		<key>XYResultNewsCell.nib/objects-11.0+.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			AfKkQtVSNB0+EnHa+xpJLmGianI=
+			sZCQLb4n1yTKgTK2EItoG937doQ=
 			</data>
 			<key>hash2</key>
 			<data>
-			ZFV4gaBJ/xlteo8PZvd//Jh5kHMxNX7MeSydF8QDALE=
+			XxVgXh1neM26u5y+crPlL3S113muFTB7En/h+ysV5VI=
 			</data>
 		</dict>
 		<key>XYResultNewsCell.nib/runtime.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			caU0MPrP581XifDxh2LeyIXyA+k=
+			aCMINnXuN2oM0o1w2UB4aORy3QM=
 			</data>
 			<key>hash2</key>
 			<data>
-			hCUzjgb/UrLpwOtAgKmfS6QqYL+2UymamSr9K7pOs3c=
+			6s4TjcaqlsVp9ljkwerbu4vmcS4aMI5egxJbaXAmDh8=
 			</data>
 		</dict>
 		<key>XYResultWeatherCell.nib</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			/Q5NzZFqptvf4a8f/4jaqf8AeDk=
+			gtrAv7twTuYljmz0OMI0BZEj4h4=
 			</data>
 			<key>hash2</key>
 			<data>
-			oE+wN5amOMLnoUkICSuLjmkdqwGUgzCdbWWHUvneaL8=
+			NeOfBai1rbgoCGQflFH+ZJO/BVohXvM1M67ZoxW1zhw=
 			</data>
 		</dict>
 		<key>XiaoYouConfig.json</key>

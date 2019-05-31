@@ -1,21 +1,14 @@
 {
     "names":[
-        "empty","demo","summer","mtl"
+        "mtl-empty","mtl-demo"
     ],
-    "empty":{
-        "url":"https://github.com/fokssss/emptyproj.git",
-        "desc":"一个空白工程"
-    },
-    "demo":{
-        "url":"https://github.com/fokssss/uniPrisident.git",
-        "desc":"一个测试用的工程"
-    },
-    "summer":{
-        "url":"https://gogs.yonyoucloud.com/caiyi/mtl-summer.git",
-        "desc":"一个测试用的SUMMER工程"
-    },    
-    "mtl":{
+
+    "mtl-empty":{
         "url":"https://gogs.yonyoucloud.com/caiyi/mtl.git",
-        "desc":"一个测试用的MTL工程"
+        "desc":"一个MTL空工程"
+    },
+    "mtl-demo":{
+        "url":"https://gogs.yonyoucloud.com/xugangm/mtl-demo.git",
+        "desc":"一个演示用的MTL工程"
     }
 }
