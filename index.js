@@ -145,7 +145,7 @@ program
   program
   .command('preview [platform]') // iOS | Android | WX | dd 。
   .alias('p') // 命令简写
-  .description('运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd 。')
+  .description('运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd | 5 Upesn  。')
   .action(function (platform) { // 执行命令的的函数
     mPreview.start(platform);
   })

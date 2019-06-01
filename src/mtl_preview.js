@@ -688,8 +688,13 @@ function uploadAppCloud(platform){
                 if(responseResult.msg="success"){
                     // 打开浏览器 ，形成二维码
                     var openbrowser = require('openbrowser');
-                    openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/"+startPage);
-                    // 开始监听output debug 工程
+
+                    if(platform=="wx"){
+                        openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/");
+                    }else{
+                        openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/"+startPage);
+                    }
+                   // 开始监听output debug 工程
                     // chokidarWatchOutputDebugDir(platform);
 
                     // 删除压缩文件
