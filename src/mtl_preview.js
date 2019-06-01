@@ -23,7 +23,8 @@ const debugList = [{
         "iOS",
         "android",
         "WX",
-        "DD"
+        "DD",
+        "Upesn"
     ],
     filter: function (val) { // 使用filter将回答变为小写
         return val.toLowerCase();
@@ -48,6 +49,8 @@ var start = function (platform) {
                 return startWX();
             case utils.Platform.DingDing:
                 return startDD();
+            case utils.Platform.Upesn:
+                return startUpesn();
         }
         });
     }else{
@@ -61,6 +64,8 @@ var start = function (platform) {
                 return startWX();
             case utils.Platform.DingDing:
                 return startDD();
+            case utils.Platform.Upesn:
+                return startUpesn();    
         }
     } 
     return utils.SUCCESS;
@@ -103,6 +108,10 @@ function chokidarWatch() {
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
                 copyAndDebugDD("false");
             }
+            if (fs.existsSync(shell.pwd() + "/output/upesn/debug/app/project.json")) {
+                copyAndInstallDebugUpesn("false");
+            }
+
             //  更新云端工程文件
             
             zipFileAndUploadcloud(path,"false");
@@ -139,7 +148,9 @@ function chokidarWatch() {
                 copyAndDebugDD("false");
             }
             //  更新云端project.json 文件
-            
+            if (fs.existsSync(shell.pwd() + "/output/upesn/debug/app/project.json")) {
+                copyAndInstallDebugUpesn("false");
+            }
             zipFileAndUploadcloud(path,"true");
             // uploadFileToCloud(path,"true");
         })
@@ -259,6 +270,27 @@ function startAndroid() {
        chokidarWatch();
         copyAndInstallDebugAndroid("true"); 
     // }
+}
+
+function startUpesn() {
+
+       chokidarWatch();
+        copyAndInstallDebugUpesn("true"); 
+   
+}
+
+function copyAndInstallDebugUpesn(isStartNode) {
+    let path = getPathByPlatform(utils.Platform.Upesn);
+    let objPath = "./" + path +"/";
+    
+    copyProjectToOutput(objPath,utils.Platform.Upesn);
+    
+    if(isStartNode=="true"){
+   
+        zipAndUploadcloud("upesn");
+    }else{
+        console.log("请到upesn刷新进行调试");  
+    }
 }
 
 
