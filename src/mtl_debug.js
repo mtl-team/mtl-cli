@@ -346,6 +346,7 @@ function copyAndInstallDebugAndroid(isStartNode) {
     // } else {
     //     // runDebugAndroid(objPath);
     }
+    
     if(isStartNode=="true"){
         let appJs = createAppJsFile(path);
             if(fs.exists(appJs, function(exists) {
@@ -355,8 +356,13 @@ function copyAndInstallDebugAndroid(isStartNode) {
                 startNode(appJs);
                 
             }));
+
+        setTimeout(function() {
+            shell.exec(cmdRunDebugApk);
+        },5000);
         // zipAndUploadcloud("android");
     }else{
+        shell.exec(cmdRunDebugApk);
         console.log("请到android刷新进行调试");  
     }
 }
