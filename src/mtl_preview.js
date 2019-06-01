@@ -517,6 +517,9 @@ output.on('close', function() {
         case utils.Platform.DingDing:
             dir = "./output/dd/debug/app/";
             break;
+        case utils.Platform.Upesn:
+            dir = "./output/upesn/debug/app/";
+            break;
     }
 
 
