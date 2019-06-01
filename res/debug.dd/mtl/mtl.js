@@ -2,8 +2,8 @@ let mtl = (function () {
 
   let instance = {};
 
-  instance.baseUrl = 'https://mdoctor.yonyoucloud.com/debugger/demo/app'
-
+  // instance.baseUrl = 'https://mdoctor.yonyoucloud.com/debugger/demo/app'
+  instance.baseUrl = 'http://localhost:3000'
   // 获取起始页面
   instance.getStartPage = function ({ baseUrl = this.baseUrl, success, fail, complete }) {
     dd.httpRequest({

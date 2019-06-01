@@ -2,7 +2,7 @@ let mtl = (function () {
 
   let instance = {};
 
-  instance.baseUrl = 'http://mdoctor.yonyoucloud.com:3000'
+  instance.baseUrl = 'http://localhost:3000'
 
   // 获取起始页面
   instance.getStartPage = function ({ baseUrl = this.baseUrl, success, fail, complete }) {
