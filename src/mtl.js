@@ -49,26 +49,26 @@ var Utils = function () {
     //检查平台参数
     this.checkPlatform = function(platform) {
         if(platform==undefined){
-            return;
+            return this.ERROR;
         }
         let p = platform.toLowerCase().trim();
         switch(p) {
             case "ios":
-            
                 return this.Platform.IOS;
             case "android":
-            
             case "adr":
                 return this.Platform.ANDROID;
             case "wx":
-            
             case "weixin":
             case "微信":
                 return this.Platform.WEIXIN;
-  
             case "eapp":
             case "e-app":
-                return this.Platform.E_APP;
+            case "dd":
+                return this.Platform.DingDing;
+            case "esn":
+            case "upesn":
+                return this.Platform.Upesn;
         }
         return this.ERROR;
     }

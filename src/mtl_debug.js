@@ -35,35 +35,30 @@ var start = function (platform) {
         return utils.reportError("不是MTL工程目录")
     }
     let plat = utils.checkPlatform(platform);
-    if(platform==undefined || plat=="error"){
+    if(utils.isError(plat)){
         inquirer.prompt(debugList).then(answers => {
-        console.log('选用平台：'+answers.platform); // 返回的结果
-        
-        switch(answers.platform) {
-            case utils.Platform.IOS:
-                return startIOS();
-            case utils.Platform.ANDROID:
-                return startAndroid();
-            case utils.Platform.WEIXIN:
-                return startWX();
-            case utils.Platform.DingDing:
-                return startDD();
-        }
+            beginDebug(answers.platform);
         });
     }else{
-        console.log('选用平台：'+plat);
-        switch(plat) {
-            case utils.Platform.IOS:
-                return startIOS();
-            case utils.Platform.ANDROID:
-                return startAndroid();
-            case utils.Platform.WEIXIN:
-                return startWX();
-            case utils.Platform.DingDing:
-                return startDD();
-        }
+        beginDebug(plat);
     } 
     return utils.SUCCESS;
+}
+
+//调试代码的正式入口
+function beginDebug(plat) {
+    console.log('选用平台：'+plat);
+    switch(plat) {
+        case utils.Platform.IOS:
+            return startIOS();
+        case utils.Platform.ANDROID:
+            return startAndroid();
+        case utils.Platform.WEIXIN:
+            return startWX();
+        case utils.Platform.DingDing:
+            return startDD();
+    }
+    utils.reportError("不支持的平台 - " + plat);
 }
 
 
