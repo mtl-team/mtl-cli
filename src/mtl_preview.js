@@ -47,7 +47,7 @@ var start = function (platform) {
 }
 
 function beginPreview(plat) {
-    utils.copyHosts("preview");
+    //utils.copyHosts("preview");
     console.log('选用平台：'+plat);
     switch(plat) {
         case utils.Platform.IOS:
