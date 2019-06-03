@@ -1030,7 +1030,7 @@ async function startNode(appJs) {
     kill(PORT).then(pids => {
       console.log(pids);
       console.log("开始启动node");
-      shell.exec("npm --save install express")
+      //shell.exec("npm --save install express")
       // shell.exec("node " + appJs);
   
        cp1 = spawn('node', [appJs], {
