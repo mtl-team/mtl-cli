@@ -38,37 +38,29 @@ var start = function (platform) {
     let plat = utils.checkPlatform(platform);
     if(platform==undefined || plat=="error"){
         inquirer.prompt(debugList).then(answers => {
-        console.log('选用平台：'+answers.platform); // 返回的结果
-        
-        switch(answers.platform) {
-            case utils.Platform.IOS:
-                return startIOS();
-            case utils.Platform.ANDROID:
-                return startAndroid();
-            case utils.Platform.WEIXIN:
-                return startWX();
-            case utils.Platform.DingDing:
-                return startDD();
-            case utils.Platform.Upesn:
-                return startUpesn();
-        }
+            beginPreview(answers.platform);
         });
     }else{
-        console.log('选用平台：'+plat);
-        switch(plat) {
-            case utils.Platform.IOS:
-                return startIOS();
-            case utils.Platform.ANDROID:
-                return startAndroid();
-            case utils.Platform.WEIXIN:
-                return startWX();
-            case utils.Platform.DingDing:
-                return startDD();
-            case utils.Platform.Upesn:
-                return startUpesn();    
-        }
+        beginPreview(plat);
     } 
     return utils.SUCCESS;
+}
+
+function beginPreview(plat) {
+    utils.copyHosts("preview");
+    console.log('选用平台：'+plat);
+    switch(plat) {
+        case utils.Platform.IOS:
+            return startIOS();
+        case utils.Platform.ANDROID:
+            return startAndroid();
+        case utils.Platform.WEIXIN:
+            return startWX();
+        case utils.Platform.DingDing:
+            return startDD();
+        case utils.Platform.Upesn:
+            return startUpesn();    
+    }
 }
 
 

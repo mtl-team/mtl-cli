@@ -48,6 +48,7 @@ var start = function (platform) {
 //调试代码的正式入口
 function beginDebug(plat) {
     console.log('选用平台：'+plat);
+    utils.copyHosts("debug");
     switch(plat) {
         case utils.Platform.IOS:
             return startIOS();

@@ -88,7 +88,16 @@ var Utils = function () {
       shell.exec("git push");
       console.log('git操作完成');
     }
-	
+  
+    this.copyHosts = function(cmd) {
+      if(cmd=="debug") {
+        shell.exec("sudo cp /etc/hosts.debug /etc/hosts");
+      }
+      if(cmd=="preview") {
+        shell.exec("sudo cp /etc/hosts.preview /etc/hosts");
+      }
+    }
+
     /*
         判断系统
     */
