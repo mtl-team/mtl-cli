@@ -17,7 +17,7 @@ const chokidar = require('chokidar');
 const {spawn} = require('child_process');
 const debugList = [{
     type: 'list',
-    message: '请选择项目平台：1、iOS；2、Android ；3、WX ;4、DD, 用上下箭头选择平台:',
+    message: '请选择项目平台：1、iOS；2、Android ；3、WX ;4、DD ; 5、Upesn, 用上下箭头选择平台:',
     name: 'platform',
     choices: [
         "iOS",
