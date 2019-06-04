@@ -394,7 +394,7 @@ function copyAndDebugWeixin(isStartNode) {
     fs.ensureDirSync(wxproj);
    
     // 拷贝 添加页面到 wx/proj  目录下
-    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
+    fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/preview.wx/', wxproj);
 
     let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     fs.ensureDirSync(projPath);
@@ -1009,7 +1009,7 @@ function startWX() {
     // fs.ensureDirSync(wxproj);
    
     // // 拷贝 添加页面到 wx/proj  目录下
-    // fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
+    // fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/preview.wx/', wxproj);
 
     // let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     // fs.ensureDirSync(projPath);
