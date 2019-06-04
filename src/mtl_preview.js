@@ -542,8 +542,6 @@ function zipFile(filePath, isProjectJson) {
         console.log(archive.pointer() + ' total bytes');
         console.log('archiver has been finalized and the output file descriptor has closed.');
 
-
-
         uploadFileToCloud(filePath, isProjectJson);
 
     });

@@ -87,22 +87,39 @@ function chokidarWatch() {
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
+            let pwd = shell.pwd().split(path.sep).join('/');
+            // let end = path.lastIndexOf("/", path.length - 1);
+            let start = path.indexOf("/app/");
+            console.log("文件目录起始位置：" + start);
+            // console.log("文件目录结束位置：" + end);
+            let relativeFileDir = path.substring(start);
+            console.log("目的修改文件的相对文件路径：" + relativeFileDir);
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
-                copyAndDebugWeixin("false");
+                // copyAndDebugWeixin("false");
+                let absoluteFileDir = pwd+"/output/wx/debug"+relativeFileDir;
+                console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
+
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
+                let absoluteFileDir = pwd+"/output/ios/debug"+relativeFileDir;
+                console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
-                copyAndInstallDebugAndroid("false");
+                let absoluteFileDir = pwd+"/output/android/debug"+relativeFileDir;
+                console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
+                // copyAndInstallDebugAndroid("false");
             }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                copyAndDebugDD("false");
+                let absoluteFileDir = pwd+"/output/dd/debug"+relativeFileDir;
+                console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
+                // copyAndDebugDD("false");
             }
-            //  更新云端工程文件
 
-            // zipFileAndUploadcloud(path,"false");
-            // uploadFileToCloud(path,"false");
         })
 
     const watcherProjectJson = chokidar.watch(shell.pwd() + "/project.json", {
@@ -121,18 +138,30 @@ function chokidarWatch() {
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
+            let pwd = shell.pwd().split(path.sep).join('/');
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
-                copyAndDebugWeixin("false");
-
+                // copyAndDebugWeixin("false");
+                let absoluteFileDir = pwd+"/output/wx/debug/app/project.json";
+                console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
-                copyAndInstallDebugIOS("false");
+                // copyAndInstallDebugIOS("false");
+                let absoluteFileDir = pwd+"/output/ios/debug/app/project.json";
+                console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
-                copyAndInstallDebugAndroid("false");
+                // copyAndInstallDebugAndroid("false");
+                let absoluteFileDir = pwd+"/output/android/debug/app/project.json";
+                console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                copyAndDebugDD("false");
+                let absoluteFileDir = pwd+"/output/dd/debug/app/project.json";
+                console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
+                 fs.copySync(path, absoluteFileDir);
+                // copyAndDebugDD("false");
             }
             //  更新云端project.json 文件
 
