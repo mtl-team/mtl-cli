@@ -1,3 +1,0 @@
-<!-- <web-view id='web-view-1' src="{{url}} " onMessage='test' /> -->
-<web-view id="web-view-1" src="{{url}}" onMessage="onAction"></web-view>
-

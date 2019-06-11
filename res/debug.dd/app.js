@@ -9,7 +9,7 @@ App({
     // options.query == {number:1}
   }, 
   global: {
-    debug: true,
+    debug: false,
     localIds: {},
     voiceLocalIds: {},
     voiceCurrentTimes: {}

@@ -1,32 +1,41 @@
-import { mtl } from '../../mtl/mtl';
 import uuid from '../../utils/uuid.js'
 let app = getApp();
 
 Page({
   data: {
-    // url: 'https://mdoctor.yonyoucloud.com/debugger/ssssss/app/example.html'
-    // url: 'http://littlemeaning.gz01.bdysite.com',
-    // url:'http://172.20.4.61:8080/mobile/#/login'
-    // url: 'http://jetyonyou.vaiwan.com/example.html',
+  
   },
   onLoad(query) {
     // 页面加载
     console.info(`Page onLoad with query: ${JSON.stringify(query)}`);
-     this.webViewContext = dd.createWebViewContext('web-view-1');
+    this.webViewContext = dd.createWebViewContext('web-view-1');
   },
   onReady() {
     let _this = this;
+    let baseUrl = 'http://mobile.yyuap.com:3000';
+    let url = `${baseUrl}/project.json`;
     console.log("ready");
-    mtl.getStartPage({
+    dd.httpRequest({
+      url: url,
       success: res => {
-        console.log('res', res.pageUrl)
-        _this.setData({
-          url: res.pageUrl,
-        })
-        console.log('url=', _this.data.url);
+        console.log('success', res);
+        if (res.status == 200) {
+          let startPage = res.data.config.startPage;
+          if (startPage) {
+            res.pageUrl = `${baseUrl}/${startPage}`;
+            _this.setData({
+              url: res.pageUrl,
+            })
+            console.log('url=', _this.data.url);
+          }
+        }
+
       },
-      
+      fail: res =>{
+        console.log('fail',res);
+      }
     })
+    
   },
   onShow() {
     // 页面显示
@@ -154,7 +163,7 @@ Page({
     Object.assign(target, _this.getCommonObject(obj))
     target.success = (res) => {
       let resource = {};
-       resource.localIds = res.filePaths.map(value => {
+      resource.localIds = res.filePaths.map(value => {
         //todo 生成唯一的UUID
         let localId = uuid(22);
         app.global.localIds[localId] = value;
