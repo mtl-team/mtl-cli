@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -40,14 +40,15 @@
     "tracer": "^0.9.8",
     "unzip-stream": "^0.3.0",
     "utility": "^1.16.1",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "chokidar": "^3.0.0",
+    "cross-port-killer": "^1.1.1"
   },
   "bin": {
     "mtl": "./index.js"
   },
   "devDependencies": {
-    "chokidar": "^3.0.0",
-    "cross-port-killer": "^1.1.1"
+   
   },
   "description": "mtl 多端统一开发工具",
   "directories": {

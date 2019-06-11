@@ -252,10 +252,10 @@ var createBegin = function (appname,template) {
     // 删除模板文件
     fse.removeSync(template);
 
-    console.log("3、开始修改本地配置 - " + appname);
+    console.log("开始修改本地配置 - " + appname);
     updateConfig(appname);
 
-    console.log("4、初始化调试环境 - " + appname);
+    console.log("初始化调试环境 - " + appname);
     shell.exec("cd ./" + appname);
     shell.exec("npm --save install express")
     shell.exec("cd ..");
