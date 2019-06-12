@@ -677,15 +677,11 @@ function uploadAppCloud(platform) {
             var responseResult = JSON.parse(buffer);
             if (responseResult.msg = "success") {
                 // 打开浏览器 ，形成二维码
-                var openbrowser = require('openbrowser');
-
-                //if(platform=="wx"){
-                //    openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/"+projectName+"/app/");
-                //}else{
-                openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
-                //}
-                // 开始监听output debug 工程
-                // chokidarWatchOutputDebugDir(platform);
+                // var openbrowser = require('openbrowser');
+                // openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
+                
+                //  接口请求生成二维码图片 ，并下载到本地
+                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
 
                 // 删除压缩文件
                 fs.removeSync('app.zip');
@@ -723,6 +719,105 @@ function zipFileAndUploadcloud(filePath, isProjectJson) {
         }
     })();
 }
+
+
+
+
+function cloudCreateQRAndDownload(selectedPlatform,param){
+    // 接口请求
+    var FormData = require('form-data');
+    var http = require('https');
+    var form = new FormData();
+  
+    var file="project.json";
+    var result=JSON.parse(fs.readFileSync(file));
+    var projectName = result.config.projectName;
+    var gitUrl = result.config.gitUrl;
+  
+    form.append('code',param);
+   
+    var headers = form.getHeaders();//这个不能少
+    // headers.Cookie = cookie;//自己的headers属性在这里追加
+    var request = http.request({
+      method: 'POST',
+      host: configFile.CONFIG_PREVIEW_URL ,
+    //   port: configFile.CONFIG_BUILDSERVER_PORT , 
+      path: configFile.CONFIG_PREVIEW_CREATE_QR_API ,
+      headers: headers
+    },(res) =>{
+              var outFile= selectedPlatform+'.png'
+              let ws = fs.createWriteStream(outFile,{
+                    highWaterMark:1
+                })
+  
+              res.on('data',(buffer) => {
+                ws.write(buffer) ;  
+              });
+              res.on('end',()=>{
+                
+                //文件下载结束
+                ws.end();
+                console.log("二维码已经下载到本地,并弹出显示。");
+                fs.exists("./output/tempPreview/"+selectedPlatform+'.png', function (exists) {
+                    if (exists) {
+                        // 删除已有的文件
+                        fs.removeSync("./output/tempPreview/"+selectedPlatform+'.png');
+                        fs.move(selectedPlatform+'.png', "./output/tempPreview/"+selectedPlatform+'.png', function (err) {
+                            if (err) return console.error(err)
+                            
+                            // var openbrowser = require('openbrowser');
+                            var pwd = shell.pwd().split(path.sep).join('/');
+                            console.log("二维码地址："+pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+
+                            // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+                            const opn = require('opn');
+                            opn(pwd +"/output/tempPreview/"+selectedPlatform+'.png').then(() => {
+                                // image viewer closed
+                                console.log("image viewer open");
+                                });
+
+                        });
+
+                    }
+                    if (!exists) {
+                        fs.move(selectedPlatform+'.png', "./output/tempPreview/"+selectedPlatform+'.png', function (err) {
+                            if (err) return console.error(err)
+                            
+                            // var openbrowser = require('openbrowser');
+                            var pwd = shell.pwd().split(path.sep).join('/');
+                            console.log("二维码地址："+pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+
+                            // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+                        
+                            const opn = require('opn');
+                            opn(pwd +"/output/tempPreview/"+selectedPlatform+'.png').then(() => {
+                                // image viewer closed
+                                console.log("image viewer open");
+
+                                });
+                        });
+                    }
+                })
+            
+              });
+          
+    });
+  
+    request.on('error', (e) => {
+      console.log(`problem with request: ${e.message}`);
+    });
+    form.pipe(request);  
+  }
+
+
+
+
+
+
+
+
+
+
 
 
 

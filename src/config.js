@@ -14,5 +14,10 @@ const config = {
     DEVELOP_HTTP_HEADER_UA: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
     // 开发者中心Referer
     DEVELOP_HTTP_HEADER_REFERER: 'https://developer.yonyoucloud.com',
+
+    CONFIG_PREVIEW_URL: 'mdoctor.yonyoucloud.com',
+    CONFIG_PREVIEW_UPLOAD_APP_API: '/mtldebugger/mtl/file/uploadApp',
+    CONFIG_PREVIEW_UPLOAD_FILE_API: '/mtldebugger/mtl/file/uploadZip',
+    CONFIG_PREVIEW_CREATE_QR_API: '/mtldebugger/mtl/qr/build',
 };
 module.exports = config;
