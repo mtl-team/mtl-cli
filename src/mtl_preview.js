@@ -602,8 +602,8 @@ function uploadFileToCloud(filePath, isProjectJson) {
     var headers = form.getHeaders();//这个不能少
     var request = http.request({
         method: 'POST',
-        hostname: 'mdoctor.yonyoucloud.com',
-        path: '/mtldebugger/mtl/file/uploadZip',
+        hostname: configFile.CONFIG_PREVIEW_URL ,
+        path: configFile.CONFIG_PREVIEW_UPLOAD_FILE_API,
         headers: headers
     }, (res) => {
         res.on('data', (buffer) => {
@@ -667,8 +667,8 @@ function uploadAppCloud(platform) {
     var headers = form.getHeaders();//这个不能少
     var request = http.request({
         method: 'POST',
-        hostname: 'mdoctor.yonyoucloud.com',
-        path: '/mtldebugger/mtl/file/uploadApp',
+        hostname: configFile.CONFIG_PREVIEW_URL,
+        path: configFile.CONFIG_PREVIEW_UPLOAD_APP_API,
         headers: headers
     }, (res) => {
         res.on('data', (buffer) => {
@@ -719,8 +719,6 @@ function zipFileAndUploadcloud(filePath, isProjectJson) {
         }
     })();
 }
-
-
 
 
 function cloudCreateQRAndDownload(selectedPlatform,param){
@@ -808,17 +806,6 @@ function cloudCreateQRAndDownload(selectedPlatform,param){
     });
     form.pipe(request);  
   }
-
-
-
-
-
-
-
-
-
-
-
 
 
 function cloudBuildAndUnzip(selectedPlatform) {
