@@ -4,7 +4,7 @@
 
 命令：mtl 
 
-> mtl 支持微信、钉钉、Android、iOS等多端原生技术开发，
+> mtl 命令行工具支持Android、iOS、微信、钉钉、移动web等多端同步开发，一套公共源码，多端调用 ，多端同步调试、预览 ，云端构建生成不同的安装包以及发布包。提供工程模板脚手架、添加标准页面、以及原生能力插件、云端构建打包等功能。
 
 
 ### 安装mtl
@@ -29,40 +29,73 @@ mtl --version   //查看版本号
 ---|---
 android | Android平台
 ios | iOS平台
-eapp | 钉钉E应用
-wx | 微信小程序平台
+WX | 微信小程序平台
+DD | 钉钉E应用
 web | 移动Web应用
-
-### 总体结构
-
-![VR技术](http://47.92.67.238:7080/res/mtl/mtlcli.jpg)
 
 
 
 # 创建工程
 
-mtl 支持根据模板创建一个工程，同时也支持从Summer工程导入为一个mtl工程
+mtl 支持根据模板脚手架创建一个工程 
 
 ### 模板创建
 ```
 mtl create [appname] [template]
 ```
-template样版工程
-+ Hello ： 一个标准的Hello工程 <- 默认
-+ X : 一个功能比较全的小应用，有登录、主页、卡片、列表
+appname 是工程名称
++  此参数是必填项；
++  本地已创建的工程不能同名再创建，造成本地目录同名；
+
+template 样版工程
++  ：一个空的MTL工程 
++  : 一个MTL demo工程 ，涉及原生的一些功能。
 
 
 
 ### 配置工程信息
 
-用户手工配置project.json文件[可选]
+project.json文件 工程配置文件 [用户手工配置或者命令行自动生成]
 ```
-{
-    "appId":"com.yonyou.new.project",
-    "version":1
-    "name":"空工程"
-    "configure-info":"etc"
+   {
+	"config": {
+		"appName": "de",
+		"packageName": "com.yonyou.de",
+		"projectName": "de",
+		"versionName": "1.0.0",
+		"versionCode": "100",
+		"versionBuild": "1.0.0",
+		"startPage": "welcome/index.html",
+		"debuggerEnable": "false",
+		"reinforcement": "false",
+		"sandbox": "false",
+		"targetDevice": "handset",
+		"statusBarTheme": "summer.Animations.NoTitleBar.FullScreen",
+		"androidMinSdkVersion": "16",
+		"isLibraryCompilation": "false",
+		"cordovaPlugins": {
+			"cordovaPlugin": [
+				{
+					"name": "cordova-plugin-compat",
+					"type": "cordova"
+				},
+				{
+					"name": "cordova-plugin-file",
+					"type": "cordova"
+				},
+				{
+					"name": "cordova-plugin-http",
+					"type": "cordova"
+				},
+				{
+					"name": "cordova-plugin-camera",
+					"type": "cordova"
+				}
+			]
+		}
+	}
 }
+
 ```
 
 
@@ -91,19 +124,15 @@ mtl config git-url http://git.yonyou.com/xxx/xxx/
 
 # 页面管理
 
-### 选择平台
-```
-mtl platfrom [All | platform name]
-//默认是All
-```
-
-
 ### 创建一个页面
 ```
-mtl [-p platform] add-page [pagename] [modelname] 
-//根据选择的平台添加页面
-//如果是All时，为所有平台添加页面
+mtl  add-page [pagename] [modelname] 
+
 ```
+pagename
++ 此参数是必填项；
++ 用户根据这个名称，替换模板页面中的模板变量，进行填槽，形成想要的页面。
+
 modelname
 + empty:标准空页面 <--默认
 + hello:标准Hello world页面
@@ -112,67 +141,65 @@ modelname
 + login:标准登录页面
 + 
 
-### 添加一个组件引用 
-添加一个依赖的组件
+# 插件引用管理 
+### 添加一个依赖的插件
 ```
-mtl [-p platform] add-component [componentname]
+mtl  add-plugin 
 ```
 
 
-# 编译&调试
+# 调试
+```
+mtl debug [ iOS | Android | WX | DD]
+```
+### debug 调试开发准备和功能说明：
++ 配置pc的host 文件如下： 添加“ 127.0.0.1       mobile.yyuap.com ”  ；
++ android 需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 172.0.0.1 ：7555 （win），adb connect 172.0.0.1 ：5555 （mac）；
++ iOS 需要搭建好xcode 开发环境；
++ 微信小程序需要安装微信小程序工具：到微信公众平台去下载，下载地址：https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html。命令行进行mtl debug wx 后 ，用微信小程序工具导入当前工程目录./output/wx/debug/proj  ，这样就可以在微信小程序工具下看到 修改app目录下工程源码的调试效果。
++ 钉钉小程序需要安装 蚂蚁金服开放平台 小程序工具，下载地址：https://docs.alipay.com/mini/ide/download。命令行进行mtl debug DD 后 ，用钉钉小程序工具导入当前工程目录./output/dd/debug/proj  ，这样就可以在钉钉小程序工具下看到 修改app目录下工程源码的调试效果。
++ 修改文件热更新，如果在项目工程下，修改了project.json 或者 app目录下的工程源码都会自动更新到output平台目录下的工程目录，需要在 android ，iOS ，wx小程序工具 ，钉钉小程序工具 里刷新就可以看到修改的效果。
++ 友情提示，终端命令行在调试状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止调试，进行其他操作。
 
-### 编译部署包
+
+
+# 预览
 ```
-mtl build [All | iOS | Android | WX | EApp]
-//不输入平台，即编译所有平台
+mtl preview [ iOS | Android | WX | DD |Upesn]
 ```
+### 预览功能准备和功能说明：
++ 预览命令行执行后 ，会在pc开发设备形成二维码；
++ 命令行执行预览android功能 ，需要用真机预先安装预览apk ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
++ 命令行执行预览iOS功能 ，需要用真机预先安装预览IPA ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
++ 命令行执行预览微信小程序功能 ，需要用真机的微信APP，用微信的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
++命令行执行预览钉钉小程序功能 ，需要用真机的钉钉APP，用钉钉的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
++命令行执行预览Upesn功能 ，需要用真机的友空间APP，用友空间的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
++ 修改文件热更新，如果在项目工程下，修改了project.json 或者 app目录下的工程源码都会自动更新到后台预览服务中，需要在 android  ，iOS  ，微信 ，钉钉，友空间 里刷新就可以看到更新的效果。
++ 友情提示，终端命令行在预览状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止预览，进行其他操作。
+
+# 构建
+```
+mtl build [ iOS | Android ]
+```
+### 构建功能准备和功能说明：
++ 云构建server 支持git 远程代码下载到构建服务器进行云构建。需要在构建前配置好Git 仓库 、分支、账号、密码等要素。
++ 云构建结束后会在控制台显示构建日志以及构建包存放目录；
++ 云构建成功后在output目录存放构建包，以及二维码安装图片。
 
 ### 运行
-安装部署包并运行
-```
-mtl start [--no-build] [All | iOS | Android | WX | EApp]
-```
-
-# 代码托管
-
-### 配置您的代码库
-
-### 提交和更新代码
-```
-mtl pull
-mtl push
-```
-
-
-
-
-
-
-# 2. 演示流程
 
 ```
-//环境部署
-npm install -g mtl
-mtl --version
-
-//创建工程
-mtl create approve
-//编辑工程文件
-mtl build WX
-//添加页面
-mtl add-page login
-//不需要修改，演示登录
-mtl build wx
-mtl add-page list
-//使用Excel作元数据，导入服务器，获得一个访问的URL
-//用工具修改login文件，配置URL等功能 
-mtl build wx
-mtl start android ios
+mtl start  [ Android ]
 ```
+### 安装运行说明
++ 请连接后android真机设备或者模拟器。
 
-+ login
-  - 协议和方案、API接口  3-13
-  - 接口实现            3-15
-+ MDD开发
-  - 元数据请救接口（列表、卡片）      3-9
+
+# git账号配置
+```
+mtl set-git  
+```
+### 设置git说明
++ 用于云端构建 ，在构建服务器增量更新源码。
++ 根据提示 输入git仓库URL ，分支 ，账户，密码。
 
