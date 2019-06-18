@@ -8,7 +8,7 @@
         "desc":"一个MTL空工程"
     },
     "mtl-demo":{
-        "url":"https://gogs.yonyoucloud.com/xugangm/mtl-demo.git",
+        "url":"https://github.com/mtl-team/mtl-demo.git",
         "desc":"一个演示用的MTL工程"
     }
 }

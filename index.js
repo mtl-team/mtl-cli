@@ -13,7 +13,7 @@ var mBuild = require('./src/mtl_build');
 var mDebug = require('./src/mtl_debug');
 var mPreview= require('./src/mtl_preview');
 var mPlugin = require('./src/mtl_plugin');
-
+var mSetgit = require('./src/mtl_setgit');
 const getAutoUpdate = require('./src/update');
 
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
@@ -34,16 +34,16 @@ program
   // create 开发者中心   c
   program
   .command('create [appname] [template]').alias('c') // 命令简写
-  .description('根据模板创建 本地 项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
+  .description('根据模板创建本地项目开发。')
   .action(function (appname,template) {
     mCreate.createApp(appname,template);
   });
 
 program
-  .command('setGitUrl [gitURL]').alias('sgu') // 命令简写
-  .description('修改gitUrl。')
-  .action(function (gitURL) {
-    mCreate.configGitUrl(gitURL);
+  .command('set-git [param]').alias('sg') // 命令简写
+  .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。\n\r 参数 为 url ，单独配置仓库地址；\n\r 参数为 branch，单独配置git分支；\n\r 参数为 user，单独配置账号名称；\n\r 参数为 password ，单独配置账号密码。 ')
+  .action(function (param) {
+    mSetgit.setGit(param);
   });   
 
 program
@@ -81,17 +81,15 @@ program
     mConfig.config(key, value);
   });
 
-program
-  .command('template [cmd] [name] [file]').alias('tpl') // 命令简写
-  .description('管理模板。')
-  .action(function (cmd, name, file) {
-    mTemplate.run(cmd, name, file);
-  });
+// program
+//   .command('template [cmd] [name] [file]').alias('tpl') // 命令简写
+//   .description('管理模板。')
+//   .action(function (cmd, name, file) {
+//     mTemplate.run(cmd, name, file);
+//   });
 
 program
   .command('add-page [name] [tplname]').alias('ap') // 命令简写
-  .option("--p,--platform [plat]", "根据平台创建页面", "Default")
-  .option("--t,--template [tpl]", "根据平台创建页面", "default")
   .description('添加页面')
   .action(function (name,tplname) {
     console.log("add-page " + name);
