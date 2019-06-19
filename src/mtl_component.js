@@ -116,10 +116,10 @@ function addImportToJson(projfile, name) {
     fs.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
 
     //修改config.xml
-    let xmlFile = "./app/config.xml";
-    let builder = new xml2js.Builder();
-    let xml = builder.buildObject(proj);
-    fs.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
+    // let xmlFile = "./app/config.xml";
+    // let builder = new xml2js.Builder();
+    // let xml = builder.buildObject(proj);
+    // fs.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
 
     return SUCCESS;
 }

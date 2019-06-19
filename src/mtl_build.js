@@ -338,10 +338,10 @@ function updateConfigFileToRelease() {
   proj.config.debuggerEnable = "false";
   fs.writeFileSync("./project.json", formatJson(proj), { flag: 'w', encoding: 'utf-8', mode: '0666' });
   //修改./app/config.xml
-  let xmlFile = "./app/config.xml";
-  var builder = new xml2js.Builder();
-  var xml = builder.buildObject(proj);
-  fs.writeFileSync(xmlFile, xml, { flag: 'w', encoding: 'utf-8', mode: '0666' });
+  // let xmlFile = "./app/config.xml";
+  // var builder = new xml2js.Builder();
+  // var xml = builder.buildObject(proj);
+  // fs.writeFileSync(xmlFile, xml, { flag: 'w', encoding: 'utf-8', mode: '0666' });
 }
 
 

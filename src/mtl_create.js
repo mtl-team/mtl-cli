@@ -311,12 +311,12 @@ function changeTheAppName(projfile, appname) {
     fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
     
     //修改config.xml
-    let xmlFile = "./app/" + CONFIG_XML;
+    // let xmlFile = "./app/" + CONFIG_XML;
 
-    var builder = new xml2js.Builder();
-    var xml = builder.buildObject(proj);
+    // var builder = new xml2js.Builder();
+    // var xml = builder.buildObject(proj);
 
-    fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
+    // fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
     return utils.SUCCESS;
 }
 
@@ -447,12 +447,12 @@ function changeTheGit(projfile, gitUrl) {
     fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
     
     //修改config.xml
-    let xmlFile = "./app/" + CONFIG_XML;
+    // let xmlFile = "./app/" + CONFIG_XML;
 
-    var builder = new xml2js.Builder();
-    var xml = builder.buildObject(proj);
+    // var builder = new xml2js.Builder();
+    // var xml = builder.buildObject(proj);
 
-    fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
+    // fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
     return utils.SUCCESS;
 }
 
