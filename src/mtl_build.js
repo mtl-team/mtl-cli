@@ -203,17 +203,31 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
 
   form.append('projectName', projectName);
   form.append('appName', appName);
-  form.append('gitUrl', conf.get('git-url'));
-  if (conf.get('git-branch') == "") {
-    form.append('gitBranch', '');
+  if (buildType == "git") {
+    form.append('gitUrl', conf.get('git-url'));
+    if (conf.get('git-branch') == "") {
+      form.append('gitBranch', '');
+
+    } else {
+
+      form.append('gitBranch', conf.get('git-branch'));
+    }
+
+    form.append('gitUser', conf.get('git-user'));
+    form.append('gitPassword', conf.get('git-password'));
 
   } else {
+    form.append('gitUrl', "");
 
-    form.append('gitBranch', conf.get('git-branch'));
+    form.append('gitBranch', '');
+
+
+
+    form.append('gitUser', "");
+    form.append('gitPassword', "");
+
   }
 
-  form.append('gitUser', conf.get('git-user'));
-  form.append('gitPassword', conf.get('git-password'));
 
   form.append('isDebug', "false");
   var headers = form.getHeaders();//这个不能少
@@ -400,16 +414,16 @@ function updateConfigFileToRelease() {
  */
 function checkProjectGitConfig() {
 
-  if (conf.get('git-url') == ""
-    && conf.get('git-branch') == ""
-    && conf.get('git-user') == ""
-    && conf.get('git-password') == "") {
+  if ((conf.get('git-url') == ""|| conf.get('git-url') == undefined)
+    && (conf.get('git-branch') == ""|| conf.get('git-url') == undefined)
+    && (conf.get('git-user') == ""|| conf.get('git-url') == undefined)
+    && (conf.get('git-password') == ""|| conf.get('git-url') == undefined)) {
     return utils.reportError("未找到工程源码配置信息,请执行: mtl set-git 命令配置好git托管的配置信息后，再进行build。");
-  } else if (conf.get('git-url') == "") {
+  } else if (conf.get('git-url') == ""|| conf.get('git-url') == undefined) {
     return utils.reportError("请执行: mtl set-git url 命令配置好git地址后，再进行build。");
-  } else if (conf.get('git-user') == "") {
+  } else if (conf.get('git-user') == ""|| conf.get('git-user') == undefined) {
     return utils.reportError("请执行: mtl set-git user 命令配置好git账号后，再进行build。");
-  } else if (conf.get('git-url') == "") {
+  } else if (conf.get('git-password') == ""|| conf.get('git-password') == undefined) {
     return utils.reportError("请执行: mtl set-git password 命令配置好git账号密码后，再进行build。");
   }
   console.log("工程源码仓库地址：" + conf.get('git-url'));
