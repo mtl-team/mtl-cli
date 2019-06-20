@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const shell = require('shelljs');
+const path = require('path');
 //Linux系统上'Linux'
 //macOS 系统上'Darwin'
 //Windows系统上'Windows_NT'
@@ -45,6 +46,20 @@ var Utils = function () {
     this.isProject = function () {
         return fs.existsSync("./project.json");
     }
+
+  //检查工程目录
+  this.checkProjectDir = function() {
+    console.log("！！！请一定进入当前工程跟目录！！！");
+    var isexist = fs.existsSync("project.json")
+    if (isexist) {
+      let pwd = shell.pwd().split(path.sep).join('/');
+      console.log("当前工程跟目录："+pwd);
+      return this.SUCCESS;
+    }else {
+      console.log("当前目录不是工程跟目录 😢 😢 😢 ！！！")
+      return this.ERROR;
+    }
+}
 
     //检查平台参数
     this.checkPlatform = function(platform) {

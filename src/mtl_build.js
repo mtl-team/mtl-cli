@@ -36,6 +36,20 @@ const startList = [{
   }
 }];
 
+var buildType = "git";
+const buildTypePrompt = {
+  type: 'list',
+  message: '请确认云构建方式：1、默认是git方式云构建，开发者通过命令行 mtl set-git 配置git 仓库以及账号信息就可以实现构建打包；2、另一种是源码上传云构建server。',
+  name: 'buildType',
+  choices: [
+    "git",
+    "uploadZip"
+  ],
+  filter: function (val) { // 使用filter将回答变为小写
+    return val;
+  }
+};
+
 class mtlBuild {
   static build(buildPlatform) {
     // 代码更新去正式编译
@@ -44,44 +58,63 @@ class mtlBuild {
     //     return;
     // }
 
-    if(checkProjectGitConfig()== "error"){
-        return;
+    // 检查是否当前工程根目录
+    if (utils.checkProjectDir() == "error") {
+      return;
     }
-    if (buildPlatform == undefined) {
-      inquirer.prompt(buildList).then(answers => {
-        console.log('选用平台：' + answers.platform); // 返回的结果
-        console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-        if (answers.platform == "ios") {
-          cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299');
-        } else {
-          cloudBuildAndUnzip(answers.platform, 'ump');
+    // 选择云构建的方式
+    inquirer.prompt(buildTypePrompt).then(answers => {
+
+      console.log('构建方式：' + answers.buildType);
+      buildType = answers.buildType;
+      if (answers.buildType == "git") {
+
+        if (checkProjectGitConfig() == "error") {
+          return;
         }
-      });
-    } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
+        selectedBuildPlatform(buildPlatform, answers.buildType)
+      } else {
+        zipAndUploadcloud(buildPlatform, answers.buildType)
+      }
+    });
 
-      console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+    // 
 
-      cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299');
-    } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
+    // if (buildPlatform == undefined) {
+    //   inquirer.prompt(buildList).then(answers => {
+    //     console.log('选用平台：' + answers.platform); // 返回的结果
+    //     console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+    //     if (answers.platform == "ios") {
+    //       cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299',buildType);
+    //     } else {
+    //       cloudBuildAndUnzip(answers.platform, 'ump',buildType);
+    //     }
+    //   });
+    // } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
 
-      console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+    //   console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
 
-      cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump');
-    } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
-      console.log('暂时不可用');
-    } else if (utils.checkPlatform(buildPlatform) == "EApp".toLowerCase()) {
-      console.log('暂时不可用');
-    } else {
-      inquirer.prompt(buildList).then(answers => {
-        console.log('选用平台：' + answers.platform); // 返回的结果
-        console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-        if (answers.platform == "ios") {
-          cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299');
-        } else {
-          cloudBuildAndUnzip(answers.platform, 'ump');
-        }
-      });
-    }
+    //   cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299',buildType);
+    // } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
+
+    //   console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+
+    //   cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump',buildType);
+    // } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
+    //   console.log('暂时不可用');
+    // } else if (utils.checkPlatform(buildPlatform) == "EApp".toLowerCase()) {
+    //   console.log('暂时不可用');
+    // } else {
+    //   inquirer.prompt(buildList).then(answers => {
+    //     console.log('选用平台：' + answers.platform); // 返回的结果
+    //     console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+    //     if (answers.platform == "ios") {
+    //       cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299',buildType);
+    //     } else {
+    //       cloudBuildAndUnzip(answers.platform, 'ump',buildType);
+    //     }
+    //   });
+    // }
   }
 
   static start(startPlatform) {
@@ -147,7 +180,7 @@ function androidInstall() {
 }
 
 
-function cloudBuildAndUnzip(selectedPlatform, certName) {
+function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   // 接口请求
   var FormData = require('form-data');
   var http = require('http');
@@ -156,21 +189,26 @@ function cloudBuildAndUnzip(selectedPlatform, certName) {
   var file = "project.json";
   var result = JSON.parse(fs.readFileSync(file));
   var projectName = result.config.projectName;
+  var appName = result.config.appName;
   var gitUrl = result.config.gitUrl;
 
   form.append('userName', 'ump');
   form.append('buildType', selectedPlatform);
-  // form.append('certName',certName); 
+  form.append('buildStyle', buildType);
   form.append('certName', certName);
-  // form.append('request', fs.createReadStream("./test.zip"));//'request'是服务器接受的key
-  form.append('projectName', projectName);
 
+  if (buildType != "git") {
+    form.append('request', fs.createReadStream(projectName + ".zip"));//'request'是服务器接受的key
+  }
+
+  form.append('projectName', projectName);
+  form.append('appName', appName);
   form.append('gitUrl', conf.get('git-url'));
-  if (conf.get('git-branch')==""){
+  if (conf.get('git-branch') == "") {
     form.append('gitBranch', '');
-    
-  }else{
-    
+
+  } else {
+
     form.append('gitBranch', conf.get('git-branch'));
   }
 
@@ -202,8 +240,13 @@ function cloudBuildAndUnzip(selectedPlatform, certName) {
       if (selectedPlatform == 'android') {
         fs.exists("android.zip", function (exists) {
           if (exists) {
-            // 删除已有的文件
+            // 删除 原有的输出文件目录
             fs.removeSync('./output/android/release');
+            if (buildType != "git") {
+              //删除 上传源码文件
+              fs.removeSync(projectName + '.zip');
+              fs.removeSync('./' + projectName);
+            }
 
             (async function () {
               try {
@@ -255,8 +298,13 @@ function cloudBuildAndUnzip(selectedPlatform, certName) {
       } else {
         fs.exists("ios.zip", function (exists) {
           if (exists) {
-
+            // 删除 原有的输出文件目录
             fs.removeSync('./output/ios/release');
+            if (buildType != "git") {
+              //删除 上传源码文件
+              fs.removeSync(projectName + '.zip');
+              fs.removeSync('./' + projectName);
+            }
             (async function () {
               try {
                 await unzipSync('ios.zip', './output/ios/release');
@@ -352,31 +400,128 @@ function updateConfigFileToRelease() {
  */
 function checkProjectGitConfig() {
 
-
-  if (conf.get('git-url')=="" 
-        &&conf.get('git-branch')=="" 
-        && conf.get('git-user') =="" 
-        &&conf.get('git-password')=="") {
+  if (conf.get('git-url') == ""
+    && conf.get('git-branch') == ""
+    && conf.get('git-user') == ""
+    && conf.get('git-password') == "") {
     return utils.reportError("未找到工程源码配置信息,请执行: mtl set-git 命令配置好git托管的配置信息后，再进行build。");
-  } else if (conf.get('git-url')==""){
+  } else if (conf.get('git-url') == "") {
     return utils.reportError("请执行: mtl set-git url 命令配置好git地址后，再进行build。");
-  }else if (conf.get('git-user')==""){
+  } else if (conf.get('git-user') == "") {
     return utils.reportError("请执行: mtl set-git user 命令配置好git账号后，再进行build。");
-  }else if (conf.get('git-url')==""){
+  } else if (conf.get('git-url') == "") {
     return utils.reportError("请执行: mtl set-git password 命令配置好git账号密码后，再进行build。");
   }
-  console.log("工程源码仓库地址："+conf.get('git-url'));
-  if (conf.get('git-branch')==""){
+  console.log("工程源码仓库地址：" + conf.get('git-url'));
+  if (conf.get('git-branch') == "") {
     console.log("工程源码仓库分支为默认主干：origin/master");
-  }else{
-    console.log("工程源码仓库分支："+conf.get('git-branch'));
+  } else {
+    console.log("工程源码仓库分支：" + conf.get('git-branch'));
   }
-  console.log("工程源码仓库账号："+conf.get('git-user'));
-  console.log("工程源码仓库账号密码："+conf.get('git-password'));
-
+  console.log("工程源码仓库账号：" + conf.get('git-user'));
+  console.log("工程源码仓库账号密码：" + conf.get('git-password'));
+  console.log("！！！请确定本地要构建的源码已经更新到git仓库！！！");
   return utils.SUCCESS;
 
 }
+
+
+function selectedBuildPlatform(buildPlatform, buildType) {
+  if (buildPlatform == undefined) {
+    inquirer.prompt(buildList).then(answers => {
+      console.log('选用平台：' + answers.platform); // 返回的结果
+      console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+      if (answers.platform == "ios") {
+        cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299', buildType);
+      } else {
+        cloudBuildAndUnzip(answers.platform, 'ump', buildType);
+      }
+    });
+  } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
+
+    console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+
+    cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299', buildType);
+  } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
+
+    console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+
+    cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump', buildType);
+  } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
+    console.log('暂时不可用');
+  } else if (utils.checkPlatform(buildPlatform) == "EApp".toLowerCase()) {
+    console.log('暂时不可用');
+  } else {
+    inquirer.prompt(buildList).then(answers => {
+      console.log('选用平台：' + answers.platform); // 返回的结果
+      console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+      if (answers.platform == "ios") {
+        cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299', buildType);
+      } else {
+        cloudBuildAndUnzip(answers.platform, 'ump', buildType);
+      }
+    });
+  }
+
+}
+
+function zipAndUploadcloud(selectedPlatform, buildType) {
+
+  (async function () {
+    try {
+      await zipDir(selectedPlatform, buildType);
+    } catch (e) {
+      console.log(e)
+    }
+  })();
+}
+
+function zipDir(platform, buildType) {
+  var file = "project.json";
+  var result = JSON.parse(fs.readFileSync(file));
+  var projectName = result.config.projectName;
+  var archiver = require('archiver');
+  var output = fs.createWriteStream(projectName + '.zip');
+
+  let archive = archiver('zip', {
+    zlib: { level: 9 } // 设置压缩级别
+  })
+
+  // 存档警告
+  archive.on('warning', function (err) {
+    if (err.code === 'ENOENT') {
+      console.warn('stat故障和其他非阻塞错误')
+    } else {
+      throw err
+    }
+  })
+  // listen for all archive data to be written 
+  output.on('close', function () {
+    console.log(archive.pointer() + ' total bytes');
+    console.log('archiver has been finalized and the output file descriptor has closed.');
+    selectedBuildPlatform(platform, buildType)
+  });
+  // 存档出错
+  archive.on('error', function (err) {
+    throw err
+  })
+  archive.pipe(output);
+
+  // 从子目录追加文件并将其命名为“新子dir”在存档中
+
+
+
+  let pwd = shell.pwd().split(path.sep).join('/');
+  fs.copySync("./app/", "./" + projectName + "/www/");
+  fs.copySync("./project.json", "./" + projectName + "/www/config.json");
+  var dir = "./" + projectName + "/www/";
+
+  archive.directory(dir, projectName + "/www/")
+  archive.finalize();
+
+}
+
+
 
 
 
