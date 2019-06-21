@@ -34,6 +34,7 @@ const gitPasswordPrompt = {
     name: 'password',
     filter: function (val) { // 使用filter将回答变为小写
         return val;
+
     }
 };
 
@@ -46,27 +47,15 @@ const gitPasswordPrompt = {
 var setGit = function (param) {
     //命令行获取
     if (param == undefined) {
-        inquirer.prompt(gitPrompt).then(answers => {
 
-            conf.set('git-url', answers.git);
-            console.log('输入的Git仓库地址：' + conf.get('git-url')); // 返回的结果
-            inquirer.prompt(gitBranchPrompt).then(answers => {
 
-                conf.set('git-branch', answers.branch);
-                console.log('输入的Git仓库分支：' + conf.get('git-branch')); // 返回的结果
-                inquirer.prompt(gitUserPrompt).then(answers => {
-
-                    conf.set('git-user', answers.user);
-                    console.log('输入的Git仓库账号：' + conf.get('git-user')); // 返回的结果
-                    inquirer.prompt(gitPasswordPrompt).then(answers => {
-
-                        conf.set('git-password', answers.password);
-                        console.log('输入的Git仓库账号密码：' + conf.get('git-password')); // 返回的结果
-
-                    });
-                });
-            });
-        });
+        f1().then(function () {
+            return f2();
+        }).then(function () {
+            return f3();
+        }).then(function () {
+            return f4();
+        })
 
     } else if (param == "url") {
         inquirer.prompt(gitPrompt).then(answers => {
@@ -101,11 +90,60 @@ var setGit = function (param) {
 
     }
 
-
-
-
-
-
-
 }
+
+function f1() {
+    var p1 = new Promise(function (resolve, reject) {
+        inquirer.prompt(gitPrompt).then(answers => {
+
+            conf.set('git-url', answers.git);
+            console.log('输入的Git仓库地址：' + conf.get('git-url')); // 返回的结果
+            resolve();
+        });
+
+    });
+    return p1;
+}
+function f2() {
+    var p2 = new Promise(function (resolve, reject) {
+        inquirer.prompt(gitBranchPrompt).then(answers => {
+
+            conf.set('git-branch', answers.branch);
+            console.log('输入的Git仓库分支：' + conf.get('git-branch')); // 返回的结果
+            resolve();
+        });
+
+    });
+    return p2;
+}
+
+function f3() {
+    var p3 = new Promise(function (resolve, reject) {
+        inquirer.prompt(gitUserPrompt).then(answers => {
+            conf.set('git-user', answers.user);
+            console.log('输入的Git仓库账号：' + conf.get('git-user')); // 返回的结果
+            resolve();
+        });
+
+    });
+    return p3;
+}
+
+function f4() {
+    var p4 = new Promise(function (resolve, reject) {
+        inquirer.prompt(gitPasswordPrompt).then(answers => {
+
+            conf.set('git-password', answers.password);
+            console.log('输入的Git仓库账号密码：' + conf.get('git-password')); // 返回的结果
+
+        });
+
+    });
+    return p4;
+}
+
+
+
+
+
 exports.setGit = setGit

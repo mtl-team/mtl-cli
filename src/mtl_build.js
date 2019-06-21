@@ -62,59 +62,26 @@ class mtlBuild {
     if (utils.checkProjectDir() == "error") {
       return;
     }
+
+    f1(buildPlatform).then(function (buildType,buildPlatform) {
+      return f2(buildType,buildPlatform);
+    })
     // 选择云构建的方式
-    inquirer.prompt(buildTypePrompt).then(answers => {
+    // inquirer.prompt(buildTypePrompt).then(answers => {
 
-      console.log('构建方式：' + answers.buildType);
-      buildType = answers.buildType;
-      if (answers.buildType == "git") {
+    //   console.log('构建方式：' + answers.buildType);
+    //   buildType = answers.buildType;
+    //   if (answers.buildType == "git") {
 
-        if (checkProjectGitConfig() == "error") {
-          return;
-        }
-        selectedBuildPlatform(buildPlatform, answers.buildType)
-      } else {
-        zipAndUploadcloud(buildPlatform, answers.buildType)
-      }
-    });
-
-    // 
-
-    // if (buildPlatform == undefined) {
-    //   inquirer.prompt(buildList).then(answers => {
-    //     console.log('选用平台：' + answers.platform); // 返回的结果
-    //     console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-    //     if (answers.platform == "ios") {
-    //       cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299',buildType);
-    //     } else {
-    //       cloudBuildAndUnzip(answers.platform, 'ump',buildType);
+    //     if (checkProjectGitConfig() == "error") {
+    //       return;
     //     }
-    //   });
-    // } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
+    //     selectedBuildPlatform(buildPlatform, answers.buildType)
+    //   } else {
+    //     zipAndUploadcloud(buildPlatform, answers.buildType)
+    //   }
+    // });
 
-    //   console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-
-    //   cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299',buildType);
-    // } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
-
-    //   console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-
-    //   cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump',buildType);
-    // } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
-    //   console.log('暂时不可用');
-    // } else if (utils.checkPlatform(buildPlatform) == "EApp".toLowerCase()) {
-    //   console.log('暂时不可用');
-    // } else {
-    //   inquirer.prompt(buildList).then(answers => {
-    //     console.log('选用平台：' + answers.platform); // 返回的结果
-    //     console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-    //     if (answers.platform == "ios") {
-    //       cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299',buildType);
-    //     } else {
-    //       cloudBuildAndUnzip(answers.platform, 'ump',buildType);
-    //     }
-    //   });
-    // }
   }
 
   static start(startPlatform) {
@@ -162,8 +129,39 @@ class mtlBuild {
       });
     }
   }
+
 }
 
+function f1(buildPlatform) {
+  var p1 = new Promise(function (resolve, reject) {
+    try {
+      inquirer.prompt(buildTypePrompt).then(answers => {
+        console.log('构建方式：' + answers.buildType);
+        buildType = answers.buildType;
+        resolve(buildType,buildPlatform);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+  });
+  return p1;
+}
+function f2(buildType,buildPlatform) {
+  var p2 = new Promise(function (resolve, reject) {
+    console.log("构建方式："+buildType);
+    if (buildType == "git") {
+      if (checkProjectGitConfig() == "error") {
+        return;
+      }
+      selectedBuildPlatform(buildPlatform, buildType)
+    } else {
+      zipAndUploadcloud(buildPlatform, buildType)
+    }
+    
+  });
+  return p2;
+}
 
 
 function androidInstall() {
@@ -414,16 +412,16 @@ function updateConfigFileToRelease() {
  */
 function checkProjectGitConfig() {
 
-  if ((conf.get('git-url') == ""|| conf.get('git-url') == undefined)
-    && (conf.get('git-branch') == ""|| conf.get('git-url') == undefined)
-    && (conf.get('git-user') == ""|| conf.get('git-url') == undefined)
-    && (conf.get('git-password') == ""|| conf.get('git-url') == undefined)) {
+  if ((conf.get('git-url') == "" || conf.get('git-url') == undefined)
+    && (conf.get('git-branch') == "" || conf.get('git-url') == undefined)
+    && (conf.get('git-user') == "" || conf.get('git-url') == undefined)
+    && (conf.get('git-password') == "" || conf.get('git-url') == undefined)) {
     return utils.reportError("未找到工程源码配置信息,请执行: mtl set-git 命令配置好git托管的配置信息后，再进行build。");
-  } else if (conf.get('git-url') == ""|| conf.get('git-url') == undefined) {
+  } else if (conf.get('git-url') == "" || conf.get('git-url') == undefined) {
     return utils.reportError("请执行: mtl set-git url 命令配置好git地址后，再进行build。");
-  } else if (conf.get('git-user') == ""|| conf.get('git-user') == undefined) {
+  } else if (conf.get('git-user') == "" || conf.get('git-user') == undefined) {
     return utils.reportError("请执行: mtl set-git user 命令配置好git账号后，再进行build。");
-  } else if (conf.get('git-password') == ""|| conf.get('git-password') == undefined) {
+  } else if (conf.get('git-password') == "" || conf.get('git-password') == undefined) {
     return utils.reportError("请执行: mtl set-git password 命令配置好git账号密码后，再进行build。");
   }
   console.log("工程源码仓库地址：" + conf.get('git-url'));
