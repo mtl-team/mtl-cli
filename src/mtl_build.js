@@ -36,7 +36,7 @@ const startList = [{
   }
 }];
 
-var buildType = "git";
+var buildType = "uploadZip";
 const buildTypePrompt = {
   type: 'list',
   message: '请确认云构建方式：1、默认是git方式云构建，开发者通过命令行 mtl set-git 配置git 仓库以及账号信息就可以实现构建打包；2、另一种是源码上传云构建server。',
@@ -63,9 +63,9 @@ class mtlBuild {
       return;
     }
 
-    f1(buildPlatform).then(function (buildType,buildPlatform) {
-      return f2(buildType,buildPlatform);
-    })
+    // f1(buildPlatform).then(function (buildType,buildPlatform) {
+    //   return f2(buildType,buildPlatform);
+    // })
     // 选择云构建的方式
     // inquirer.prompt(buildTypePrompt).then(answers => {
 
@@ -76,9 +76,9 @@ class mtlBuild {
     //     if (checkProjectGitConfig() == "error") {
     //       return;
     //     }
-    //     selectedBuildPlatform(buildPlatform, answers.buildType)
+        // selectedBuildPlatform(buildPlatform, buildType)
     //   } else {
-    //     zipAndUploadcloud(buildPlatform, answers.buildType)
+        zipAndUploadcloud(buildPlatform, buildType)
     //   }
     // });
 
