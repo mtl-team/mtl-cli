@@ -169,6 +169,8 @@ function downloadPageTemplate(isUpdate) {
         shell.exec(gitClone + gitPageUrl + " --progress "+tplCachePath);
         //shell.exec("rm -rf "+tplCachePath+"/.git");
         fs.removeSync(tplCachePath+"/.git"); 
+        fs.removeSync(tplCachePath+"/.gitignore"); 
+        fs.removeSync(tplCachePath+"/LICENSE"); 
     }
     return utils.SUCCESS;
 }
