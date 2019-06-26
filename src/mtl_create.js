@@ -333,11 +333,16 @@ function downloadTemplate(appname, template) {
     return utils.SUCCESS;
 }
 
+
+function formatJson(data) {
+    return JSON.stringify(data,null,4);
+}
+
 /**
  * 格式化输出JSON对象，返回String
  * @param {JSON} data 
  */
-function formatJson(data) {
+function formatJson2(data) {
     let LN = "\r";
     let TAB = "\t";
     var rep = "~";
@@ -532,3 +537,4 @@ async function  getTempList(){
 exports.createApp = createApp
 exports.pushRemote = pushRemote
 exports.configGitUrl = configGitUrl
+exports.test = formatJson
