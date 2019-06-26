@@ -1,7 +1,11 @@
-const utils = require('../mtl/mtl').Utils
 
 var debugAndroid = function(){
-    require('../mtl/mtl_page').addView("test");
+    var data = {
+        "t1":"t1~v",
+        "t2":"t2v"
+    }
+    var x = require('../src/mtl_create').test(data);
+    console.log(x);
 }
 
 debugAndroid();
