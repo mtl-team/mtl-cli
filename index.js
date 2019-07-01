@@ -8,6 +8,8 @@ var mConfig = require('./src/mtl_config');
 var mTemplate = require('./src/mtl_template');
 var mPage = require('./src/mtl_page');
 var mComponent = require('./src/mtl_component');
+var mSetPackageName = require('./src/mtl_setPackageName');
+var mSetBundleID = require('./src/mtl_setBundleID');
 var mViewpage = require('./src/mtl_viewpage');
 var mBuild = require('./src/mtl_build');
 var mDebug = require('./src/mtl_debug');
@@ -103,6 +105,19 @@ program
     mComponent.addComponent(pluginName);
   });
   
+  program
+  .command('set-packageName [packageName]').alias('s-packageName') // 命令简写
+  .description('设置android包名。')
+  .action(function (packageName) {
+    mSetPackageName.setPackageName(packageName);
+  });
+
+  program
+  .command('set-bundleID [bundleID]').alias('s-bundleID') // 命令简写
+  .description('设置iOS bundleID。')
+  .action(function (bundleID) {
+    mSetBundleID.setBundleID(bundleID);
+  }); 
 program
   .command('plugin [cmd] [name] [file]').alias('tpl') // 命令简写
   .description('管理插件。')
