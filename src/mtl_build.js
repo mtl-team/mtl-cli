@@ -188,6 +188,16 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   var result = JSON.parse(fs.readFileSync(file));
   var projectName = result.config.projectName;
   var appName = result.config.appName;
+
+if(selectedPlatform == "ios"){
+  console.log('iOS 构建ipa包的描述文件和证书，请先在云构建服务器上传！！！');
+  console.log('iOS 构建需要的描述文件和证书，会关联iOS bundleID！！！');
+  console.log('当前构建 bundleID为：'+result.config.bundleID);
+  console.log("如果没有设置bundleID ，会使用系统默认的描述文件和证书去构建！！！");
+  console.log("设置bundleID命令：mtl set-bundleID ！！！");
+
+}
+
   var gitUrl = result.config.gitUrl;
 
   form.append('userName', 'ump');
