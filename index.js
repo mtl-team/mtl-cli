@@ -16,6 +16,8 @@ var mDebug = require('./src/mtl_debug');
 var mPreview= require('./src/mtl_preview');
 var mPlugin = require('./src/mtl_plugin');
 var mSetgit = require('./src/mtl_setgit');
+
+var mSetStartPage = require('./src/mtl_setStartPage');
 const getAutoUpdate = require('./src/update');
 
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
@@ -112,12 +114,22 @@ program
     mSetPackageName.setPackageName(packageName);
   });
 
+
   program
   .command('set-bundleID [bundleID]').alias('s-bundleID') // 命令简写
   .description('设置iOS bundleID。')
   .action(function (bundleID) {
     mSetBundleID.setBundleID(bundleID);
   }); 
+
+
+  program
+  .command('set-startPage [startPage]').alias('s-startPage') // 命令简写
+  .description('设置android包名。')
+  .action(function (startPage) {
+    mSetStartPage.setStartPage(startPage);
+  });
+
 program
   .command('plugin [cmd] [name] [file]').alias('tpl') // 命令简写
   .description('管理插件。')
