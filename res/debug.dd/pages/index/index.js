@@ -3,7 +3,7 @@ let app = getApp();
 
 Page({
   data: {
-  
+
   },
   onLoad(query) {
     // 页面加载
@@ -21,21 +21,24 @@ Page({
         console.log('success', res);
         if (res.status == 200) {
           let startPage = res.data.config.startPage;
-          if (startPage) {
+          let appCode = res.data.config.ddAppCode;
+          app.global.appCode = appCode;
+          if (startPage && startPage.indexOf('http') == -1) {
             res.pageUrl = `${baseUrl}/${startPage}`;
-            _this.setData({
-              url: res.pageUrl,
-            })
-            console.log('url=', _this.data.url);
+          } else {
+            res.pageUrl = `${startPage}`;
           }
+          _this.setData({
+            url: res.pageUrl,
+          })
+          console.log('url=', _this.data.url);
         }
-
       },
-      fail: res =>{
-        console.log('fail',res);
+      fail: res => {
+        console.log('fail', res);
       }
     })
-    
+
   },
   onShow() {
     // 页面显示
@@ -77,10 +80,9 @@ Page({
     let obj = e.detail;
     this[obj.action](obj);
     this.onAlert(obj);
-  },
-  /**
+  },/**
    * 扫一扫，支持扫描二维码和条形码
-   * @param {*} obj 
+
    */
   scanQRCode(obj) {
     let _this = this;
@@ -88,41 +90,48 @@ Page({
     let scanObject = { type: scanType };
     Object.assign(scanObject, _this.getCommonObject(obj))
     scanObject.success = (res) => {
-      obj.method = 'success'
-      res.resultStr = res.code;
-      obj.parameters = res;
+      let resource = {
+        code: 200,
+        message: '',
+        data: {
+          resultStr: res.code
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: resource.data
+      }, {
+        method: 'complete',
+        parameters: resource
+      }]
       _this.webViewContext.postMessage(obj);
+
     }
     dd.scan(scanObject)
   },
-
   getCommonObject(obj) {
     let _this = this;
     return {
-      success: (res) => {
-        obj.method = 'success'
-        obj.parameters = res;
-        dd.alert({ content: 'success' });
-        _this.webViewContext.postMessage(obj);
-      },
       fail: res => {
-        obj.method = 'fail'
-        obj.parameters = res;
-        dd.alert({ content: 'fail' });
+        let resource = {
+          code: -1,
+          message: JSON.stringify(res)
+        }
+        obj.methods = [{
+          method: 'fail',
+          parameters: resource
+        }, {
+          method: 'complete',
+          parameters: resource
+        }]
         _this.webViewContext.postMessage(obj);
       },
-      // complete: res => {
-      //   obj.method = 'complete'
-      //   obj.parameters = res;
-      //   dd.alert({ content: 'success' });
-      //   _this.webViewContext.postMessage(obj);
-      // }
     }
   },
   /**
-    * 保留当前页面，跳转到应用内的某个指定页面，可以使用 dd.navigateBack 返回到原来页面。
-    * @param {{ page: 'index',parameters: {key: 'value'}}} obj 
-    */
+   * 保留当前页面，跳转到应用内的某个指定页面，可以使用 dd.navigateBack 返回到原来页面。
+   * @param {{ page: 'index',parameters: {key: 'value'}}} obj 
+   */
   navigateTo(obj) {
     let _this = this;
     let target = { url: _this._getUrl(obj) }
@@ -170,11 +179,20 @@ Page({
         value = localId;
         return value;
       });
-      dd.alert({
-        content: `${JSON.stringify(resource)}`
-      })
-      obj.method = 'success'
-      obj.parameters = resource;
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          localIds: resource.localIds
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
       _this.webViewContext.postMessage(obj);
     }
     dd.chooseImage(target);
@@ -199,8 +217,23 @@ Page({
    */
   uploadImage(obj) {
     //todo 需要在开发者后台将上传URL设置为HTTP安全域名
+    let _this = this;
     obj.fileType = 'image';
-    this.uploadFile(obj)
+    // let localId = obj.localId;
+    let src = app.global.localIds[obj.localId];
+    dd.getImageInfo({
+      src: src,
+      success: (res) => {
+        // {"width":200,"height":200,"path":"temp://1559014415464.jpeg"}
+        let path = res.path;
+        obj.fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+        obj.filePath = path;
+        _this.uploadFile(obj)
+      },
+
+    });
+
+
   },
 
   /**
@@ -208,11 +241,10 @@ Page({
    * @param {*} obj 
    */
   uploadFile(obj) {
-    let url = "";
-    let fileType = obj.fileType;
-    let localId = obj.localId;
-    let filePath = app.global.localIds[localId];
-    let fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+    let _this = this;
+    let url = "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/uploadToOSS";
+    let { fileType, fileName, filePath } = obj;
+
     let target = {
       url: url,
       fileType: fileType,
@@ -220,6 +252,24 @@ Page({
       filePath: filePath
     }
     Object.assign(target, this.getCommonObject(obj));
+    target.success = (res) => {
+      let serverId = JSON.parse(res.data).data;
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          serverId: serverId
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
+      _this.webViewContext.postMessage(obj);
+    }
     dd.uploadFile(target);
   },
 
@@ -233,19 +283,33 @@ Page({
 
   downloadFile(obj) {
     let _this = this;
-    let url = "",
-      serverId = obj.serverId;
+    let serverId = obj.serverId;
+    let url = `https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download?serviceId=${serverId}`;
+
     //todo 通过serverId请求服务器获取图片链接
     let target = {
       url: url
     }
     Object.assign(target, this.getCommonObject(obj));
-    target.success = (res) => {
+    target.success = ({ filePath }) => {
       let localId = uuid(22);
-      app.global.localIds[localId] = res.apFilePath || res.filepath;
-      obj.method = 'success'
-      obj.parameters = resource;
+      app.global.localIds[localId] = filePath;
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          localId: localId
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
       _this.webViewContext.postMessage(obj);
+
     }
     dd.downloadFile(target);
   },
@@ -256,21 +320,36 @@ Page({
    */
   getLocalImgSrc(obj) {
     let src = app.global.localIds[obj.localId];
-    dd.alert({
-      title: 'src',
-      content: `${src}`
-    });
     if (src) {
-      obj.method = 'success'
-      let res = {
-        imgSrc: src
-      };
-      obj.parameters = res;
-      this.webViewContext.postMessage(obj);
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          imgSrc: src
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: resource
+      }]
+      _this.webViewContext.postMessage(obj);
     } else {
-      obj.method = 'fail'
-      obj.parameters = '图片没有找到';
-      this.webViewContext.postMessage(obj);
+      let resource = {
+        code: -1,
+        message: '图片没有找到'
+      }
+      obj.methods = [{
+        method: 'fail',
+        parameters: resource
+      }, {
+        method: 'complete',
+        parameters: resource
+      }]
+      _this.webViewContext.postMessage(obj);
+
     }
 
   },
@@ -280,19 +359,65 @@ Page({
    * @param {*} obj 
    */
   getLocalImgData(obj) {
+    let _this = this;
     let src = app.global.localIds[obj.localId];
     if (src) {
-      obj.method = 'success'
-      let res = {
-        localData: src
-      };
-      obj.parameters = res;
-      this.webViewContext.postMessage(obj);
+      dd.getImageInfo({
+        src: src,
+        success: (res) => {
+          // {"width":200,"height":200,"path":"temp://1559014415464.image"}
+          let path = res.path;
+          let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+          // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
+          let imgType = 'png';
+          let prefix = `data:image/${imgType};base64,`
+          let target = {
+            url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
+            fileType: 'image',
+            fileName: fileName,
+            filePath: path,
+          }
+          Object.assign(target, _this.getCommonObject(obj));
+          target.success = (res) => {
+            let result = JSON.parse(res.data);
+            let base64ImgCode = result.data;
+            let src = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
+            let data = {
+              code: 200,
+              message: '',
+              data: {
+                localData: src
+              }
+            }
+            obj.methods = [{
+              method: 'success',
+              parameters: data.data
+            }, {
+              method: 'complete',
+              parameters: data
+            }]
+            _this.webViewContext.postMessage(obj);
+          }
+          dd.uploadFile(target);
+        },
+
+      });
     } else {
-      obj.method = 'fail'
-      obj.parameters = '图片没有找到';
-      this.webViewContext.postMessage(obj);
+      let resource = {
+        code: -1,
+        message: '图片没有找到'
+      }
+      obj.methods = [{
+        method: 'fail',
+        parameters: resource
+      }, {
+        method: 'complete',
+        parameters: resource
+      }]
+      _this.webViewContext.postMessage(obj);
     }
+
+
   },
 
   /**
@@ -301,27 +426,26 @@ Page({
    */
   getLocation(obj) {
     let _this = this;
-    dd.alert({
-      title: 'action',
-      content: `${obj.action}`
-    })
-    dd.getLocation({
-      success: (res) => {
-        obj.method = 'success';
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
-      },
-      fail: res => {
-        obj.method = 'fail';
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
-      },
-      complete: res => {
-        obj.method = 'complete'
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
+    let target = _this.getCommonObject(obj);
+    target.success = res => {
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          latitude: res.latitude,
+          longitude: res.longitude
+        }
       }
-    });
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
+      _this.webViewContext.postMessage(obj);
+    }
+    dd.getLocation(target);
   },
 
   /**
@@ -330,10 +454,6 @@ Page({
    */
   openLocation(obj) {
     let _this = this;
-    dd.alert({
-      title: 'action',
-      content: `${obj.action}`
-    })
     let { latitude = 0, longitude = 0, name = '', address = '', scale = 1, infoUrl = '' } = obj;
     if (scale > 19) {
       scale = 19;
@@ -367,9 +487,20 @@ Page({
 
       }
       res.networkType = result[res.networkType];
-      obj.method = 'success'
-      res.resultStr = res.code;
-      obj.parameters = res;
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          networkType: res.networkType
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
       _this.webViewContext.postMessage(obj);
     }
     dd.getNetworkType(target)
@@ -393,11 +524,20 @@ Page({
       //todo 生成唯一的UUID
       let localId = uuid(22);
       app.global.voiceLocalIds[localId] = res.tempFilePath;
-      let resource = {
-        localId: localId
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          localId: localId
+        }
       }
-      obj.method = 'success'
-      obj.parameters = resource;
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
       _this.webViewContext.postMessage(obj);
     }
     rm.stop();
@@ -417,8 +557,20 @@ Page({
       let resource = {
         localId: localId
       }
-      obj.method = 'success'
-      obj.parameters = resource;
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          localId: localId
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }];
       _this.webViewContext.postMessage(obj);
 
     }
@@ -483,11 +635,20 @@ Page({
           let element = app.global.voiceLocalIds[key];
           console.log(element);
           if (element.includes(filePath)) {
-            let res = {
-              localId: key
-            };
-            obj.method = 'success'
-            obj.parameters = res;
+            let data = {
+              code: 200,
+              message: '',
+              data: {
+                localId: key
+              }
+            }
+            obj.methods = [{
+              method: 'success',
+              parameters: data.data
+            }, {
+              method: 'complete',
+              parameters: data
+            }]
             _this.webViewContext.postMessage(obj);
             break;
           }
@@ -502,6 +663,10 @@ Page({
    */
   uploadVoice(obj) {
     //todo 需要在开发者后台将上传URL设置为HTTP安全域名
+    let path = app.global.localIds[obj.localId];
+    obj.filePath = path;
+    obj.fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+    obj.fileType = 'audio';
     this.uploadFile(obj)
   },
 
@@ -534,16 +699,11 @@ Page({
         let src = res.filePaths[0];
         obj.success = (res) => {
           _this._identifyInvoice(res);
-
         };
-        obj.fail = (res) => {
-          obj.method = 'fail';
-          obj.parameters = res;
-          _this.webViewContext.postMessage(obj);
-        }
         obj.src = src;
         _this._getImageUrl(obj);
-      }
+      },
+      fail: _this.getCommonObject().fail
     });
 
   },
@@ -557,11 +717,7 @@ Page({
     obj.success = (res) => {
       _this._identifyInvoice(res);
     };
-    obj.fail = (res) => {
-      obj.method = 'fail';
-      obj.parameters = res;
-      _this.webViewContext.postMessage(obj);
-    }
+    obj.fail = _this.getCommonObject().fail;
     _this._getImageUrl(obj);
   },
 
@@ -603,7 +759,7 @@ Page({
     let url = 'https://ocrapi-invoice.taobao.com/ocrservice/invoice';
     let appCode = obj.appCode || '397a546045454397bfa68c918df3bb18';
     let params = { "url": `${imageUrl}` }
-    dd.httpRequest({
+    let target = {
       url: url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -611,31 +767,64 @@ Page({
       },
       method: 'POST',
       data: JSON.stringify(params),
-      success: (res) => {
-        obj.method = 'success'
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
-      },
-      fail: res => {
-        obj.method = 'fail'
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
+    }
+    Object.assign(target, _this.getCommonObject(obj));
+    target.success = (res) => {
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          data: res.data.data
+        }
       }
-    });
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
+      _this.webViewContext.postMessage(obj);
+    }
+    dd.httpRequest(target);
   },
-  scanIDCard(obj) {
 
+  scanIDCard(obj) {
+    let _this = this;
+    dd.chooseImage({
+      count: 1,
+      success: (res) => {
+        let value = res.filePaths[0];
+        //todo 生成唯一的UUID
+        let localId = uuid(22);
+        app.global.localIds[localId] = value;
+        obj.image = localId;
+        _this.recognizeIDCard(obj);
+      },
+      fail: _this.getCommonObject(obj)
+    });
   },
   recognizeIDCard(obj) {
+    let _this = this;
+    obj.success = (res) => {
+      _this._identifyIDCard(res);
+    }
+    obj.fail = _this.getCommonObject(obj)
+    _this._getImageBase64(obj);
 
   },
   _identifyIDCard(obj) {
     let _this = this;
-    let { imgBase64 } = obj;
+    let { appCode, imgBase64, side } = obj;
     let url = 'https://dm-51.data.aliyun.com/rest/160601/ocr/ocr_idcard.json';
-    let appCode = obj.appCode || '397a546045454397bfa68c918df3bb18';
-    let params = { "image": `${imgBase64}` }
-    dd.httpRequest({
+    // let appCode = appCode || '397a546045454397bfa68c918df3bb18';
+    let params = {
+      "image": imgBase64,
+      "configure": {
+        side: side
+      }
+    }
+    let target = {
       url: url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -643,31 +832,66 @@ Page({
       },
       method: 'POST',
       data: JSON.stringify(params),
+    };
+    Object.assign(target, _this.getCommonObject(obj));
+    target.success = (res) => {
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          data: res.data
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
+      _this.webViewContext.postMessage(obj);
+    };
+    dd.httpRequest(target);
+  },
+
+
+  scanBankCard(obj) {
+    let _this = this;
+    dd.chooseImage({
+      count: 1,
       success: (res) => {
-        obj.method = 'success'
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
+        let value = res.filePaths[0];
+        //todo 生成唯一的UUID
+        let localId = uuid(22);
+        app.global.localIds[localId] = value;
+        obj.image = localId;
+        _this.recognizeBankCard(obj);
       },
-      fail: res => {
-        obj.method = 'fail'
+      fail: (res) => {
+        obj.method = 'fail';
         obj.parameters = res;
         _this.webViewContext.postMessage(obj);
       }
     });
-  },
-  scanBankCard(obj) {
-
   },
   recognizeBankCard(obj) {
+    let _this = this;
+    obj.success = (res) => {
+      _this._identifyBankCard(res);
+    };
+    obj.fail = _this.getCommonObject(obj);
+
+    _this._getImageBase64(obj);
 
   },
-  _identifyIDCard(obj) {
+  _identifyBankCard(obj) {
     let _this = this;
     let { imgBase64 } = obj;
-    let url = 'https://dm-51.data.aliyun.com/rest/160601/ocr/ocr_idcard.json';
+    let url = 'https://yhk.market.alicloudapi.com/rest/160601/ocr/ocr_bank_card.json'
+
     let appCode = obj.appCode || '397a546045454397bfa68c918df3bb18';
     let params = { "image": `${imgBase64}` }
-    dd.httpRequest({
+    let target = {
       url: url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -675,17 +899,222 @@ Page({
       },
       method: 'POST',
       data: JSON.stringify(params),
+    };
+    Object.assign(target, _this.getCommonObject(obj));
+    target.success = (res) => {
+      let data = {
+        code: 200,
+        message: '',
+        data: {
+          data: res.data
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: data.data
+      }, {
+        method: 'complete',
+        parameters: data
+      }]
+      _this.webViewContext.postMessage(obj);
+    }
+    dd.httpRequest(target);
+  },
+
+  _getImageBase64(obj) {
+    let src = app.global.localIds[obj.image];
+    dd.getImageInfo({
+      src: src,
       success: (res) => {
-        obj.method = 'success'
-        obj.parameters = res;
-        _this.webViewContext.postMessage(obj);
+        // {"width":200,"height":200,"path":"temp://1559014415464.image"}
+        let path = res.path;
+        let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+        // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
+        let imgType = 'png';
+        // let prefix = `data:image/${imgType};base64,`
+        dd.uploadFile({
+          url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
+          fileType: 'image',
+          fileName: fileName,
+          filePath: path,
+          success: (res) => {
+            let data = JSON.parse(res.data);
+            let base64ImgCode = data.data;
+            obj.imgBase64 = base64ImgCode;
+            obj.success && obj.success(obj)
+          },
+          fail: (res) => {
+            obj.fail && obj.fail(res)
+          }
+        });
       },
-      fail: res => {
-        obj.method = 'fail'
-        obj.parameters = res;
+
+    });
+  },
+  setStorage(obj) {
+    let { domain = 'domain.default', key, data } = obj;
+    if (typeof key != 'string') {
+      throw '"key" should be a string'
+      return;
+    }
+    dd.getStorage({
+      key: domain,
+      success: function (res) {
+        let structs = res.data || {};
+        structs[key] = data;
+        dd.setStorageSync({
+          key: domain,
+          data: structs
+        });
+
+      },
+      fail: function (res) {
+
+      }
+    });
+
+  },
+  getStorage(obj) {
+    let _this = this;
+    let { domain = 'domain.default', key } = obj;
+    dd.getStorage({
+      key: domain,
+      success: function (res) {
+        let result = res.data || {}
+        if (result.hasOwnProperty(key)) {
+          let data = {
+            code: 200,
+            message: '',
+            data: {
+              data: result[key]
+            }
+          }
+          obj.methods = [{
+            method: 'success',
+            parameters: data.data
+          }, {
+            method: 'complete',
+            parameters: data
+          }]
+          _this.webViewContext.postMessage(obj);
+        } else {
+          let resource = {
+            code: -1,
+            message: `not found data for key ${key}`,
+          }
+          obj.methods = [{
+            method: 'fail',
+            parameters: resource
+          }, {
+            method: 'complete',
+            parameters: resource
+          }]
+          _this.webViewContext.postMessage(obj);
+        }
+      },
+      fail: function (res) {
+        let resource = {
+          code: -1,
+          message: JSON.stringify(res)
+        }
+        obj.methods = [{
+          method: 'fail',
+          parameters: resource
+        }, {
+          method: 'complete',
+          parameters: resource
+        }]
         _this.webViewContext.postMessage(obj);
       }
     });
+  },
+  removeStorage(obj) {
+    let { domain = 'domain.default', key } = obj;
+    dd.getStorage({
+      key: domain,
+      success: function (res) {
+        let structs = res.data || {};
+        delete structs[key];
+        dd.setStorageSync({
+          key: domain,
+          data: structs
+        });
+      },
+
+    });
+
+  },
+  clearStorage(obj) {
+    let { domain = 'domain.default' } = obj;
+    dd.removeStorage({
+      key: domain,
+      success: function () { },
+      fail: res => {
+
+      }
+    });
+  },
+  getAuthCode(obj) {
+    let _this = this;
+    let target = this.getCommonObject();
+    target.success = (res) => {
+      let resource = {
+        code: 200,
+        message: '',
+        data: {
+          authCode: res.authCode
+        }
+      }
+      obj.methods = [{
+        method: 'success',
+        parameters: resource.data
+      }, {
+        method: 'complete',
+        parameters: resource
+      }]
+      _this.webViewContext.postMessage(obj);
+    }
+    dd.getAuthCode(target);
+  },
+  showAlert(obj) {
+    dd.alert({
+      content: obj.msg
+    });
+  },
+  getAppCode(obj) {
+    let resource = {
+      code: 200,
+      message: '',
+      data: {
+        appCode: app.global.appCode
+      }
+    }
+    obj.methods = [{
+      method: 'success',
+      parameters: resource.data
+    }, {
+      method: 'complete',
+      parameters: resource
+    }]
+    this.webViewContext.postMessage(obj);
+  },
+  addPushListener(obj) {
+    let pushMsg = this.data.pushMsg;
+    let resource = {
+      code: 200,
+      message: '',
+      data: {
+        msg: pushMsg
+      }
+    }
+    obj.methods = [{
+      method: 'success',
+      parameters: resource.data
+    }, {
+      method: 'complete',
+      parameters: resource
+    }]
+    this.webViewContext.postMessage(obj);
   },
 
 });

@@ -12,6 +12,7 @@ App({
     debug: false,
     localIds: {},
     voiceLocalIds: {},
-    voiceCurrentTimes: {}
+    voiceCurrentTimes: {},
+    appCode:''
   }
 });

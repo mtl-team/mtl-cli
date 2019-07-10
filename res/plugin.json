@@ -1,34 +1,25 @@
 {
-    "compat":{
-        "url":"cordova-plugin-compat",
-        "desc":"compat插件。"
-    },
-    "file":{
-        "url":"cordova-plugin-file",
-        "desc":"file插件，文件操作。"
-    },
-    "http":{
-        "url":"cordova-plugin-http",
-        "desc":"http插件，用于http。"
-    },    
-    "camera":{
-        "url":"cordova-plugin-camera",
-        "desc":"camera插件，相机。"
-    },
-    "zbar":{
-        "url":"cordova-plugin-summer-zbar",
-        "desc":"zbar插件，二维码扫描升级版。"
-    },
-    "device":{
-        "url":"cordova-plugin-device",
-        "desc":"device插件，获取插件信息。"
-    },
-    "upload":{
-        "url":"summer-plugin-upload",
-        "desc":"upload插件，用于文件上传。"
-    },    
-    "sqlite":{
-        "url":"cordova-sqlite-plugin",
-        "desc":"sqlite插件，数据插件"
-    }
+    "cordovaPlugins": [
+        {
+            "name": "mtl-plugin-faceverify",
+            "type": "cordova"
+        },
+        {
+            "name": "mtl-plugin-terminal",
+            "type": "cordova"
+        },
+        {
+            "name": "mtl-plugin-umeng",
+            "type": "cordova"
+        },
+        {
+            "name": "mtl-plugin-vui",
+            "type": "cordova",
+            "parameters": [
+                "APPID=11152975",
+                "APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
+                "SECRETKEY=iBzBh459NnqViqaLQUvNF88xi2dqj0U1"
+            ]
+        }
+    ]
 }
