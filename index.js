@@ -37,7 +37,7 @@ program
 
 program
   .command('set-git').alias('sg') // 命令简写
-  .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。\n\r 参数 为 url ，单独配置仓库地址；\n\r 参数为 branch，单独配置git分支；\n\r 参数为 user，单独配置账号名称；\n\r 参数为 password ，单独配置账号密码。 ')
+  .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。 ')
   .action(function () {
     mSetgit.setGit();
   });   
