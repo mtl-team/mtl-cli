@@ -36,19 +36,7 @@ const startList = [{
   }
 }];
 
-var buildType = "uploadZip";
-const buildTypePrompt = {
-  type: 'list',
-  message: '请确认云构建方式：1、默认是git方式云构建，开发者通过命令行 mtl set-git 配置git 仓库以及账号信息就可以实现构建打包；2、另一种是源码上传云构建server。',
-  name: 'buildType',
-  choices: [
-    "git",
-    "uploadZip"
-  ],
-  filter: function (val) { // 使用filter将回答变为小写
-    return val;
-  }
-};
+
 
 class mtlBuild {
   static build(buildPlatform) {
@@ -63,24 +51,21 @@ class mtlBuild {
       return;
     }
 
-    // f1(buildPlatform).then(function (buildType,buildPlatform) {
-    //   return f2(buildType,buildPlatform);
-    // })
-    // 选择云构建的方式
-    // inquirer.prompt(buildTypePrompt).then(answers => {
+    console.log('当前构建方式：' + conf.get('buildType'));
+    if (conf.get('buildType') == "git") {
 
-    //   console.log('构建方式：' + answers.buildType);
-    //   buildType = answers.buildType;
-    //   if (answers.buildType == "git") {
+      if (checkProjectGitConfig() == "error") {
+        return;
+      }
+      selectedBuildPlatform(buildPlatform, "git");
+    } else if (conf.get('buildType') == "uploadZip") {
+      zipAndUploadcloud(buildPlatform, "uploadZip");
+    }
 
-    //     if (checkProjectGitConfig() == "error") {
-    //       return;
-    //     }
-        // selectedBuildPlatform(buildPlatform, buildType)
-    //   } else {
-        zipAndUploadcloud(buildPlatform, buildType)
-    //   }
-    // });
+    else {
+      zipAndUploadcloud(buildPlatform, "uploadZip");
+    }
+
 
   }
 
@@ -132,36 +117,6 @@ class mtlBuild {
 
 }
 
-function f1(buildPlatform) {
-  var p1 = new Promise(function (resolve, reject) {
-    try {
-      inquirer.prompt(buildTypePrompt).then(answers => {
-        console.log('构建方式：' + answers.buildType);
-        buildType = answers.buildType;
-        resolve(buildType,buildPlatform);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-
-  });
-  return p1;
-}
-function f2(buildType,buildPlatform) {
-  var p2 = new Promise(function (resolve, reject) {
-    console.log("构建方式："+buildType);
-    if (buildType == "git") {
-      if (checkProjectGitConfig() == "error") {
-        return;
-      }
-      selectedBuildPlatform(buildPlatform, buildType)
-    } else {
-      zipAndUploadcloud(buildPlatform, buildType)
-    }
-    
-  });
-  return p2;
-}
 
 
 function androidInstall() {
@@ -169,7 +124,7 @@ function androidInstall() {
   var result = JSON.parse(fs.readFileSync(file));
   var projectName = result.config.projectName;
 
-  console.log('android 工程运行展示中，请先打开模拟器...');
+  console.log('android 工程运行展示中，请先连接android手机或者打开模拟器...');
 
   let pwd = shell.pwd().split(path.sep).join('/');
   var runProjPath = pwd + "/output/android/release/export/" + projectName + ".apk"
@@ -189,14 +144,14 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   var projectName = result.config.projectName;
   var appName = result.config.appName;
 
-if(selectedPlatform == "ios"){
-  console.log('iOS 构建ipa包的描述文件和证书，请先在云构建服务器上传！！！');
-  console.log('iOS 构建需要的描述文件和证书，会关联iOS bundleID！！！');
-  console.log('当前构建 bundleID为：'+result.config.bundleID);
-  console.log("如果没有设置bundleID ，会使用系统默认的描述文件和证书去构建！！！");
-  console.log("设置bundleID命令：mtl set-bundleID ！！！");
+  if (selectedPlatform == "ios") {
+    console.log('iOS 构建ipa包的描述文件和证书，请先在云构建服务器上传！！！');
+    console.log('iOS 构建需要的描述文件和证书，会关联iOS bundleID！！！');
+    console.log('当前构建 bundleID为：' + result.config.bundleID);
+    console.log("如果没有设置bundleID ，会使用系统默认的描述文件和证书去构建！！！");
+    console.log("设置bundleID命令：mtl set-bundleID ！！！");
 
-}
+  }
 
   var gitUrl = result.config.gitUrl;
 
@@ -422,18 +377,6 @@ function updateConfigFileToRelease() {
  */
 function checkProjectGitConfig() {
 
-  if ((conf.get('git-url') == "" || conf.get('git-url') == undefined)
-    && (conf.get('git-branch') == "" || conf.get('git-url') == undefined)
-    && (conf.get('git-user') == "" || conf.get('git-url') == undefined)
-    && (conf.get('git-password') == "" || conf.get('git-url') == undefined)) {
-    return utils.reportError("未找到工程源码配置信息,请执行: mtl set-git 命令配置好git托管的配置信息后，再进行build。");
-  } else if (conf.get('git-url') == "" || conf.get('git-url') == undefined) {
-    return utils.reportError("请执行: mtl set-git url 命令配置好git地址后，再进行build。");
-  } else if (conf.get('git-user') == "" || conf.get('git-user') == undefined) {
-    return utils.reportError("请执行: mtl set-git user 命令配置好git账号后，再进行build。");
-  } else if (conf.get('git-password') == "" || conf.get('git-password') == undefined) {
-    return utils.reportError("请执行: mtl set-git password 命令配置好git账号密码后，再进行build。");
-  }
   console.log("工程源码仓库地址：" + conf.get('git-url'));
   if (conf.get('git-branch') == "") {
     console.log("工程源码仓库分支为默认主干：origin/master");

@@ -10,7 +10,13 @@
         },
         {
             "name": "mtl-plugin-umeng",
-            "type": "cordova"
+            "type": "cordova",
+            "parameters" :[
+                "WEXIN-APPKEY=wxe1406439b46007d4",
+                "WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
+                "DING-APPKEY=dingoaokqduou0l8poumhz",
+                "UMENG-APPKEY=5cb5b38e570df31281000824"
+            ]
         },
         {
             "name": "mtl-plugin-vui",

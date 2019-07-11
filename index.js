@@ -16,7 +16,7 @@ var mDebug = require('./src/mtl_debug');
 var mPreview= require('./src/mtl_preview');
 var mPluginManger = require('./src/mtl_plugin');
 var mSetgit = require('./src/mtl_setgit');
-
+var mSetBuildType = require('./src/mtl_setBuildType');
 var mSetStartPage = require('./src/mtl_setStartPage');
 const getAutoUpdate = require('./src/update');
 
@@ -27,14 +27,6 @@ const getAutoUpdate = require('./src/update');
 program
   .version(require('./package').version)
 
-// program
-//   .command('create [appname] [template]').alias('c') // 命令简写
-//   .description('根据模板创建项目。\nappname: 工程名称 ；\ntemplate: 模板名称；\n\r使用mtl template list查看模板')
-//   .action(function (appname,template) {
-//     mCreate.createApp(appname,template);
-//   });
-
-
   // create 开发者中心   c
   program
   .command('create [appname] [template]').alias('c') // 命令简写
@@ -44,11 +36,17 @@ program
   });
 
 program
-  .command('set-git [param]').alias('sg') // 命令简写
+  .command('set-git').alias('sg') // 命令简写
   .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。\n\r 参数 为 url ，单独配置仓库地址；\n\r 参数为 branch，单独配置git分支；\n\r 参数为 user，单独配置账号名称；\n\r 参数为 password ，单独配置账号密码。 ')
-  .action(function (param) {
-    mSetgit.setGit(param);
+  .action(function () {
+    mSetgit.setGit();
   });   
+  program
+  .command('set-buildType').alias('s-bt') // 命令简写
+  .description('设置对工程源码进行云构建打包方式： 1 源码上传 | 2 git   ')
+  .action(function () {
+    mSetBuildType.setBuildType();
+  }); 
 
 // program
 //   .command('pushRemote').alias('psr') // 命令简写
@@ -73,14 +71,14 @@ program
 
 program
   .command('login [username] [password]').alias('l') // 命令简写
-  .description('login to yonyou cloud build')
+  .description('登录开发中心')
   .action(function (username, password) {
     mLogin.login(username, password);
   });
 
 program
   .command('config [key] [value]').alias('conf') // 命令简写
-  .description('Setting your environment variables')
+  .description('设置mtl-cli环境变量')
   .action(function (key, value) {
     mConfig.config(key, value);
   });
