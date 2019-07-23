@@ -96,27 +96,27 @@ function chokidarWatch() {
             console.log("目的修改文件的相对文件路径：" + relativeFileDir);
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
                 // copyAndDebugWeixin("false");
-                let absoluteFileDir = pwd+"/output/wx/debug"+relativeFileDir;
+                let absoluteFileDir = pwd + "/output/wx/debug" + relativeFileDir;
                 console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
 
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 copyAndInstallDebugIOS("false");
-                let absoluteFileDir = pwd+"/output/ios/debug"+relativeFileDir;
+                let absoluteFileDir = pwd + "/output/ios/debug" + relativeFileDir;
                 console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
-                let absoluteFileDir = pwd+"/output/android/debug"+relativeFileDir;
+                let absoluteFileDir = pwd + "/output/android/debug" + relativeFileDir;
                 console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
                 // copyAndInstallDebugAndroid("false");
             }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                let absoluteFileDir = pwd+"/output/dd/debug"+relativeFileDir;
+                let absoluteFileDir = pwd + "/output/dd/debug" + relativeFileDir;
                 console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
                 // copyAndDebugDD("false");
             }
 
@@ -141,26 +141,26 @@ function chokidarWatch() {
             let pwd = shell.pwd().split(path.sep).join('/');
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
                 // copyAndDebugWeixin("false");
-                let absoluteFileDir = pwd+"/output/wx/debug/app/project.json";
+                let absoluteFileDir = pwd + "/output/wx/debug/app/project.json";
                 console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
                 // copyAndInstallDebugIOS("false");
-                let absoluteFileDir = pwd+"/output/ios/debug/app/project.json";
+                let absoluteFileDir = pwd + "/output/ios/debug/app/project.json";
                 console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
                 // copyAndInstallDebugAndroid("false");
-                let absoluteFileDir = pwd+"/output/android/debug/app/project.json";
+                let absoluteFileDir = pwd + "/output/android/debug/app/project.json";
                 console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
             }
             if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                let absoluteFileDir = pwd+"/output/dd/debug/app/project.json";
+                let absoluteFileDir = pwd + "/output/dd/debug/app/project.json";
                 console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
-                 fs.copySync(path, absoluteFileDir);
+                fs.copySync(path, absoluteFileDir);
                 // copyAndDebugDD("false");
             }
             //  更新云端project.json 文件
@@ -402,7 +402,15 @@ function copyAndDebugWeixin(isStartNode) {
 
     // 拷贝 添加页面到 wx/proj  目录下
     // fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.wx/', wxproj);
+
+    if (!fs.existsSync(wxproj + "/app.json")) {
+        fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.wx/', wxproj);
+
+        console.log("WX proj 工程创建完毕！");
+    } else {
+        console.log("WX proj 工程已经存在！");
+    }
+
 
     let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     fs.ensureDirSync(projPath);
@@ -444,7 +452,14 @@ function copyAndDebugDD(isStartNode) {
     fs.ensureDirSync(ddproj);
 
     // 拷贝 添加页面到 dd/proj  目录下
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', ddproj);
+
+
+    if (!fs.existsSync(ddproj + "/app.json")) {
+        fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', ddproj);
+        console.log("DD proj 工程创建完毕！");
+    } else {
+        console.log("DD proj 工程已经存在！");
+    }
 
     let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
     fs.ensureDirSync(projPath);
@@ -998,7 +1013,7 @@ function formatJson(data) {
 
 //开始调试微信Web小程序
 function startWX() {
-    console.log("准备开始生成微信工程...");
+    // console.log("准备开始生成微信工程...");
     // let path = getPathByPlatform(utils.Platform.WEIXIN);
     // let objPath = "./" + path +"/";
     // let wxproj = objPath + "../proj/";
