@@ -245,3 +245,15 @@ mtl config key value
 //设置git的地址
 mtl config git-url http://git.yonyou.com/xxx/xxx/
 ```
+# FAQ 
+### 一 、为什么启动页不能替换？
+
+```
+答：
+ 1、对修改project.json文件的startPage项没有保存成功。
+ 2、修改的目录以及文件名称与实际工程的目录和文件名称不一致。
+ 3、 如果是用git方式进行构建工程，修改的工程文件没有更新到git 仓库。
+```
+
+
+
