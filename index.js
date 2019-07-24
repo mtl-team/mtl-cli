@@ -19,7 +19,7 @@ var mSetgit = require('./src/mtl_setgit');
 var mSetBuildType = require('./src/mtl_setBuildType');
 var mSetStartPage = require('./src/mtl_setStartPage');
 const getAutoUpdate = require('./src/update');
-
+var mHelp = require('./src/mtl_help');
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
 
 // getAutoUpdate();
@@ -180,6 +180,13 @@ program
   .description('清除用户信息 。')
   .action(function () { // 执行命令的的函数
     mConfig.clearUserInfo();
+  })
+
+  program
+  .command('readme') // 清除用户信息
+  .description('帮助文档')
+  .action(function () { // 执行命令的的函数
+    mHelp.helpInfo();
   })
 
 program.parse(process.argv)
