@@ -199,6 +199,8 @@ var hasTemplet = function (template) {
     return fse.existsSync(template+ "/project.json");
 }
 
+
+
 /**
  * MTL工程 个人版  创建工程前准备
  * @param {String} appname 
@@ -245,8 +247,14 @@ var createBegin = function (appname,template) {
     //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
     //需要这些文件和目录存在
 
-    if(template=="mtl-react-demo"){
+    if(template.indexOf("mtl-react")>=0){
+   
+
         fse.copySync('./'+template , appname );
+        fse.removeSync(appname+"/.git"); 
+        fse.removeSync(appname+"/.gitignore"); 
+        fse.removeSync(appname+"/LICENSE"); 
+
     }else{
         fse.copySync('./'+template+ '/app', appname +'/app');
     }
