@@ -36,7 +36,14 @@ const startList = [{
   }
 }];
 
-
+/**
+* 执行build react 工程构建
+*/
+function buildReactProject() {
+  return new Promise((resolve, reject) => {
+      shell.exec(" yarn  build ");
+  })
+}
 
 class mtlBuild {
   static build(buildPlatform) {
@@ -50,6 +57,31 @@ class mtlBuild {
     if (utils.checkProjectDir() == "error") {
       return;
     }
+    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+
+    console.log('technologyStack：'+proj.config.technologyStack);
+
+    if (proj.config.technologyStack == "react") {
+
+        console.log('react工程。');
+        // shell.exec("yarn build");
+        (async function () {
+            try {
+                await buildReactProject();
+            } catch (e) {
+                console.log(e)
+            }
+        })();
+        if (fs.existsSync("./build")) {
+            fs.ensureDirSync('./app');
+            fs.copySync('./build', './app');
+        } else {
+            console.log('react工程build失败。');
+            return;
+        }
+
+    }
+
 
     console.log('当前构建方式：' + conf.get('buildType'));
     if (conf.get('buildType') == "git") {
@@ -181,11 +213,7 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
 
   } else {
     form.append('gitUrl', "");
-
     form.append('gitBranch', '');
-
-
-
     form.append('gitUser', "");
     form.append('gitPassword', "");
 
