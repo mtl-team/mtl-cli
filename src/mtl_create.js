@@ -244,7 +244,13 @@ var createBegin = function (appname,template) {
     fse.ensureDirSync(appname);
     //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
     //需要这些文件和目录存在
-    fse.copySync('./'+template+ '/app', appname +'/app');
+
+    if(template=="mtl-react-demo"){
+        fse.copySync('./'+template , appname );
+    }else{
+        fse.copySync('./'+template+ '/app', appname +'/app');
+    }
+  
     //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
     fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
     console.log('拷贝文件 success');
