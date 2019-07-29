@@ -250,17 +250,19 @@ var createBegin = function (appname,template) {
     if(template.indexOf("mtl-react")>=0){
    
 
-        fse.copySync('./'+template , appname );
+        // fse.copySync('./'+template , appname );
+        fse.moveSync('./'+template , appname );
         fse.removeSync(appname+"/.git"); 
         fse.removeSync(appname+"/.gitignore"); 
         fse.removeSync(appname+"/LICENSE"); 
 
     }else{
         fse.copySync('./'+template+ '/app', appname +'/app');
+        fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
     }
   
     //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
-    fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
+   
     console.log('拷贝文件 success');
 
     // 删除模板文件
