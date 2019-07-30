@@ -30,49 +30,11 @@ const debugList = [{
         return val.toLowerCase();
     }
 }];
-
-
-/**
-* 执行build react 工程构建
-*/
-function buildReactProject() {
-    return new Promise((resolve, reject) => {
-        shell.exec(" yarn  build ");
-    })
-}
-
 var start = function (platform) {
 
     if (!utils.isProject()) {
         return utils.reportError("不是MTL工程目录")
     }
-
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-
-    console.log('technologyStack：'+proj.config.technologyStack);
-
-    if (proj.config.technologyStack == "react") {
-
-        console.log('react工程。');
-        // shell.exec("yarn build");
-        (async function () {
-            try {
-                await buildReactProject();
-            } catch (e) {
-                console.log(e)
-            }
-        })();
-        if (fs.existsSync("./build")) {
-            fs.ensureDirSync('./app');
-            fs.copySync('./build', './app');
-        } else {
-            console.log('react工程build失败。');
-            return;
-        }
-
-    }
-
-
     let plat = utils.checkPlatform(platform);
     if (platform == undefined || plat == "error") {
         inquirer.prompt(debugList).then(answers => {

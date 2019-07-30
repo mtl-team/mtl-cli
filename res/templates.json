@@ -1,6 +1,6 @@
 {
     "names":[
-        "mtl-empty","mtl-demo","mtl-react-empty"
+        "mtl-empty","mtl-demo"
     ],
 
     "mtl-empty":{
@@ -10,9 +10,5 @@
     "mtl-demo":{
         "url":"https://github.com/mtl-team/mtl-demo.git",
         "desc":"一个演示用的MTL工程"
-    },
-    "mtl-react-empty":{
-        "url":"http://git.yonyou.com/xugangm/mtl-react-empty.git",
-        "desc":"一个空的MTL-REACT工程"
     }
 }
