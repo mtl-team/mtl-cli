@@ -39,12 +39,11 @@ const promptList = [{
 var createApp = async function (an,tl) {
 
     if(!an) {
-        console.log("必须录入工程名称")
-        return utils.reportError("mtl lc appname");
+        return utils.reportError(" 必须录入工程名称 ，例如 ：mtl c demo");
     }
     if(fse.existsSync(an)){
-        console.log("本地已存在- "+ an +" -工程名称")
-        return utils.reportError("执行： dir 查看目录文件夹信息。");
+      
+        return utils.reportError("本地已存在- "+ an +" -工程 ,同一目录下工程不能重名！！！");
     }
     if(conf.get('username')){
         //开发者中心
@@ -247,26 +246,14 @@ var createBegin = function (appname,template) {
     //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
     //需要这些文件和目录存在
 
-    if(template.indexOf("mtl-react")>=0){
-   
-
-        // fse.copySync('./'+template , appname );
-        fse.moveSync('./'+template , appname );
-        fse.removeSync(appname+"/.git"); 
-        fse.removeSync(appname+"/.gitignore"); 
-        fse.removeSync(appname+"/LICENSE"); 
-
-    }else{
-        fse.copySync('./'+template+ '/app', appname +'/app');
-        fse.copySync('./'+template+ '/project.json', appname+'/project.json' );
-    }
-  
+    // fse.copySync('./'+template , appname );
+    fse.renameSync('./'+template , appname );
+    fse.removeSync(appname+"/.git"); 
+    fse.removeSync(appname+"/.gitignore"); 
+    fse.removeSync(appname+"/LICENSE"); 
     //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
-   
-    console.log('拷贝文件 success');
-
     // 删除模板文件
-    fse.removeSync(template);
+    // fse.removeSync(template);
 
     console.log("开始修改本地配置 - " + appname);
     updateConfig(appname);
