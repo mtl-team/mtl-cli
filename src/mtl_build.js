@@ -98,7 +98,6 @@ class mtlBuild {
       zipAndUploadcloud(buildPlatform, "uploadZip");
     }
 
-
   }
 
   static start(startPlatform) {
@@ -179,11 +178,20 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   if (selectedPlatform == "ios") {
     console.log('iOS 构建ipa包的描述文件和证书，请先在云构建服务器上传！！！');
     console.log('iOS 构建需要的描述文件和证书，会关联iOS bundleID！！！');
-    console.log('当前构建 bundleID为：' + result.config.bundleID);
+    console.log('当前构建 bundleID：' + result.config.bundleID);
     console.log("如果没有设置bundleID ，会使用系统默认的描述文件和证书去构建！！！");
     console.log("设置bundleID命令：mtl set-bundleID ！！！");
-
+    console.log('iOS项目工程编译中，请稍候  🚀 🚀 🚀 ...');
+  }else{
+    console.log('android 构建apk包的签名文件，请先在云构建服务器上传！！！');
+    console.log('android 构建签名文件，会关联android packageID ！！！');
+    console.log('当前构建 packageID：' + result.config.packageName);
+    console.log("如果没有设置packageID ，会使用系统默认的签名文件去构建！！！");
+    console.log("设置packageID命令：mtl set-packageName ！！！");
+    console.log('android项目工程编译中，请稍候  🚀 🚀 🚀 ...');
   }
+
+
 
   var gitUrl = result.config.gitUrl;
 
@@ -423,7 +431,6 @@ function selectedBuildPlatform(buildPlatform, buildType) {
   if (buildPlatform == undefined) {
     inquirer.prompt(buildList).then(answers => {
       console.log('选用平台：' + answers.platform); // 返回的结果
-      console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
       if (answers.platform == "ios") {
         cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299', buildType);
       } else {
@@ -432,12 +439,9 @@ function selectedBuildPlatform(buildPlatform, buildType) {
     });
   } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
 
-    console.log('iOS 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
 
     cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299', buildType);
   } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
-
-    console.log('android 项目工程编译中，请稍候  🚀 🚀 🚀 ...');
 
     cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump', buildType);
   } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
@@ -447,7 +451,6 @@ function selectedBuildPlatform(buildPlatform, buildType) {
   } else {
     inquirer.prompt(buildList).then(answers => {
       console.log('选用平台：' + answers.platform); // 返回的结果
-      console.log(answers.platform + '项目工程编译中，请稍候  🚀 🚀 🚀 ...');
       if (answers.platform == "ios") {
         cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299', buildType);
       } else {
