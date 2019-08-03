@@ -2,7 +2,20 @@
     "cordovaPlugins": [
         {
             "name": "mtl-plugin-faceverify",
-            "type": "cordova"
+            "type": "cordova",
+            "parameters": [
+                "LICENSEID_IOS=12312",
+                "LICENSEID_ANDROID=mtl-android-face-android",
+                "BASE_URL=http://172.20.14.154:80",
+                "PUB_KEY=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJwnm0t5GdNp/Q7fEM+jGMoxK/1S0r0KaMF2vsX2cXRRkb7fGo/uXhtbrDqjzvoqF954idr3vRRJ8jIC7BNxbhSoETIpxqr78Yup5rF6HlA8mEOZWavPNQ6Y1zz+uRS7QV2GrMEy2D/Wdrru6TWFVfhiKM2RvavrdncinYCSmxqQIDAQAB"
+            ]
+        },
+        {
+            "name": "mtl-plugin-bdlocation",
+            "type": "cordova",
+            "parameters": [
+                "BDMAP_KEY_ANDROID=hvontoOPpe0YWDgGVrtLHel8mSm6ibh"
+            ]
         },
         {
             "name": "mtl-plugin-terminal",
@@ -11,7 +24,7 @@
         {
             "name": "mtl-plugin-umeng",
             "type": "cordova",
-            "parameters" :[
+            "parameters": [
                 "WEXIN-APPKEY=wxe1406439b46007d4",
                 "WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
                 "DING-APPKEY=dingoaokqduou0l8poumhz",
