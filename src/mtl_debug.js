@@ -46,8 +46,11 @@ var start = function (platform) {
     if (!utils.isProject()) {
         return utils.reportError("不是MTL工程目录")
     }
+
+
+
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    console.log('technologyStack：'+proj.config.technologyStack);
+    console.log('technologyStack：' + proj.config.technologyStack);
     if (proj.config.technologyStack == "react") {
 
         console.log('react工程。');
@@ -286,8 +289,17 @@ function startIOS() {
 
     //     cloudBuildAndUnzip("ios");
     // }else{
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
+    // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
     // 临时530演示使用debug.app end
+
+   //  第一次启动debug 开始下载debug 程序
+   if (!fs.existsSync(pwd + "/iOSDebug/debug.app")) {
+
+    console.log("开始下载android调试程序,请稍后...");
+    let debugLibs = require("../res/debug.json");
+    shell.exec("git clone " + debugLibs.iOSDebug + " --progress ");
+}
+
     copyAndInstallDebugIOS("true");
     // }
 
@@ -314,11 +326,20 @@ function startAndroid() {
     //     }
 
     //     cloudBuildAndUnzip("android");
-    // }else{
+    // }
     // 临时530演示使用debug.app end
+
+
+    //  第一次启动debug 开始下载debug 程序
+    if (!fs.existsSync(pwd + "/androidDebug/debug.apk")) {
+
+        console.log("开始下载android调试程序,请稍后...");
+        let debugLibs = require("../res/debug.json");
+        shell.exec("git clone " + debugLibs.androidDebug + " --progress ");
+    }
     chokidarWatch();
     copyAndInstallDebugAndroid("true");
-    // }
+
 }
 
 
@@ -345,9 +366,18 @@ function copyAndInstallDebugIOS(isStartNode) {
     let path = getPathByPlatform(utils.Platform.IOS);
     let objPath = "./" + path + "/";
     copyProjectToOutput(objPath, utils.Platform.IOS);
+    var debugApp = "./" + path + "/../debug.app";
+    
+    if (!fs.existsSync(debugApp)) {
+        let pwd = shell.pwd().split(path.sep).join('/');
+        // let cloudDebugApkPath = pwd + "/output/android/debug/export/debug.apk";
+        fs.copySync(pwd + "/iOSDebug/debug.app", debugApp);
+        // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/android/debug.apk', debugApk);
+    }
+
     if (isStartNode == "true") {
         shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
-        let debugApp = "./" + path + "/../debug.app";
+        
         // if(!fs.existsSync(debugApp)) {
         console.log("开始安装调试应用");
         // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
@@ -386,26 +416,16 @@ function copyAndInstallDebugAndroid(isStartNode) {
 
     if (!fs.existsSync(debugApk)) {
         let pwd = shell.pwd().split(path.sep).join('/');
-        let cloudDebugApkPath = pwd + "/output/android/debug/export/debug.apk";
-        // let cmd = "cp -rf "+cloudDebugApkPath+ " " + debugApk;
+        // let cloudDebugApkPath = pwd + "/output/android/debug/export/debug.apk";
+       
 
-        // fs.copySync(cloudDebugApkPath, debugApk);
-        fs.copySync(__dirname.split(path.sep).join('/') + '/../res/android/debug.apk', debugApk);
-
+        fs.copySync(pwd + "/androidDebug/debug.apk", debugApk);
+        // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/android/debug.apk', debugApk);
+    }
 
         console.log("开始安装debug 调试程序");
-        //shell.exec(cmd);
-        shell.exec("adb install -r " + debugApk);
-        // shell.exec(cmdRunDebugApk);
-        // console.log("正在为第一次安装准备文件");
-        // setTimeout(function() {
-        //     runDebugAndroid(objPath);
-        // },5000);
 
-
-        // } else {
-        //     // runDebugAndroid(objPath);
-    }
+        shell.exec("adb install -r " + debugApk);   
 
     if (isStartNode == "true") {
         let appJs = createAppJsFile(path);
