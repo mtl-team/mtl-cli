@@ -77,7 +77,7 @@ program
   });
 
 program
-  .command('config [key] [value]').alias('conf') // 命令简写
+  .command('set-config [key] [value]').alias('conf') // 命令简写
   .description('设置mtl-cli环境变量')
   .action(function (key, value) {
     mConfig.config(key, value);
