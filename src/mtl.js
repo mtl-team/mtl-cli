@@ -49,14 +49,14 @@ var Utils = function () {
 
   //检查工程目录
   this.checkProjectDir = function() {
-    console.log("！！！请一定进入当前工程跟目录！！！");
+    console.log("！！！请一定进入当前工程根目录！！！");
     var isexist = fs.existsSync("project.json")
     if (isexist) {
       let pwd = shell.pwd().split(path.sep).join('/');
-      console.log("当前工程跟目录："+pwd);
+      console.log("当前工程根目录："+pwd);
       return this.SUCCESS;
     }else {
-      console.log("当前目录不是工程跟目录 😢 😢 😢 ！！！")
+      console.log("当前目录不是工程根目录 😢 😢 😢 ！！！")
       return this.ERROR;
     }
 }

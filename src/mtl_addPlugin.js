@@ -20,7 +20,9 @@ const promptCheckbox = [{
 }];
 
 var addPlugin = function () {
-
+    if (!utils.isProject()) {
+        return utils.reportError("不是MTL工程目录")
+    }
     var result = JSON.parse(fs.readFileSync("./project.json").toString());
 
     var defPlugins = result.config.cordovaPlugins;

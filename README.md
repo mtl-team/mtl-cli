@@ -169,7 +169,7 @@ mtl debug [ iOS | Android | WX | DD]
 ```
 ### debug 调试开发准备和功能说明：
 + 配置pc的host 文件如下： 添加“ 127.0.0.1       mobile.yyuap.com ”  ；
-+ android 需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 172.0.0.1:7555 （win），adb connect 172.0.0.1:5555 （mac）。如果debug过一次了没有成功，可以把工程根目录下的output/android/debug 目录删除 ，重新执行命令行debug 。如果 报错 error: more than one device and emulator ，可以用adb devices 命令看看是不是存在多个。发现还真是多个设备，那就需要为ADB命令指定设备的序列号了，
++ android 需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 127.0.0.1:7555 （win），adb connect 127.0.0.1:5555 （mac）。如果debug过一次了没有成功，可以把工程根目录下的output/android/debug 目录删除 ，重新执行命令行debug 。如果 报错 error: more than one device and emulator ，可以用adb devices 命令看看是不是存在多个。发现还真是多个设备，那就需要为ADB命令指定设备的序列号了，
 adb -s emulator-5554 shell
 也就是给命令加上-s的参数就可以了；
 + iOS 需要搭建好xcode 开发环境；

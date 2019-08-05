@@ -19,5 +19,10 @@ const config = {
     CONFIG_PREVIEW_UPLOAD_APP_API: '/mtldebugger/mtl/file/uploadApp',
     CONFIG_PREVIEW_UPLOAD_FILE_API: '/mtldebugger/mtl/file/uploadZip',
     CONFIG_PREVIEW_CREATE_QR_API: '/mtldebugger/mtl/qr/build',
+
+    CONFIG_PROJECT_TEMPLATE_PATH: '/Users/xugang/Desktop/yonyou/cli/model/localResource/',
+    CONFIG_PAGE_TEMPLATE_PATH: '/Users/xugang/Desktop/yonyou/cli/model/localResource/mtlPages',
+
+
 };
 module.exports = config;
