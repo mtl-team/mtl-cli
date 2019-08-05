@@ -318,6 +318,7 @@ function changeTheAppName(projfile, appname) {
 
     // fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
     return utils.SUCCESS;
+    
 }
 
 //下载工程模版
@@ -537,4 +538,3 @@ async function  getTempList(){
 exports.createApp = createApp
 exports.pushRemote = pushRemote
 exports.configGitUrl = configGitUrl
-exports.test = formatJson
