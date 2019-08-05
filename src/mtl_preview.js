@@ -267,7 +267,7 @@ function startIOS() {
 
     //     cloudBuildAndUnzip("ios");
     // }else{
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
+    // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
     // 临时530演示使用debug.app end
     copyAndInstallDebugIOS("true");
     // }
