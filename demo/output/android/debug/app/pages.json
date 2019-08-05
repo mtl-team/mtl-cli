@@ -1,0 +1,35 @@
+{
+    "platforms": [
+        {
+            "platform": "wx",
+            "pages": {
+                "login": {
+                    "url": "/pages/index/index"
+                },
+                "index": {
+                    "url": "/pages/index/index"
+                }
+            }
+        },
+        {
+            "platform": "ios",
+            "pages": {
+                "login": {
+                    "url" : "index/platform",
+                    "class": "LoginViewController"
+                },
+                "index": {
+                    "class": "HomeViewController"
+                }
+            }
+        },
+        {
+            "platform": "android",
+            "pages": {
+                "audio": {
+                    "class": "com.yonyou.myapis.AudioActivity"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,138 @@
+{
+
+	"config": {
+
+		
+		"appName": "demo",
+
+		"packageName": "com.yonyou.demo",
+
+		"bundleID": "com.yonyou.uap.mobile5",
+
+		"projectName": "demo",
+
+		"versionName": "1.0.0",
+
+		"versionCode": "100",
+
+		"versionBuild": "1.0.0",
+
+		"startPage": "welcome/index.html",
+
+		"debuggerEnable": "false",
+
+		"reinforcement": "false",
+
+		"sandbox": "false",
+
+		"targetDevice": "handset",
+
+		"statusBarTheme": "summer.Animations.NoTitleBar.FullScreen",
+
+		"errorUrl": "",
+
+		"urlScheme": "iosMtlScheme",
+
+		"queriesSchemes": "",
+
+		"androidScheme": "",
+
+		"androidMinSdkVersion": "19",
+
+		"isLibraryCompilation": "false",
+
+		"ddAppCode": "dingnlb2wikil7pldytf",
+
+		"wxAppCode": "dingnlb2wikil7pldytf",
+
+		"cordovaPlugins": [
+
+			{
+
+				"name": "mtl-plugin-faceverify",
+
+				"type": "cordova",
+
+				"parameters": [
+
+					"LICENSEID_IOS=12312",
+
+					"LICENSEID_ANDROID=mtl-android-face-android",
+
+					"BASE_URL=http://172.20.14.154:80",
+
+					"PUB_KEY=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJwnm0t5GdNp/Q7fEM+jGMoxK/1S0r0KaMF2vsX2cXRRkb7fGo/uXhtbrDqjzvoqF954idr3vRRJ8jIC7BNxbhSoETIpxqr78Yup5rF6HlA8mEOZWavPNQ6Y1zz+uRS7QV2GrMEy2D/Wdrru6TWFVfhiKM2RvavrdncinYCSmxqQIDAQAB"
+
+				]
+
+			},
+
+			{
+
+				"name": "mtl-plugin-bdlocation",
+
+				"type": "cordova",
+
+				"parameters": [
+
+					"BDMAP_KEY_ANDROID=hvontoOPpe0YWDgGVrtLHel8mSm6ibhG"
+
+				]
+
+			},
+
+			{
+
+				"name": "mtl-plugin-terminal",
+
+				"type": "cordova"
+
+			},
+
+			{
+
+				"name": "mtl-plugin-umeng",
+
+				"type": "cordova",
+
+				"parameters": [
+
+					"WEXIN-APPKEY=wxe1406439b46007d4",
+
+					"WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
+
+					"DING-APPKEY=dingoaokqduou0l8poumhz",
+
+					"UMENG-APPKEY=5cb5b38e570df31281000824"
+
+				]
+
+			},
+
+			{
+
+				"name": "mtl-plugin-vui",
+
+				"type": "cordova",
+
+				"parameters": [
+
+					"APPID=11152975",
+
+					"APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
+
+					"SECRETKEY=iBzBh459NnqViqaLQUvNF88xi2dqj0U1"
+
+				]
+
+			}
+
+		],
+
+		"gitUrl": "https://gogs.yonyoucloud.com/caiyi/mtl.git",
+
+		"technologyStack": "tradition"
+
+	}
+
+}

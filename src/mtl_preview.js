@@ -229,7 +229,7 @@ function startIOS() {
 
     //     cloudBuildAndUnzip("ios");
     // }else{
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
+    // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
     // 临时530演示使用debug.app end
     copyAndInstallDebugIOS("true");
     // }
@@ -317,19 +317,10 @@ function copyAndInstallDebugIOS(isStartNode) {
         // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
         // shell.exec(cmd);
         let cmdInstallApp = "xcrun simctl install booted " + debugApp;
-        // shell.exec(cmdInstallApp);
-        // }
+
         console.log("开始运行调试应用");
         // shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
         zipAndUploadcloud("ios");
-        // let appJs = createAppJsFile(path);
-        // if(fs.exists(appJs, function(exists) {
-        //     if(!exists) {
-        //         return utils.reportError("没有找到app-node.js");
-        //     }
-        //     startNode(appJs);
-
-        // }));
 
     } else {
         console.log("请到iOS模拟器刷新进行调试");

@@ -1,0 +1,57 @@
+{
+  "main": {
+    "title": "小友",
+    "speakText": "Hi,我是小友，请问有什么可以帮到您？",
+    "greeting": "你好，我是小友，请问有什么可以帮到您？或者您可以这样问我",
+    "tips": [{
+      "text": "给张小文打电话",
+      "url": "sendText://"
+    }, {
+      "text": "帮我打开日程应用",
+      "url": "sendText://"
+    }, {
+      "text": "今日天气",
+      "url": "sendText://"
+    }],
+  },
+  "settings": {
+    "title": "小友设置",
+    "description": "我是来自友空间的智能语音助手小友，可以帮你处理很多事情，帮你安排诸多事宜，我还有很多功能功能等你来唤醒我。"
+  },
+  "help": {
+    "title": "帮助",
+    "tips": [{
+      "image": "xy_help_contacts",
+      "items": [{
+        "text": "我要找张小文"
+      }, {
+        "text": "给文小刀打电话"
+      }, {
+        "text": "给张小亮发短信"
+      }]
+    }, {
+      "image": "xy_help_everyday",
+      "items": [{
+        "text": "今日天气"
+      }, {
+        "text": "查看最近新闻"
+      }]
+    }, {
+      "image": "xy_help_app",
+      "items": [{
+        "text": "帮我打开日程"
+      }, {
+        "text": "我要找投票应用"
+      }, {
+        "text": "找项目应用"
+      }]
+    }, {
+      "image": "xy_help_schedule",
+      "items": [{
+        "text": "我要创建日程"
+      }, {
+        "text": "帮我创建下午三点的日程"
+      }]
+    }]
+  }
+}
