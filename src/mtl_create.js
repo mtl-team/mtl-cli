@@ -29,7 +29,7 @@ const promptList = [{
         "ERP",
     ],
     filter: function (val) { // 使用filter将回答变为小写
-        return val.toLowerCase();
+        return val;
     }
 }];
 
@@ -257,6 +257,83 @@ var createBegin = function (appname, template) {
     shell.exec("cd ..");
 
 }
+
+/**
+ * MTL工程 js 接口  创建工程前准备
+ * @param {String} appname 
+ * @param {String} template 
+ * 
+ */
+var createBeginApi = function (appname, template,workSpace) {
+    //判断模板是否存在
+
+    shell.exec("cd " + workSpace);
+    let tplItem = tplLibs[template];
+    if (!tplItem) {
+        console.log("无效的模板名称 - " + template);
+        console.log("您可以先不输入模板名称，在交互中选择工程模板。");
+        return utils.reportError();
+    }
+
+    console.log("开始创建名称为 - " + appname + "- 的工程");
+
+
+    if (fse.existsSync(template)) {
+        console.log('error: 当前位置存在 ' + template + ' 目录，与模板名称冲突,请检查本地文件。');
+        console.log('创建工程失败。');
+        return;
+    }
+
+    if (conf.get('localResource') == "true") {
+        fse.copySync(configFile.CONFIG_PROJECT_TEMPLATE_PATH + template, appname);
+
+    } else {
+        //  开始下载模板工程
+        // let rs = downloadTemplate(appname, template);
+        // if (rs != SUCCESS) {
+        //     return;
+        // }
+
+
+        let tplLibs = require("../res/templates.json");
+        let tplItem = tplLibs[template];
+        let appDir =workSpace+ '/' + template;
+    
+        console.log("mtl git url - " + gitClone + tplItem.url);
+        shell.exec(gitClone + tplItem.url + " --progress " + appDir);
+
+
+
+
+        //创建文件夹
+        fse.ensureDirSync(workSpace+ '/' + appname);
+        //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+        //需要这些文件和目录存在
+        fse.copySync(workSpace+ '/' + template + '/app', workSpace+ '/' +appname + '/app');
+        //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
+        fse.copySync(workSpace+ '/' + template + '/project.json', workSpace+ '/' +appname + '/project.json');
+
+        // 删除模板文件
+        fse.removeSync(workSpace+ '/'+template);
+
+    }
+
+    console.log("开始更新本地配置 - " + appname);
+    updateConfig(workSpace+"/"+appname);
+
+    console.log("初始化调试环境 - " + appname);
+    shell.exec("cd  " +workSpace+ '/' + appname);
+    shell.exec("npm --save install express")
+    shell.exec("cd ..");
+    if(fse.existsSync(workSpace+"/"+appname)){
+        return workSpace+"/"+appname;
+    }else{
+        return utils.reportError();
+    }
+}
+
+
+
 
 /**
  * MTL工程 更新配置
@@ -535,3 +612,4 @@ async function getTempList() {
 exports.createApp = createApp
 exports.pushRemote = pushRemote
 exports.configGitUrl = configGitUrl
+exports.createBeginApi = createBeginApi
