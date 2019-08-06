@@ -14,7 +14,7 @@
 ```
 npm -g install mtl-cli
 ```
-安装完成后，运行下面命令，检查是否安装成功
+在安装过程中 ，如果是Mac电脑遇到安装失败，权限不够，需要加上 sudo  。 例如： sudo npm -g install mtl-cli 。 安装完成后，运行下面命令，检查是否安装成功
 ```
 mtl --version   //查看版本号
 ```
@@ -42,13 +42,17 @@ mtl 根据模板脚手架创建一个工程
 mtl create [appname] [template]
 ```
 appname 是工程名称
-+  此参数是必填项；
++  此参数是必填项。参数不能是特殊字符 ，长度不要超过64。例如mtl-demo、mtl@……%demo 这样的工程命名都是不对的；
 +  本地已创建的工程不能同名再创建，造成本地目录同名；
 
 template 样版工程
-+  ：一个空的MTL工程 
-+  : 一个MTL demo工程 ，涉及交互的一些功能。
-
++  ：一个空的MTL工程 。
++  : 一个MTL demo工程 ，涉及原生交互的一些功能。
++  ：一个MTL网络聊天工程工程 。
++  : 一个MTL网上商城工程。
++  ：一个MTL电商秀工程 。
++  : 一个MTL网络社交工程。
++  ：一个MTL销售分析工程 。
 
 
 ### 配置工程信息
@@ -57,57 +61,51 @@ project.json文件 是工程配置文件，工程的信息以及各个端需要�
 
 + [**用户可以通过命令行更新或者手工配置**]
 ```
-   {
-	"config": {
-		"appName": "mtl-test",
-		"packageName": "com.yonyou.mtl-test",
-		"bundleID": "com.yonyou.uap.mobile5",
-		"projectName": "mtl-test",
-		"versionName": "1.0.0",
-		"versionCode": "100",
-		"versionBuild": "1.0.0",
-		"startPage": "index.html",
-		"debuggerEnable": "false",
-		"reinforcement": "false",
-		"sandbox": "false",
-		"targetDevice": "handset",
-		"statusBarTheme": "summer.Animations.NoTitleBar.FullScreen",
-		"androidMinSdkVersion": "19",
-		"isLibraryCompilation": "false",
-		"ddAppCode": "dingnlb2wikil7pldytf",
-		"wxAppCode": "dingnlb2wikil7pldytf",
-		"cordovaPlugins": [
-			{
-				"name": "mtl-plugin-faceverify",
-				"type": "cordova"
-			},
-			{
-				"name": "mtl-plugin-terminal",
-				"type": "cordova"
-			},
-			{
-				"name": "mtl-plugin-umeng",
-				"type": "cordova",
-				"parameters": [
-    				"WEXIN-APPKEY=wxe1406439b46007d4",
-                	"WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
-                    "DING-APPKEY=dingoaokqduou0l8poumhz",
-                    "UMENG-APPKEY=5cb5b38e570df31281000824"
-				]
-			},
-			{
-				"name": "mtl-plugin-vui",
-				"type": "cordova",
-				"parameters": [
-					"APPID=11152975",
-					"APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
-					"SECRETKEY=iBzBh459NnqViqaLQUvNF88xi2dqj0U1"
-				]
-			}
-		]
-	}
+{
+    "config": {
+        "appName": "mtl",
+        "packageName": "com.yonyou.mtl",
+        "bundleID": "com.yonyou.uap.mobile5",
+        "projectName": "mtl",
+        "versionName": "1.0.0",
+        "versionCode": "100",
+        "versionBuild": "1.0.0",
+        "startPage": "index.html",
+        "debuggerEnable": "false",
+        "reinforcement": "false",
+        "sandbox": "false",
+        "targetDevice": "handset",
+        "statusBarTheme": "summer.Animations.NoTitleBar.FullScreen",
+        "errorUrl": "",
+        "urlScheme": "iosMtlScheme",
+        "queriesSchemes": "",
+        "androidScheme": "",
+        "androidMinSdkVersion": "19",
+        "isLibraryCompilation": "false",
+        "ddAppCode": "dingnlb2wikil7pldytf",
+        "wxAppCode": "dingnlb2wikil7pldytf",
+        "cordovaPlugins": [],
+        "gitUrl": "https://gogs.yonyoucloud.com/caiyi/mtl.git",
+        "technologyStack": "tradition"
+    }
 }
 ```
+简单介绍几个重要参数：
++  appName ：用户应用名称，一般在android ，iOS 构建打包后会生成的包名称。
++  packageName ： android的包ID 。
++  bundleID ： iOS 的bundleID 。
++  projectName ： 创建工程的名称，一般与appName同名皆可以 。
++  version**** ： 这个设置的android ，iOS 构建包的版本号，对于其他平台版本设置不涉及 。
++  startPage ： 这个是工程的首页地址 ，是很重要的参数 ！用户创建的工程无论调试、预览、构建都要关注这个参数 ，因为这是工程的入口 。
++  debuggerEnable ： 这个是android和iOS平台的调试构建包 ，暂时支持android ，后期支持iOS 。
++  reinforcement ： android的加固功能，暂时不支持 。
++  ****Schemes ： android和iOS的schemes配置 。
++ androidMinSdkVersion ： android支持的最小版本 。
++ ddAppCode、wxAppCode ： WX 、DD 小程序的接入code 。
++ cordovaPlugins ： 配置调用原生能力的插件列表。
++ technologyStack ： 这个是技术栈 ，要支持传统H5、react 、以及VUE等等框架。现在支持H5，以及即将上线的react框架。
+
+
 
 
 ### 设置android包名
@@ -136,14 +134,13 @@ mtl  add-page [pagename] [modelname]
 
 ```
 pagename
-+ 此参数是必填项；
++ 此参数是必填项，pagename 不能是特殊字符和汉字，长度不能超过64个字符；
 + 用户根据这个名称，替换模板页面中的模板变量，进行填槽，形成想要的页面。
 
 modelname
 + empty:标准空页面 <--默认
 + list:标准列表页面
 + login:标准登录页面
-+ mdd-list:多元数据页面
 + ncc-login: ncc 登录页面
 + ncc-platform:ncc平台页面
 
@@ -155,6 +152,7 @@ mtl  add-plugin
 ```
 现在拥有的插件 ，持续开发中：
 + mtl-plugin-faceverify 人脸识别
++ mtl-plugin-bdlocation 定位
 + mtl-plugin-terminal   多端控制
 + mtl-plugin-umeng      三方友盟
 + mtl-plugin-vui        语音交互
