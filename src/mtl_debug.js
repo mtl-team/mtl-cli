@@ -7,7 +7,8 @@ const xml2js = require('xml2js');
 const configFile = require('./config');
 const os = require("os");
 var unzip = require("unzip-stream");
-
+const Configstore = require('configstore');
+const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
 
 const PORT = 3000; // long-running process running on this, e.g. a web-server.
 const { kill } = require("cross-port-killer");
@@ -246,11 +247,16 @@ function startIOS() {
     //  第一次启动debug 开始下载debug 程序
     if (!fs.existsSync(pwd + "/iOSDebug/debug.app")) {
 
-        console.log("开始下载android调试程序,请稍后...");
-        let debugLibs = require("../res/debug.json");
-        shell.exec("git clone " + debugLibs.iOSDebug + " --progress ");
-    }
+        if (conf.get('localResource') == "true") {
+            fs.copySync(configFile.CONFIG_IOS_DEBUG_PATH , "./iOSDebug");
+    
+        } else {
 
+            console.log("开始下载android调试程序,请稍后...");
+            let debugLibs = require("../res/debug.json");
+            shell.exec("git clone " + debugLibs.iOSDebug + " --progress ");
+        }
+    }
     copyAndInstallDebugIOS("true");
     // }
 
@@ -272,11 +278,14 @@ function startAndroid() {
     //  第一次启动debug 开始下载debug 程序
     if (!fs.existsSync(pwd + "/androidDebug/debug.apk")) {
 
-        console.log("开始下载android调试程序,请稍后...");
-        let debugLibs = require("../res/debug.json");
-        shell.exec("git clone " + debugLibs.androidDebug + " --progress ");
+        if (conf.get('localResource') == "true") {
+            fs.copySync(configFile.CONFIG_ANDROID_DEBUG_PATH , "./androidDebug");
+        } else {
+            console.log("开始下载android调试程序,请稍后...");
+            let debugLibs = require("../res/debug.json");
+            shell.exec("git clone " + debugLibs.androidDebug + " --progress ");
+        }
     }
-
     chokidarWatch();
     copyAndInstallDebugAndroid("true");
     // }
