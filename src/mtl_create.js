@@ -240,7 +240,7 @@ var createBegin = function (appname, template) {
         //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
         //需要这些文件和目录存在
         fse.copySync('./' + template + '/app', appname + '/app');
-        //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
+        fse.copySync('./'+template+ '/script', appname +'/script');
         fse.copySync('./' + template + '/project.json', appname + '/project.json');
 
         // 删除模板文件
@@ -310,7 +310,7 @@ var createBeginApi = function (appname, template,workSpace) {
         //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
         //需要这些文件和目录存在
         fse.copySync(workSpace+ '/' + template + '/app', workSpace+ '/' +appname + '/app');
-        //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
+        fse.copySync(workSpace+ '/' + template + '/script', workSpace+ '/' +appname + '/script');
         fse.copySync(workSpace+ '/' + template + '/project.json', workSpace+ '/' +appname + '/project.json');
 
         // 删除模板文件
@@ -323,7 +323,7 @@ var createBeginApi = function (appname, template,workSpace) {
 
     console.log("初始化调试环境 - " + appname);
     shell.exec("cd  " +workSpace+ '/' + appname);
-    shell.exec("npm --save install express")
+    shell.exec("cnpm --save install express")
     shell.exec("cd ..");
     if(fse.existsSync(workSpace+"/"+appname)){
         return workSpace+"/"+appname;
