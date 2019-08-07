@@ -13,6 +13,6 @@ App({
     localIds: {},
     voiceLocalIds: {},
     voiceCurrentTimes: {},
-    appCode:''
+    serverIds: {},
   }
 });

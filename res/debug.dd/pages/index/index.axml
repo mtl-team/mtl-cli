@@ -1,1 +1,1 @@
-<web-view id="web-view-1" src="{{url}}" onMessage="onAction"></web-view>
+<mtl-api-component  url={{url}} appCode={{appCode}} query={{query}}/>
