@@ -12,7 +12,7 @@ Page({
   },
   onReady() {
     let _this = this;
-    let baseUrl = 'http://mobile.yyuap.com:3000';
+    let baseUrl = 'http://localhost:3000';
     let url = `${baseUrl}/project.json`;
     console.log("ready");
     dd.httpRequest({

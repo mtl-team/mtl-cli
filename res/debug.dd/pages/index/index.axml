@@ -1,1 +1,1 @@
-<web-view id="web-view-1" src="{{url}}" onMessage="onAction"></web-view>
+<web-view id="web-view-1" src="http://jetyonyou.vaiwan.com/welcome/index.html" onMessage="onAction"></web-view>
