@@ -1,1 +1,1 @@
-<web-view id="web-view-1" src="http://jetyonyou.vaiwan.com/welcome/index.html" onMessage="onAction"></web-view>
+<mtl-api-component  url={{url}} appCode={{appCode}} query={{query}}/>
