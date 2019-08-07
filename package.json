@@ -32,7 +32,6 @@
     "openbrowser": "^1.0.2",
     "opn": "^6.0.0",
     "path": "^0.12.7",
-    "react-native": "^0.59.1",
     "readline-sync": "^1.4.9",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
