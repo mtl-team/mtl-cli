@@ -1,16 +1,32 @@
 [TOC]
 
-# 1. 概述
 
-命令：mtl 
 
-> mtl 命令行工具支持Android、iOS、微信、钉钉、移动web等多端同步跨平台开发，一套源码，多端调用 ，多端调试、多端预览 ，多端在云端服务构建生成不同的安装包以及发布包。提供工程模板脚手架，添加标准页面，原生能力插件等，并在云端构建打包等功能。
+# 快速开始
+概述：mtl-cli
+
+> mtl-cli 工具支持Android、iOS、微信、钉钉、移动web等多端同步跨平台开发，一套源码，多端调用 ，多端调试、多端预览 ，多端在云端服务构建生成不同的安装包以及发布包。提供工程模板脚手架，添加标准页面，原生能力插件等，并在云端构建打包等功能。
+
+> 支持的平台
+
+简称 | 说明
+---|---
+android | Android平台
+ios | iOS平台
+WX | 微信小程序平台
+DD | 钉钉E应用
+web | 移动Web应用
+
+### 系统环境要求
+兼容  Mac 和 win 操作系统。
+
+### 前置软件安装
++ 首先安装node.js、npm
 
 
 ### 安装mtl
 
-+ 首先安装node.js、npm
-+ 然后安装mtl
+
 ```
 npm -g install mtl-cli
 ```
@@ -21,23 +37,14 @@ mtl --version   //查看版本号
 
 
 
-### 支持的平台
-
-简称 | 说明
----|---
-android | Android平台
-ios | iOS平台
-WX | 微信小程序平台
-DD | 钉钉E应用
-web | 移动Web应用
 
 
 
-# 创建工程
+
+### 创建工程
 
 mtl 根据模板脚手架创建一个工程 
 
-### 模板创建
 ```
 mtl create [appname] [template]
 ```
@@ -54,7 +61,10 @@ template 样版工程
 +  : 一个MTL网络社交工程。
 +  ：一个MTL销售分析工程 。
 
-
+```
+注意： 如果 mac 在创建工程结束的时候报错“Error: EACCES: permission denied” ，这个可能是 安装 express 没有权限导致 。
+解决方法 ： 进入到你创建的**工程目录** 下 ，执行：sudo npm --save install express ，等待安装包执行完成后就可以了。 。  
+```
 ### 配置工程信息
 
 project.json文件 是工程配置文件，工程的信息以及各个端需要的重要数据都会集中在此文件中。
@@ -126,9 +136,7 @@ mtl  set-startPage
 以上三个设置项都是通过命令行 更新project.json 文件。
 
 
-# 页面管理
-
-### 创建一个页面
+### 创建页面
 ```
 mtl  add-page [pagename] [modelname] 
 
@@ -145,8 +153,7 @@ modelname
 + ncc-platform:ncc平台页面
 
 
-# 插件引用管理 
-### 添加工程需要的插件
+### 添加插件引用原生功能
 ```
 mtl  add-plugin 
 ```
@@ -165,14 +172,22 @@ mtl  add-plugin
 ```
 mtl debug [ iOS | Android | WX | DD]
 ```
-### debug 调试开发准备和功能说明：
-+ 配置pc的host 文件如下： 添加“ 127.0.0.1       mobile.yyuap.com ”  ；
-+ android 需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 127.0.0.1:7555 （win），adb connect 127.0.0.1:5555 （mac）。如果debug过一次了没有成功，可以把工程根目录下的output/android/debug 目录删除 ，重新执行命令行debug 。如果 报错 error: more than one device and emulator ，可以用adb devices 命令看看是不是存在多个。发现还真是多个设备，那就需要为ADB命令指定设备的序列号了，
+
+### android 调试 
++ android 平台需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 127.0.0.1:7555 （win），adb connect 127.0.0.1:5555 （mac）。如果debug过一次了没有成功，可以把工程根目录下的output/android/debug 目录删除 ，重新执行命令行debug 。如果 报错 error: more than one device and emulator ，可以用adb devices 命令看看是不是存在多个。发现还真是多个设备，那就需要为ADB命令指定设备的序列号了，
 adb -s emulator-5554 shell
 也就是给命令加上-s的参数就可以了；
+### iOS 调试 
 + iOS 需要搭建好xcode 开发环境；
+### 微信小程序调试
 + 微信小程序需要安装微信小程序工具：到微信公众平台去下载，下载地址：https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html。命令行进行mtl debug wx 后 ，用微信小程序工具导入当前工程目录./output/wx/debug/proj  ，这样就可以在微信小程序工具下看到 修改app目录下工程源码的调试效果。
+### 钉钉小程序调试 
+
 + 钉钉小程序需要安装 蚂蚁金服开放平台 小程序工具，下载地址：https://docs.alipay.com/mini/ide/download。命令行进行mtl debug DD 后 ，用钉钉小程序工具导入当前工程目录./output/dd/debug/proj  ，这样就可以在钉钉小程序工具下看到 修改app目录下工程源码的调试效果。
+ 
+
+### debug 调试host配置和功能说明：
++ 配置pc的host 文件如下： 添加“ 127.0.0.1       mobile.yyuap.com ”  ；
 + 修改文件热更新，如果在项目工程下，修改了project.json 或者 app目录下的工程源码都会自动更新到output平台目录下的工程目录，需要在 android ，iOS ，wx小程序工具 ，钉钉小程序工具 里刷新就可以看到修改的效果。
 + 友情提示，终端命令行在调试状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止调试，进行其他操作。
 
@@ -182,13 +197,22 @@ adb -s emulator-5554 shell
 ```
 mtl preview [ iOS | Android | WX | DD |Upesn]
 ```
-### 预览功能准备和功能说明：
+
+### android预览说明：
++ 命令行执行预览android功能 ，需要用真机预先安装"预览apk" ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发的真机预览功能。
+### iOS 预览说明：
++ 命令行执行预览iOS功能 ，需要用真机预先安装"预览IPA" ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发的真机预览功能。
+### 微信小程序预览说明：
++ 命令行执行预览微信小程序功能 ，需要用真机的微信APP，用微信的扫码功能  ，扫码识别后 ，就可以验证项目开发的真机预览功能。
+### 钉钉小程序预览说明： 
+
++ 命令行执行预览钉钉小程序功能 ，需要用真机的钉钉APP，用钉钉的扫码功能  ，扫码识别后 ，就可以验证项目开发的真机预览功能。
+
+
+### 友空间预览说明：
++ 命令行执行预览Upesn功能 ，需要用真机的友空间APP，用友空间的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
+### 预览功能说明：
 + 预览命令行执行后 ，会在pc开发设备形成二维码；
-+ 命令行执行预览android功能 ，需要用真机预先安装"预览apk" ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
-+ 命令行执行预览iOS功能 ，需要用真机预先安装"预览IPA" ，在真机安装后，打开预览APP的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
-+ 命令行执行预览微信小程序功能 ，需要用真机的微信APP，用微信的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
-+命令行执行预览钉钉小程序功能 ，需要用真机的钉钉APP，用钉钉的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
-+命令行执行预览Upesn功能 ，需要用真机的友空间APP，用友空间的扫码功能  ，扫码识别后 ，就可以验证项目开发功能的真机预览功能。
 + 修改文件热更新，如果在项目工程下，修改了project.json 或者 app目录下的工程源码都会自动更新到后台预览服务中，需要在 android  ，iOS  ，微信 ，钉钉，友空间 里刷新就可以看到更新的效果。
 + 友情提示，终端命令行在预览状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止预览，进行其他操作。
 
@@ -238,10 +262,10 @@ mtl login
 
 ### 设置环境变量
 ```
-mtl config key value
+mtl set-config key value
 
 //设置git的地址
-mtl config git-url http://git.yonyou.com/xxx/xxx/
+mtl set-config git-url http://git.yonyou.com/xxx/xxx/
 ```
 # FAQ 
 ### 一 、为什么启动页不能替换？
