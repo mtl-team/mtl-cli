@@ -246,14 +246,14 @@ var createBegin = function (appname,template) {
     //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
     //需要这些文件和目录存在
 
-    // fse.copySync('./'+template , appname );
-    fse.renameSync('./'+template , appname );
+    fse.copySync('./'+template , appname );
+    // fse.renameSync('./'+template , appname );
     fse.removeSync(appname+"/.git"); 
     fse.removeSync(appname+"/.gitignore"); 
     fse.removeSync(appname+"/LICENSE"); 
     //fse.copySync('./'+template+ '/.debug', appname +'/.debug');
     // 删除模板文件
-    // fse.removeSync(template);
+    fse.removeSync(template);
 
     console.log("开始修改本地配置 - " + appname);
     updateConfig(appname);

@@ -1,6 +1,6 @@
 {
     "names":[
-        "mtl-empty","mtl-demo","mtl-react-empty"
+        "mtl-empty","mtl-demo","mtl-react-empty","mtl-mdf-react"
     ],
 
     "mtl-empty":{
@@ -14,5 +14,9 @@
     "mtl-react-empty":{
         "url":"http://git.yonyou.com/xugangm/mtl-react-empty.git",
         "desc":"一个空的MTL-REACT工程"
+    },
+    "mtl-mdf-react":{
+        "url":"https://code.aliyun.com/xugang_hot/mtl-mdf-react.git",
+        "desc":"一个基于mdf的MTL-REACT工程"
     }
 }
