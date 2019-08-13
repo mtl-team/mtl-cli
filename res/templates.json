@@ -1,37 +1,14 @@
 {
     "names":[
-        "mtl-empty","mtl-demo","chatting","e-shop","onlineRetailers","socialNetwork","salesAnalysis"
+        "mtl-empty","mtl-demo"
     ],
 
     "mtl-empty":{
-        "url":"https://github.com/xugangm/mtl-empty.git",
+        "url":"https://code.aliyun.com/xugang_hot/mtl-empty.git",
         "desc":"一个MTL空工程"
     },
     "mtl-demo":{
-        "url":"https://github.com/mtl-team/mtl-demo.git",
+        "url":"https://code.aliyun.com/xugang_hot/mtl-demo.git",
         "desc":"一个演示用的MTL工程"
-    },
-    "chatting":{
-        "url":"https://code.aliyun.com/xugang_hot/chatting.git",
-        "desc":"一个MTL网络聊天工程"
-    },
-    "e-shop":{
-        "url":"https://code.aliyun.com/xugang_hot/e-shop.git",
-        "desc":"一个MTL网上商城工程"
-    },
-    "onlineRetailers":{
-        "url":"https://code.aliyun.com/xugang_hot/onlineRetailers.git",
-        "desc":"一个MTL电商秀工程"
-    },
-    "socialNetwork":{
-        "url":"https://code.aliyun.com/xugang_hot/socialNetwork.git",
-        "desc":"一个MTL网络社交工程"
-    },
-    "salesAnalysis":{
-        "url":"https://code.aliyun.com/xugang_hot/salesAnalysis.git",
-        "desc":"一个MTL销售分析工程"
     }
-
-
-
 }

@@ -51,8 +51,6 @@ var addView = async function (name, tplname) {
         }
     } else {
 
-
-
         if (conf.get('localResource') == "true") {
 
             let pwd = shell.pwd().split(path.sep).join('/');
@@ -83,30 +81,44 @@ var addView = async function (name, tplname) {
 
 
 //根据js api 接口 添加页面模板
-function addPageApi(projectPath,name, tplname) {
+function addPageApi(projectPath, name, tplname) {
+    var result = [];
     // 页面模板本地和网络获取
     var pageTemplatePath = projectPath + tplCachePath;
     if (conf.get('localResource') == "true") {
         //本地获取
-        
-        fs.copySync(configFile.CONFIG_PAGE_TEMPLATE_PATH, pageTemplatePath);
-
+        try {
+            fs.copySync(configFile.CONFIG_PAGE_TEMPLATE_PATH, pageTemplatePath);
+        } catch (e) {
+            console.log(e);
+            result.push("1");
+            result.push("页面模板本地拷贝创建失败。 " + e);
+            return result;
+        }
     } else {
         //开始下载模板页面
-    
+
         if (!fs.existsSync(pageTemplatePath)) {
             //let gitPageUrl = 'https://gogs.yonyoucloud.com/caiyi/mtlPages.git';   //页面模板地址-可写入配置
-            let gitPageUrl = require("../res/configure.json").pages;
-            console.log("mtl git url - " + gitClone + gitPageUrl);
-            shell.exec(gitClone + gitPageUrl + " --progress " + pageTemplatePath);
-            
-            fs.removeSync(pageTemplatePath + "/.git");
-            fs.removeSync(pageTemplatePath + "/.gitignore");
-            fs.removeSync(pageTemplatePath + "/LICENSE");
-        }else{
-            console.log("！！！本地已经存在页面模板库，删除后可以重新加载！！！" );
+            try {
+                let gitPageUrl = require("../res/configure.json").pages;
+                console.log("mtl git url - " + gitClone + gitPageUrl);
+                shell.exec(gitClone + gitPageUrl + " --progress " + pageTemplatePath);
+
+                fs.removeSync(pageTemplatePath + "/.git");
+                fs.removeSync(pageTemplatePath + "/.gitignore");
+                fs.removeSync(pageTemplatePath + "/LICENSE");
+            } catch (e) {
+                console.log(e);
+                result.push("1");
+                result.push("页面模板下载失败。 " + e);
+                return result;
+            }
+
+        } else {
+            console.log("！！！本地已经存在页面模板库，删除后可以重新加载！！！");
         }
-        
+
     }
 
     var tplPath;
@@ -114,15 +126,27 @@ function addPageApi(projectPath,name, tplname) {
         //开发者中心
         tplPath = "tpl_cache/" + tplname;
     } else {
-        tplPath = projectPath+tplCachePath + "/" + tplname;
+        tplPath = projectPath + tplCachePath + "/" + tplname;
     }
 
     if (!fs.existsSync(tplPath)) {
         console.log("页面路径 - " + tplPath);
-        return utils.reportError("模版：" + tplname + " 没有找到");
+        result.push("1");
+        result.push("页面模板 没有找到");
+        return result;
     }
     console.log("开始添加模版 - " + tplname);
-    copyTplDirApi(name, tplPath, projectPath);
+    try {
+        copyTplDirApi(name, tplPath, projectPath);
+        result.push("0");
+        result.push("页面模板添加成功。");
+        return result;
+    } catch (e) {
+        console.log(e);
+        result.push("1");
+        result.push("页面模板添加失败。 " + e);
+        return result;
+    }
 }
 function copyTplDirApi(name, path, objPath) {
     console.log("[目录]" + objPath);

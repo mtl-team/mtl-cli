@@ -240,7 +240,7 @@ var createBegin = function (appname, template) {
         //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
         //需要这些文件和目录存在
         fse.copySync('./' + template + '/app', appname + '/app');
-        fse.copySync('./'+template+ '/script', appname +'/script');
+        fse.copySync('./' + template + '/script', appname + '/script');
         fse.copySync('./' + template + '/project.json', appname + '/project.json');
 
         // 删除模板文件
@@ -264,15 +264,18 @@ var createBegin = function (appname, template) {
  * @param {String} template 
  * 
  */
-var createBeginApi = function (appname, template,workSpace) {
+var createBeginApi = function (appname, template, workSpace) {
     //判断模板是否存在
 
     shell.exec("cd " + workSpace);
     let tplItem = tplLibs[template];
+    var result = [];
     if (!tplItem) {
         console.log("无效的模板名称 - " + template);
         console.log("您可以先不输入模板名称，在交互中选择工程模板。");
-        return utils.reportError();
+        result.push("1");
+        result.push("模板名称错误，不能创建工程");
+        return result;
     }
 
     console.log("开始创建名称为 - " + appname + "- 的工程");
@@ -281,58 +284,63 @@ var createBeginApi = function (appname, template,workSpace) {
     if (fse.existsSync(template)) {
         console.log('error: 当前位置存在 ' + template + ' 目录，与模板名称冲突,请检查本地文件。');
         console.log('创建工程失败。');
-        return;
+        result.push("1");
+        result.push("当前位置已经存在工程目录，与模板名称冲突，创建失败。");
+        return result;
     }
 
     if (conf.get('localResource') == "true") {
-        fse.copySync(configFile.CONFIG_PROJECT_TEMPLATE_PATH + template, appname);
-
+        try {
+            fse.copySync(configFile.CONFIG_PROJECT_TEMPLATE_PATH + template, appname);
+        } catch (e) {
+            console.log(e);
+            result.push("1");
+            result.push("模板本地拷贝创建失败。 " + e);
+            return result;
+        }
     } else {
-        //  开始下载模板工程
-        // let rs = downloadTemplate(appname, template);
-        // if (rs != SUCCESS) {
-        //     return;
-        // }
+        try {
+            let tplLibs = require("../res/templates.json");
+            let tplItem = tplLibs[template];
+            let appDir = workSpace + '/' + template;
+            console.log("mtl git url - " + gitClone + tplItem.url);
+            shell.exec(gitClone + tplItem.url + " --progress " + appDir);
 
+            //创建文件夹
+            fse.ensureDirSync(workSpace + '/' + appname);
+            //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+            //需要这些文件和目录存在
+            fse.copySync(workSpace + '/' + template + '/app', workSpace + '/' + appname + '/app');
+            fse.copySync(workSpace + '/' + template + '/script', workSpace + '/' + appname + '/script');
+            fse.copySync(workSpace + '/' + template + '/project.json', workSpace + '/' + appname + '/project.json');
 
-        let tplLibs = require("../res/templates.json");
-        let tplItem = tplLibs[template];
-        let appDir =workSpace+ '/' + template;
-    
-        console.log("mtl git url - " + gitClone + tplItem.url);
-        shell.exec(gitClone + tplItem.url + " --progress " + appDir);
-
-
-
-
-        //创建文件夹
-        fse.ensureDirSync(workSpace+ '/' + appname);
-        //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
-        //需要这些文件和目录存在
-        fse.copySync(workSpace+ '/' + template + '/app', workSpace+ '/' +appname + '/app');
-        fse.copySync(workSpace+ '/' + template + '/script', workSpace+ '/' +appname + '/script');
-        fse.copySync(workSpace+ '/' + template + '/project.json', workSpace+ '/' +appname + '/project.json');
-
-        // 删除模板文件
-        fse.removeSync(workSpace+ '/'+template);
-
+            // 删除模板文件
+            fse.removeSync(workSpace + '/' + template);
+        } catch (e) {
+            console.log(e);
+            result.push("1");
+            result.push("模板下载报错，创建失败。");
+            return result;
+        }
     }
 
     console.log("开始更新本地配置 - " + appname);
-    updateConfig(workSpace+"/"+appname);
+    updateConfig(workSpace + "/" + appname);
 
     console.log("初始化调试环境 - " + appname);
-    shell.exec("cd  " +workSpace+ '/' + appname);
+    shell.exec("cd  " + workSpace + '/' + appname);
     shell.exec("cnpm --save install express")
     shell.exec("cd ..");
-    if(fse.existsSync(workSpace+"/"+appname)){
-        return workSpace+"/"+appname;
-    }else{
-        return utils.reportError();
+    if (fse.existsSync(workSpace + "/" + appname)) {
+        result.push("0");
+        result.push(workSpace + "/" + appname);
+        return result;
+    } else {
+        result.push("1");
+        result.push("工程目录创建失败。");
+        return result;
     }
 }
-
-
 
 
 /**
@@ -392,7 +400,7 @@ function changeTheAppName(projfile, appname) {
 
     // fse.writeFileSync(xmlFile, xml,{flag:'w',encoding:'utf-8',mode:'0666'});
     return utils.SUCCESS;
-    
+
 }
 
 //下载工程模版
