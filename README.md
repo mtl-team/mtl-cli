@@ -1,7 +1,7 @@
 [TOC]
 
 
-
+<a name="快速开始" class="anchor"></a >
 # 快速开始
 概述：mtl-cli
 
@@ -55,15 +55,14 @@ appname 是工程名称
 template 样版工程
 +  ：一个空的MTL工程 。
 +  : 一个MTL demo工程 ，涉及原生交互的一些功能。
-+  ：一个MTL网络聊天工程工程 。
-+  : 一个MTL网上商城工程。
-+  ：一个MTL电商秀工程 。
-+  : 一个MTL网络社交工程。
-+  ：一个MTL销售分析工程 。
 
 ```
 注意： 如果 mac 在创建工程结束的时候报错“Error: EACCES: permission denied” ，这个可能是 安装 express 没有权限导致 。
-解决方法 ： 进入到你创建的**工程目录** 下 ，执行：sudo npm --save install express ，等待安装包执行完成后就可以了。 。  
+解决方法 ：
+1）、进入到你创建的**工程目录** 下 ，执行：sudo npm --save install express ，等待安装包执行完成后就可以了。
+2）、修改你的workspace 目录操作权限，指令： sudo chmod -R 777 workspace 的文件夹目录。
+
+如果在win上同样出现权限的报错，请查询win修改权限相关的操作。
 ```
 ### 配置工程信息
 
@@ -168,6 +167,9 @@ mtl  add-plugin
 上下箭头来移动光标，按下"a"实现全选, 按下"i"实现反选。
 “回车” 确认保存到project.json 文件中
 ```
+
+
+<a name="调试" class="anchor"></a >
 # 调试
 ```
 mtl debug [ iOS | Android | WX | DD]
@@ -175,7 +177,7 @@ mtl debug [ iOS | Android | WX | DD]
 
 ### android 调试 
 + android 平台需要配置好 android开发环境 ，至少adb工具。安装android 模拟器 ，例如 网易模拟器 nunu  ，确保adb 连接通 ， 可以使用 命令 ：adb connect 127.0.0.1:7555 （win），adb connect 127.0.0.1:5555 （mac）。如果debug过一次了没有成功，可以把工程根目录下的output/android/debug 目录删除 ，重新执行命令行debug 。如果 报错 error: more than one device and emulator ，可以用adb devices 命令看看是不是存在多个。发现还真是多个设备，那就需要为ADB命令指定设备的序列号了，
-adb -s emulator-5554 shell
+adb -s “emulator-5554” shell
 也就是给命令加上-s的参数就可以了；
 ### iOS 调试 
 + iOS 需要搭建好xcode 开发环境；
@@ -192,7 +194,7 @@ adb -s emulator-5554 shell
 + 友情提示，终端命令行在调试状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止调试，进行其他操作。
 
 
-
+<a name="预览" class="anchor"></a >
 # 预览
 ```
 mtl preview [ iOS | Android | WX | DD |Upesn]
@@ -216,16 +218,25 @@ mtl preview [ iOS | Android | WX | DD |Upesn]
 + 修改文件热更新，如果在项目工程下，修改了project.json 或者 app目录下的工程源码都会自动更新到后台预览服务中，需要在 android  ，iOS  ，微信 ，钉钉，友空间 里刷新就可以看到更新的效果。
 + 友情提示，终端命令行在预览状态下 ，一直处于工程的监听中 ，请不要中断当前的状态 ，直到想要终止预览，进行其他操作。
 
+<a name="构建" class="anchor"></a >
 # 构建
 ```
 mtl build [ iOS | Android ]
 ```
 ### 构建功能准备和功能说明：
-+ 云构建server 源码上传，并完成构建。
+
+```
+    1、 在构建之前最好先设置一下构建打包方式，构建方式支持两种方式：源码上传打包 和 git 分支打包。 
+命令： mtl set-buildType  设置构建方式。
+    2、 在构建之前需要上传android 的打包签名文件；iOS的证书和描述文件 。上传证书的网站暂时不对外开放 。android 的签名文件，iOS的证书 和描述文件 可以先发邮箱给xugangm@yonyou.com或者在微信群里@david。
+    android 的签名文件需要提供签名文件 ，密码 ，别名、别名密码以及包名ID，包名ID和签名文件是绑定的。
+    iOS 提供证书和签名文件 、证书的密码以及iOS的bundle ID 。bundle ID和证书是绑定的关系。
+```
+
++ 云构建server源码上传方式，将功能开发实现的静态源码资源与project.json 文件一并打包成zip压缩文件，上传至云构建server并完成构建打包。
 + 云构建server 支持git 远程代码下载到构建服务器进行云构建。需要在构建前通过"mtl set-git" 配置好Git 仓库 、分支、账号、密码等要素。
-+ 通过 命令行 “set-buildType” 设置构建方式。
 + 云构建结束后会在控制台显示构建日志以及构建包存放目录；
-+ 云构建成功后在output目录存放构建包，以及二维码安装图片。
++ 云构建成功后在output目录存放构建包。
 
 ### 运行
 
@@ -233,7 +244,7 @@ mtl build [ iOS | Android ]
 mtl start  [ Android ]
 ```
 ### 安装运行说明
-+ 请连接后android真机设备或者模拟器。
++ 请连接android真机设备或者模拟器。
 
 
 # git账号配置
@@ -244,21 +255,6 @@ mtl set-git
 + 用于云端构建 ，在构建服务器增量更新源码。
 + 根据提示 输入git仓库URL ，分支 ，账户，密码。
 
-
-# 用户管理
-
-### 用户登录
-登录到开发中心 
-```
-mtl login
->User login: 
->Password:
->login successed! welcome,XXX. 
-```
-登录后，会在~/.mtl/目录下创建一个login.cfg的文件，记录用户信息。
-> 如果是公共电脑后，请在使用完毕后，删除这个文件
-
-![登录逻辑](http://iuap-design-cdn.oss-cn-beijing.aliyuncs.com/static/mtl/screenshot/mtl_login.png)
 
 ### 设置环境变量
 ```
