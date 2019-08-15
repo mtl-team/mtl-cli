@@ -88,13 +88,27 @@ function chokidarWatch() {
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
-            let pwd = shell.pwd().split(path.sep).join('/');
-            // let end = path.lastIndexOf("/", path.length - 1);
-            let start = path.indexOf("/app/");
-            console.log("文件目录起始位置：" + start);
-            // console.log("文件目录结束位置：" + end);
+
+            var start = 0;
+            var pwd = shell.pwd().split(path.sep).join('/');
+            if(utils.isWindows()()){
+                // win 
+                console.log("WIN 系统");
+                start = path.indexOf("\app\/");
+            }else{
+                // mac
+                console.log("MAC 系统");
+                
+                 start = path.indexOf("/app/");
+                console.log("文件目录起始位置：" + start);
+
+            }
+
+
+            
             let relativeFileDir = path.substring(start);
             console.log("目的修改文件的相对文件路径：" + relativeFileDir);
+
             if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
                 // copyAndDebugWeixin("false");
                 let absoluteFileDir = pwd + "/output/wx/debug" + relativeFileDir;
