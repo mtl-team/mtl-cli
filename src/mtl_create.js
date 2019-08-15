@@ -253,7 +253,7 @@ var createBegin = function (appname, template) {
 
     console.log("初始化调试环境 - " + appname);
     shell.exec("cd ./" + appname);
-    shell.exec("cnpm --save install express")
+    shell.exec("npm --save install express")
     shell.exec("cd ..");
 
 }
@@ -329,7 +329,7 @@ var createBeginApi = function (appname, template, workSpace) {
 
     console.log("初始化调试环境 - " + appname);
     shell.exec("cd  " + workSpace + '/' + appname);
-    shell.exec("cnpm --save install express")
+    shell.exec("npm --save install express")
     shell.exec("cd ..");
     if (fse.existsSync(workSpace + "/" + appname)) {
         result.push("0");
