@@ -102,9 +102,20 @@ function chokidarWatch() {
             }
             if (fs.existsSync(shell.pwd() + "/output/upesn/debug/app/project.json")) {
                 copyAndInstallDebugUpesn("false");
+
             }
 
             //  更新云端工程文件
+
+            if(utils.isWindows()){
+                // win 
+                console.log("WIN 系统");
+                path=path.replace(/\\/g,'/');
+                console.log("update file path:"+path);
+            }else{
+                // mac do nothing
+            }
+
 
             zipFileAndUploadcloud(path, "false");
             // uploadFileToCloud(path,"false");
@@ -211,10 +222,6 @@ function updateIosPlistFile(plistDir) {
     plist.writeFileSync(plistDir, data);
 }
 function startIOS() {
-    if (os.platform() != "darwin") {
-        console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
-        return;
-    }
 
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();

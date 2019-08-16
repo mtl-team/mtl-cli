@@ -91,21 +91,21 @@ function chokidarWatch() {
 
             var start = 0;
             var pwd = shell.pwd().split(path.sep).join('/');
-            if(utils.isWindows()()){
+            if(utils.isWindows()){
                 // win 
                 console.log("WIN 系统");
-                start = path.indexOf("\app\/");
+                start = path.indexOf("\\app\\");
             }else{
                 // mac
                 console.log("MAC 系统");
                 
                  start = path.indexOf("/app/");
-                console.log("文件目录起始位置：" + start);
+                
 
             }
 
 
-            
+            console.log("文件目录起始位置：" + start);
             let relativeFileDir = path.substring(start);
             console.log("目的修改文件的相对文件路径：" + relativeFileDir);
 
