@@ -163,7 +163,7 @@ var createDevPro = function (appname, template) {
     console.log('拷贝文件 success');
 
     console.log("3、开始修改本地配置 - " + appname);
-    updateConfig(appname);
+    // updateConfig(appname);
 
 }
 
@@ -249,9 +249,10 @@ var createBegin = function (appname, template) {
     }
 
     console.log("开始更新本地配置 - " + appname);
-    updateConfig(appname);
-
+    // updateConfig(appname);  
+    
     console.log("初始化调试环境 - " + appname);
+    console.log("--本地创建完成--先执行 cd " + appname + " 进入目标目录--");
     shell.exec("cd ./" + appname);
     shell.exec("npm --save install express")
     shell.exec("cd ..");
@@ -325,9 +326,10 @@ var createBeginApi = function (appname, template, workSpace) {
     }
 
     console.log("开始更新本地配置 - " + appname);
-    updateConfig(workSpace + "/" + appname);
-
+    // updateConfig(workSpace + "/" + appname);
+    
     console.log("初始化调试环境 - " + appname);
+    console.log("--本地创建完成--先执行 cd " + appname + " 进入目标目录--");
     shell.exec("cd  " + workSpace + '/' + appname);
     shell.exec("npm --save install express")
     shell.exec("cd ..");
