@@ -237,10 +237,11 @@ var createBegin = function (appname, template) {
 
         //创建文件夹
         fse.ensureDirSync(appname);
-        //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+        
         //需要这些文件和目录存在
         fse.copySync('./' + template + '/app', appname + '/app');
         fse.copySync('./' + template + '/script', appname + '/script');
+        fse.copySync('./' + template + '/.vscode', appname + '/.vscode');
         fse.copySync('./' + template + '/project.json', appname + '/project.json');
 
         // 删除模板文件
@@ -309,10 +310,11 @@ var createBeginApi = function (appname, template, workSpace) {
 
             //创建文件夹
             fse.ensureDirSync(workSpace + '/' + appname);
-            //复制模板文件到工程   fse.copySync('/tmp/myfile', '/tmp/mynewfile');
+        
             //需要这些文件和目录存在
             fse.copySync(workSpace + '/' + template + '/app', workSpace + '/' + appname + '/app');
             fse.copySync(workSpace + '/' + template + '/script', workSpace + '/' + appname + '/script');
+            fse.copySync(workSpace + '/' + template + '/.vscode', workSpace + '/' + appname + '/.vscode');
             fse.copySync(workSpace + '/' + template + '/project.json', workSpace + '/' + appname + '/project.json');
 
             // 删除模板文件
