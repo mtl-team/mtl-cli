@@ -73,6 +73,100 @@ var addView = async function (name, tplname) {
 
 }
 
+
+//根据js api 接口 添加页面模板
+function addPageApi(projectPath, name, tplname) {
+    var result = [];
+    // 页面模板本地和网络获取
+    var pageTemplatePath = projectPath + tplCachePath;
+    if (conf.get('localResource') == "true") {
+        //本地获取
+        try {
+            fs.copySync(configFile.CONFIG_PAGE_TEMPLATE_PATH, pageTemplatePath);
+        } catch (e) {
+            console.log(e);
+            result.push("1");
+            result.push("页面模板本地拷贝创建失败。 " + e);
+            return result;
+        }
+    } else {
+        //开始下载模板页面
+
+        if (!fs.existsSync(pageTemplatePath)) {
+            //let gitPageUrl = 'https://gogs.yonyoucloud.com/caiyi/mtlPages.git';   //页面模板地址-可写入配置
+            try {
+                let gitPageUrl = require("../res/configure.json").pages;
+                console.log("mtl git url - " + gitClone + gitPageUrl);
+                shell.exec(gitClone + gitPageUrl + " --progress " + pageTemplatePath);
+
+                fs.removeSync(pageTemplatePath + "/.git");
+                fs.removeSync(pageTemplatePath + "/.gitignore");
+                fs.removeSync(pageTemplatePath + "/LICENSE");
+            } catch (e) {
+                console.log(e);
+                result.push("1");
+                result.push("页面模板下载失败。 " + e);
+                return result;
+            }
+
+        } else {
+            console.log("！！！本地已经存在页面模板库，删除后可以重新加载！！！");
+        }
+
+    }
+
+    var tplPath;
+    if (conf.get('username')) {
+        //开发者中心
+        tplPath = "tpl_cache/" + tplname;
+    } else {
+        tplPath = projectPath + tplCachePath + "/" + tplname;
+    }
+
+    if (!fs.existsSync(tplPath)) {
+        console.log("页面路径 - " + tplPath);
+        result.push("1");
+        result.push("页面模板 没有找到");
+        return result;
+    }
+    console.log("开始添加模版 - " + tplname);
+    try {
+        copyTplDirApi(name, tplPath, projectPath);
+        result.push("0");
+        result.push("页面模板添加成功。");
+        return result;
+    } catch (e) {
+        console.log(e);
+        result.push("1");
+        result.push("页面模板添加失败。 " + e);
+        return result;
+    }
+}
+function copyTplDirApi(name, path, objPath) {
+    console.log("[目录]" + objPath);
+    fs.readdir(path, function (err, files) {
+        if (err) {
+            return utils.reportError("错误 - " + err);
+        }
+        for (index in files) {
+            // console.log(index + " - " + files[index]);
+            let item = files[index];
+            let newPath = path + "/" + item;
+            let stat = fs.lstatSync(newPath);
+            if (stat.isDirectory()) {
+                copyTplDir(name, newPath, objPath + "/" + replaceToRealName(item, name));
+            } else {
+                copyTplFile(path, item, objPath, name);
+            }
+        }
+    });
+}
+
+
+
+
+
+
 //开始根据模版添加页面
 function addPage(name, tplname) {
     let tplPath;
@@ -259,3 +353,4 @@ var downloadDevPageTemp = async function (name, template) {
 }
 //addView("xcv",null);
 exports.addView = addView
+exports.addPageApi = addPageApi
