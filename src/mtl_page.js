@@ -85,6 +85,19 @@ function addPageApi(projectPath, name, tplname) {
     var result = [];
     // 页面模板本地和网络获取
     var pageTemplatePath = projectPath + tplCachePath;
+    if(utils.isWindows()){
+        // win 
+        console.log("WIN 系统");
+        pageTemplatePath = projectPath + '\\' + tplCachePath;
+    }else{
+        // mac
+        console.log("MAC 系统");
+        
+        pageTemplatePath = projectPath + '/' + tplCachePath;
+        
+
+    }
+
     if (conf.get('localResource') == "true") {
         //本地获取
         try {
@@ -126,7 +139,22 @@ function addPageApi(projectPath, name, tplname) {
         //开发者中心
         tplPath = "tpl_cache/" + tplname;
     } else {
+
+
         tplPath = projectPath + tplCachePath + "/" + tplname;
+        if(utils.isWindows()){
+            // win 
+            console.log("WIN 系统");
+            
+            tplPath = projectPath + '\\' +tplCachePath + '\\' + tplname;
+        }else{
+            // mac
+            console.log("MAC 系统");
+            
+            tplPath = projectPath + + '/' + tplCachePath + "/" + tplname;
+    
+        }
+        
     }
 
     if (!fs.existsSync(tplPath)) {
