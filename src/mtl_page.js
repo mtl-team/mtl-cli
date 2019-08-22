@@ -185,10 +185,27 @@ function copyTplDirApi(name, path, objPath) {
         for (index in files) {
             // console.log(index + " - " + files[index]);
             let item = files[index];
-            let newPath = path + "/" + item;
+            var  newPath = path + "/" + item;
+
+            if(utils.isWindows()){
+                // win 
+                newPath = path + '\\' + item;
+            }else{
+                // mac  
+                newPath = path + "/" + item;
+            }
+
             let stat = fs.lstatSync(newPath);
             if (stat.isDirectory()) {
-                copyTplDir(name, newPath, objPath + "/" + replaceToRealName(item, name));
+                if(utils.isWindows()){
+                    // win 
+                    objPath = objPath + '\\' ;
+                }else{
+                    // mac  
+                    objPath = objPath + "/" ;
+                }
+                copyTplDirApi(name, newPath, objPath  + replaceToRealName(item, name));
+
             } else {
                 copyTplFile(path, item, objPath, name);
             }
