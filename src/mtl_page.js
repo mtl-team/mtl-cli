@@ -91,10 +91,8 @@ function addPageApi(projectPath, name, tplname) {
         pageTemplatePath = projectPath + '\\' + tplCachePath;
     }else{
         // mac
-        console.log("MAC 系统");
-        
+        console.log("MAC 系统");   
         pageTemplatePath = projectPath + '/' + tplCachePath;
-        
 
     }
 
@@ -139,20 +137,13 @@ function addPageApi(projectPath, name, tplname) {
         //开发者中心
         tplPath = "tpl_cache/" + tplname;
     } else {
-
-
         tplPath = projectPath + tplCachePath + "/" + tplname;
         if(utils.isWindows()){
-            // win 
-            console.log("WIN 系统");
-            
+            // win             
             tplPath = projectPath + '\\' +tplCachePath + '\\' + tplname;
         }else{
-            // mac
-            console.log("MAC 系统");
-            
-            tplPath = projectPath + + '/' + tplCachePath + "/" + tplname;
-    
+            // mac           
+            tplPath = projectPath + '/' + tplCachePath + "/" + tplname;
         }
         
     }
@@ -163,7 +154,7 @@ function addPageApi(projectPath, name, tplname) {
         result.push("页面模板 没有找到");
         return result;
     }
-    console.log("开始添加模版 - " + tplname);
+    
     try {
         copyTplDirApi(name, tplPath, projectPath);
         result.push("0");
@@ -186,7 +177,6 @@ function copyTplDirApi(name, path, objPath) {
             // console.log(index + " - " + files[index]);
             let item = files[index];
             var  newPath = path + "/" + item;
-
             if(utils.isWindows()){
                 // win 
                 newPath = path + '\\' + item;
@@ -212,7 +202,6 @@ function copyTplDirApi(name, path, objPath) {
         }
     });
 }
-
 
 
 
