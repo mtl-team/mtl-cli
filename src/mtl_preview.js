@@ -723,7 +723,7 @@ function uploadAppCloud(platform) {
                 
                 //  接口请求生成二维码图片 ，并下载到本地
                 // cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
-                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/project.json");
+                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/project.json");
                 // 删除压缩文件
                 fs.removeSync('app.zip');
             }
