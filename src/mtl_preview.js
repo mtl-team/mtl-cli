@@ -722,8 +722,8 @@ function uploadAppCloud(platform) {
                 // openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
                 
                 //  接口请求生成二维码图片 ，并下载到本地
-                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
-
+                // cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
+                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/project.json");
                 // 删除压缩文件
                 fs.removeSync('app.zip');
             }
