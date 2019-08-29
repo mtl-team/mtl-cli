@@ -173,11 +173,7 @@ function chokidarWatch() {
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
-            let pwd = shell.pwd().split(path.sep).join('/');
-            // let end = path.lastIndexOf("/", path.length - 1);
-            let start = path.indexOf("/app/");
-            console.log("文件目录起始位置：" + start);
-            
+
             var start = 0;
 	        var pwd = shell.pwd().split(path.sep).join('/');
 	            if(utils.isWindows()){
