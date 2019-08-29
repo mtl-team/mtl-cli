@@ -310,7 +310,21 @@ var createBeginApi = function (appname, template, workSpace) {
         try {
             let tplLibs = require("../res/templates.json");
             let tplItem = tplLibs[template];
-            let appDir = workSpace + '/' + template;
+            var appDir = workSpace + '/' + template;
+            if(utils.isWindows()){
+                // win 
+                console.log("WIN 系统");
+                appDir = workSpace + '\\' + template;
+            }else{
+                // mac
+                console.log("MAC 系统");
+                
+                appDir = workSpace + '/' + template;
+                
+
+            }
+
+            
             console.log("mtl git url - " + gitClone + tplItem.url);
             shell.exec(gitClone + tplItem.url + " --progress " + appDir);
 

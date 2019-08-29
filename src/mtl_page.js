@@ -79,6 +79,17 @@ function addPageApi(projectPath, name, tplname) {
     var result = [];
     // 页面模板本地和网络获取
     var pageTemplatePath = projectPath + tplCachePath;
+    if(utils.isWindows()){
+        // win 
+        console.log("WIN 系统");
+        pageTemplatePath = projectPath + '\\' + tplCachePath;
+    }else{
+        // mac
+        console.log("MAC 系统");   
+        pageTemplatePath = projectPath + '/' + tplCachePath;
+
+    }
+
     if (conf.get('localResource') == "true") {
         //本地获取
         try {
@@ -121,6 +132,14 @@ function addPageApi(projectPath, name, tplname) {
         tplPath = "tpl_cache/" + tplname;
     } else {
         tplPath = projectPath + tplCachePath + "/" + tplname;
+        if(utils.isWindows()){
+            // win             
+            tplPath = projectPath + '\\' +tplCachePath + '\\' + tplname;
+        }else{
+            // mac           
+            tplPath = projectPath + '/' + tplCachePath + "/" + tplname;
+        }
+        
     }
 
     if (!fs.existsSync(tplPath)) {
@@ -129,7 +148,7 @@ function addPageApi(projectPath, name, tplname) {
         result.push("页面模板 没有找到");
         return result;
     }
-    console.log("开始添加模版 - " + tplname);
+    
     try {
         copyTplDirApi(name, tplPath, projectPath);
         result.push("0");
@@ -151,10 +170,26 @@ function copyTplDirApi(name, path, objPath) {
         for (index in files) {
             // console.log(index + " - " + files[index]);
             let item = files[index];
-            let newPath = path + "/" + item;
+            var  newPath = path + "/" + item;
+            if(utils.isWindows()){
+                // win 
+                newPath = path + '\\' + item;
+            }else{
+                // mac  
+                newPath = path + "/" + item;
+            }
+
             let stat = fs.lstatSync(newPath);
             if (stat.isDirectory()) {
-                copyTplDir(name, newPath, objPath + "/" + replaceToRealName(item, name));
+                if(utils.isWindows()){
+                    // win 
+                    objPath = objPath + '\\' ;
+                }else{
+                    // mac  
+                    objPath = objPath + "/" ;
+                }
+                copyTplDirApi(name, newPath, objPath  + replaceToRealName(item, name));
+
             } else {
                 copyTplFile(path, item, objPath, name);
             }
