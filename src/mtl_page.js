@@ -7,7 +7,7 @@ const configFile = require('./config');
 const Configstore = require('configstore');
 const conf = new Configstore(configFile.CONFIG_STORE_FILENAME);
 const mtlConfig = require('./mtl_config');
-
+const path = require('path');
 const gitClone = "git clone ";
 const TPL_NAME = "__template_name";
 const tplCachePath = "../tpl_caches";
@@ -38,8 +38,6 @@ var addView = async function (name, tplname) {
         return utils.reportError("mtl add-page name [template_name]");
     }
 
-
-
     if (conf.get('username')) {
         //开发者中心
         if (!tplname) {
@@ -52,13 +50,21 @@ var addView = async function (name, tplname) {
             downloadDevPageTemp(name, tplname);
         }
     } else {
-        //本地模板list，从gogs下载模板页面
-        // if(name==UPDATE_TEMPLATE) {
-        //     return downloadPageTemplate(true);
-        // } else {
-        //     downloadPageTemplate(false);
-        // }
-        downloadPageTemplate();
+
+        if (conf.get('localResource') == "true") {
+
+            let pwd = shell.pwd().split(path.sep).join('/');
+            let pageTemplatePath = pwd + "/" + tplCachePath;
+            fs.copySync(configFile.CONFIG_PAGE_TEMPLATE_PATH, pageTemplatePath);
+
+        } else {
+            //开始下载模板页面
+            if (name == UPDATE_TEMPLATE) {
+                return downloadPageTemplate(true);
+            } else {
+                downloadPageTemplate(false);
+            }
+        }
 
         if (!tplname) {
             let tpls = fs.readdirSync(tplCachePath);
@@ -199,9 +205,6 @@ function copyTplDirApi(name, path, objPath) {
 
 
 
-
-
-
 //开始根据模版添加页面
 function addPage(name, tplname) {
     let tplPath;
@@ -218,16 +221,7 @@ function addPage(name, tplname) {
         return utils.reportError("模版 " + tplname + " 没有找到");
     }
     console.log("开始添加模版 - " + tplname);
-
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    if (proj.config.technologyStack == "react") {
-        fs.copySync(tplPath, "./src/pages/" + tplname);
-
-    } else {
-        copyTplDir(name, tplPath, ".");
-    }
-
-
+    copyTplDir(name, tplPath, ".");
 }
 
 function copyTplDir(name, path, objPath) {
@@ -297,29 +291,16 @@ function copyTplFileX(srcfile, objfile, objfilename) {
 
 
 //下载页面模版
-function downloadPageTemplate() {
-
-    if (fs.existsSync(tplCachePath)) {
-        //shell.exec("rm -rf " + tplCachePath); 
-        fs.removeSync(tplCachePath);
+function downloadPageTemplate(isUpdate) {
+    if (isUpdate) {
+        if (fs.existsSync(tplCachePath)) {
+            //shell.exec("rm -rf " + tplCachePath); 
+            fs.removeSync(tplCachePath);
+        }
     }
-
     if (!fs.existsSync(tplCachePath)) {
         //let gitPageUrl = 'https://gogs.yonyoucloud.com/caiyi/mtlPages.git';   //页面模板地址-可写入配置
-
-        var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-        console.log('technologyStack：' + proj.config.technologyStack);
-        var gitPageUrl = null;
-        if (proj.config.technologyStack == "react") {
-
-            gitPageUrl = require("../res/configure.json").reactPages;
-
-        } else {
-            gitPageUrl = require("../res/configure.json").pages;
-        }
-
-
-        // let gitPageUrl = require("../res/configure.json").pages;
+        let gitPageUrl = require("../res/configure.json").pages;
         console.log("mtl git url - " + gitClone + gitPageUrl);
         shell.exec(gitClone + gitPageUrl + " --progress " + tplCachePath);
         //shell.exec("rm -rf "+tplCachePath+"/.git");
