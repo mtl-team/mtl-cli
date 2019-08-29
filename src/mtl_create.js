@@ -279,6 +279,7 @@ var createBeginApi = function (paramData) {
     var appname = mParam.name;
     var template = mParam.projectTemplate;
     var workSpace = mParam.workSpace;
+
     //判断模板是否存在
     shell.exec("cd " + workSpace);
     let tplItem = tplLibs[template];
@@ -298,7 +299,7 @@ var createBeginApi = function (paramData) {
         console.log('error: 当前位置存在 ' + template + ' 目录，与模板名称冲突,请检查本地文件。');
         console.log('创建工程失败。');
         result.push("1");
-        result.push("当前位置已经存在工程目录，与模板名称冲突，创建失败。");
+        result.push("当前位置已经存在工程目录与模板名称冲突，创建失败。");
         return result;
     }
 
@@ -360,6 +361,39 @@ var createBeginApi = function (paramData) {
     shell.exec("cd  " + workSpace + '/' + appname);
     shell.exec("npm --save install express")
     shell.exec("cd ..");
+
+
+    var projfile = workSpace + '/' + appname+ '/project.json';
+            if(utils.isWindows()){
+                // win 
+                console.log("WIN 系统");
+              
+                projfile = workSpace + '\\' + appname+ '\\project.json';
+            }else{
+                // mac
+                console.log("MAC 系统");
+                
+                projfile = workSpace + '/' + appname+ '/project.json';
+                
+
+            }
+
+
+    var proj = JSON.parse(fse.readFileSync(projfile).toString());
+    var app =proj["config"];
+
+    //处理基本属性
+    app["appName"] = appname;
+    app["bundleID"]= mParam.bundleId;
+    app["packageName"]= mParam.packageName;
+    app["projectName"]=appname;
+    app["technologyStack"]=mParam.projectType;
+    app["versionName"]=mParam.version;
+    //回写
+    proj["config"] = app;
+    
+    fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
+
     if (fse.existsSync(workSpace + "/" + appname)) {
         result.push("0");
         result.push(workSpace + "/" + appname);
