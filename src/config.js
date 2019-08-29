@@ -22,8 +22,8 @@ const config = {
 
     CONFIG_PROJECT_TEMPLATE_PATH: '/Users/xyy/src/github/localResource/',
     CONFIG_PAGE_TEMPLATE_PATH: '/Users/xyy/src/github/localResource/mtlPages',
-    CONFIG_IOS_DEBUG_PATH: '/Users/xugang/Desktop/yonyou/cli/model/localResource/iOSDebug/',
-    CONFIG_ANDROID_DEBUG_PATH: '/Users/xugang/Desktop/yonyou/cli/model/localResource/androidDebug/',
+    CONFIG_IOS_DEBUG_PATH: '/Users/xyy/src/github/localResource/iOSDebug/',
+    CONFIG_ANDROID_DEBUG_PATH: '/Users/xyy/src/github/localResource/androidDebug/',
 
 };
 module.exports = config;
