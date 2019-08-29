@@ -285,21 +285,14 @@ var createBeginApi = function (paramData) {
     let tplItem = tplLibs[template];
     var result = [];
     if (!tplItem) {
-        console.log("无效的模板名称 - " + template);
-        console.log("您可以先不输入模板名称，在交互中选择工程模板。");
         result.push("1");
-        result.push("模板名称错误，不能创建工程");
+        result.push("暂不支持的模板："+ template);
         return result;
     }
 
-    console.log("开始创建名称为 - " + appname + "- 的工程");
-
-
     if (fse.existsSync(template)) {
-        console.log('error: 当前位置存在 ' + template + ' 目录，与模板名称冲突,请检查本地文件。');
-        console.log('创建工程失败。');
         result.push("1");
-        result.push("当前位置已经存在工程目录与模板名称冲突，创建失败。");
+        result.push('当前位置已经存在工程目录' + template + '与模板名称冲突，创建失败。');
         return result;
     }
 
@@ -387,7 +380,7 @@ var createBeginApi = function (paramData) {
     app["bundleID"]= mParam.bundleId;
     app["packageName"]= mParam.packageName;
     app["projectName"]=appname;
-    app["technologyStack"]=mParam.projectType;
+
     app["versionName"]=mParam.version;
     //回写
     proj["config"] = app;
