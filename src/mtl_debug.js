@@ -110,14 +110,11 @@ var start = function (platform) {
         return utils.reportError("不是MTL工程目录");
     }
 
-
-
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
     console.log('technologyStack：' + proj.config.technologyStack);
     if (proj.config.technologyStack == "mdf") {
 
-        console.log('react工程。');
-        // shell.exec("yarn build");
+        console.log('mdf工程。');
         debugReactServer();
         debugReactMobile();
      
@@ -341,6 +338,7 @@ function startIOS() {
         return;
     }
 
+  
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
     // 启动debug 程序
@@ -392,6 +390,16 @@ function startAndroid() {
     // }
     // 临时530演示使用debug.app end
 
+
+    // var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    // console.log('technologyStack：' + proj.config.technologyStack);
+    // if (proj.config.technologyStack == "mdf") {
+
+    //     console.log('mdf工程。');
+    //     debugReactServer();
+    //     debugReactMobile();
+     
+    // }
 
     //  第一次启动debug 开始下载debug 程序
     if (!fs.existsSync(pwd + "/androidDebug/debug.apk")) {
@@ -1127,6 +1135,15 @@ function startWX() {
     //     startNode(appJs);
     // }))
     //  监听工程源码 ，给debug 实时更新
+    // var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    // console.log('technologyStack：' + proj.config.technologyStack);
+    // if (proj.config.technologyStack == "mdf") {
+
+    //     console.log('mdf工程。');
+    //     debugReactServer();
+    //     debugReactMobile();
+     
+    // }
     chokidarWatch();
     copyAndDebugWeixin("true");
     return utils.SUCCESS;
@@ -1135,7 +1152,15 @@ function startWX() {
 
 //开始调试钉钉Web小程序
 function startDD() {
+    // var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    // console.log('technologyStack：' + proj.config.technologyStack);
+    // if (proj.config.technologyStack == "mdf") {
 
+    //     console.log('mdf工程。');
+    //     debugReactServer();
+    //     debugReactMobile();
+     
+    // }
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
     copyAndDebugDD("true");

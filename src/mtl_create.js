@@ -273,26 +273,44 @@ var createBegin = function (appname,template) {
  * 
  */
 // var createBeginApi = function (appname, template, workSpace) {
+/**
+ * react 
+ * vue
+ * h5
+ * @param {*} paramData 
+ */
 var createBeginApi = function (paramData) {
     
-    var mParam = JSON.parse(paramData);
-    var appname = mParam.name;
-    var template = mParam.projectTemplate;
-    var workSpace = mParam.workSpace;
+    var appname = paramData.projectName;
+    var template = paramData.projectTemplate;
+    var workSpace = paramData.workSpace;
+    var projectType = paramData.projectType;
+    var result = [];
+    if (projectType === "vue") {
+      result.push("1");
+      result.push(`目前不支持当前工程类型: ${projectType}`);
+      return result;
+    }
 
     //判断模板是否存在
     shell.exec("cd " + workSpace);
     let tplItem = tplLibs[template];
-    var result = [];
     if (!tplItem) {
+        console.log("无效的模板名称 - " + template);
+        console.log("您可以先不输入模板名称，在交互中选择工程模板。");
         result.push("1");
-        result.push("暂不支持的模板："+ template);
+        result.push(`当前模板${template},正在开发中....请期待`);
         return result;
     }
 
+    console.log("开始创建名称为 - " + appname + "- 的工程");
+
+
     if (fse.existsSync(template)) {
+        console.log('error: 当前位置存在 ' + template + ' 目录，与模板名称冲突,请检查本地文件。');
+        console.log('创建工程失败。');
         result.push("1");
-        result.push('当前位置已经存在工程目录' + template + '与模板名称冲突，创建失败。');
+        result.push("当前位置已经存在工程目录与模板名称冲突，创建失败。");
         return result;
     }
 
@@ -377,11 +395,10 @@ var createBeginApi = function (paramData) {
 
     //处理基本属性
     app["appName"] = appname;
-    app["bundleID"]= mParam.bundleId;
-    app["packageName"]= mParam.packageName;
+    app["bundleID"]= paramData.bundleId;
+    app["packageName"]= paramData.packageName;
     app["projectName"]=appname;
-
-    app["versionName"]=mParam.version;
+    app["versionName"]=paramData.version;
     //回写
     proj["config"] = app;
     
