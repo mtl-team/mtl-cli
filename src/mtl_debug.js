@@ -50,11 +50,11 @@ async function debugReactServer() {
         });
 
         debugServer.stdout.on('data', (data) => {
-            // console.log(`stdout: ${data}`);
+            console.log(`stdout: ${data}`);
         });
 
         debugServer.stderr.on('data', (data) => {
-            // console.log(`stderr: ${data}`);
+            console.log(`stderr: ${data}`);
         });
 
         debugServer.on('close', (code) => {
@@ -82,11 +82,11 @@ async function debugReactMobile() {
         });
 
         debugMobile.stdout.on('data', (data) => {
-            // console.log(`stdout: ${data}`);
+             console.log(`stdout: ${data}`);
         });
 
         debugMobile.stderr.on('data', (data) => {
-            // console.log(`stderr: ${data}`);
+             console.log(`stderr: ${data}`);
         });
 
         debugMobile.on('close', (code) => {
@@ -114,7 +114,7 @@ var start = function (platform) {
 
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
     console.log('technologyStack：' + proj.config.technologyStack);
-    if (proj.config.technologyStack == "react") {
+    if (proj.config.technologyStack == "mdf") {
 
         console.log('react工程。');
         // shell.exec("yarn build");
@@ -429,8 +429,8 @@ function copyAndInstallDebugIOS(isStartNode) {
     let path = getPathByPlatform(utils.Platform.IOS);
     let objPath = "./" + path + "/";
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    if (proj.config.technologyStack == "react") {
-        // react 工程不需要 ，直接监听原工程
+    if (proj.config.technologyStack == "mdf") {
+        // mdf 工程不需要 ，直接监听原工程
     }else{
         // copy 工程到 output
         copyProjectToOutput(objPath, utils.Platform.IOS);
@@ -445,7 +445,7 @@ function copyAndInstallDebugIOS(isStartNode) {
     shell.exec(cmdInstallApp);
     console.log("开始运行调试应用");
     shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
-    if (proj.config.technologyStack == "react") {
+    if (proj.config.technologyStack == "mdf") {
     //  do nothing  用react的 node 服务
     }else{
         let appJs = createAppJsFile(path);
@@ -464,8 +464,8 @@ function copyAndInstallDebugAndroid(isStartNode) {
     let objPath = "./" + path + "/";
 
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    if (proj.config.technologyStack == "react") {
-        // react 工程不需要 ，直接监听原工程
+    if (proj.config.technologyStack == "mdf") {
+        // mdf 工程不需要 ，直接监听原工程
     }else{
         // copy 工程到 output
         copyProjectToOutput(objPath, utils.Platform.ANDROID);
@@ -477,7 +477,7 @@ function copyAndInstallDebugAndroid(isStartNode) {
     }
     console.log("开始安装debug 调试程序");
     shell.exec("adb install -r " + debugApk);   
-    if (proj.config.technologyStack == "react") {
+    if (proj.config.technologyStack == "mdf") {
          // 延迟 5秒 执行打开activity 页面
         setTimeout(function () {
             shell.exec(cmdRunDebugApk);
@@ -516,8 +516,8 @@ function copyAndDebugWeixin(isStartNode) {
         fs.copySync('./wx/', projPath);
     }
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    if (proj.config.technologyStack == "react") {
-        // react 工程不需要 ，直接监听原工程
+    if (proj.config.technologyStack == "mdf") {
+        // mdf 工程不需要 ，直接监听原工程
     }else{
         // copy 工程到 output
         fs.ensureDirSync(objPath);
@@ -555,8 +555,8 @@ function copyAndDebugDD(isStartNode) {
     }
 
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    if (proj.config.technologyStack == "react") {
-        // react 工程不需要 ，直接监听原工程
+    if (proj.config.technologyStack == "mdf") {
+        // mdf 工程不需要 ，直接监听原工程
     }else{
         // copy 工程到 output
         fs.ensureDirSync(objPath);
