@@ -272,9 +272,14 @@ var createBegin = function (appname,template) {
  * @param {String} template 
  * 
  */
-var createBeginApi = function (appname, template, workSpace) {
+// var createBeginApi = function (appname, template, workSpace) {
+var createBeginApi = function (paramData) {
+    
+    var mParam = JSON.parse(paramData);
+    var appname = mParam.name;
+    var template = mParam.projectTemplate;
+    var workSpace = mParam.workSpace;
     //判断模板是否存在
-
     shell.exec("cd " + workSpace);
     let tplItem = tplLibs[template];
     var result = [];

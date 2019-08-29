@@ -4,7 +4,7 @@ let app = getApp();
 Component({
   props: {
     url: "",
-    query:"",
+    query: "",
     appCode: ""
   },
   didMount() {
@@ -553,15 +553,21 @@ Component({
     },
 
     recognizeInvoice(obj) {
-      let { appCode, image } = obj.obj;
-      let localId = image;
-      let filePath = app.global.localIds[localId];
-      obj.src = filePath;
-      obj.success = (res) => {
-        this._identifyInvoice(res);
-      };
-      obj.fail = this.getFailFunction(obj);
-      this._getImageUrl(obj);
+      let src = app.global.localIds[obj.obj.image];
+      if (src.startsWith('data:')) {
+        obj.imgBase64 = src;
+        this._identifyInvoice(obj)
+      } else {
+        let { appCode, image } = obj.obj;
+        let localId = image;
+        let filePath = app.global.localIds[localId];
+        obj.src = filePath;
+        obj.success = (res) => {
+          this._identifyInvoice(res);
+        };
+        obj.fail = this.getFailFunction(obj);
+        this._getImageUrl(obj);
+      }
     },
 
     _getImageUrl(obj) {
@@ -591,7 +597,7 @@ Component({
       });
     },
     _identifyInvoice(obj) {
-      let { imageUrl } = obj;
+      let { imageUrl, imgBase64 } = obj;
       let url = 'https://ocrapi-invoice.taobao.com/ocrservice/invoice';
       let appCode = obj.obj.appCode;
       if (!!!appCode) {
@@ -605,7 +611,7 @@ Component({
         return;
       }
 
-      let params = { "url": `${imageUrl}` }
+      let params = !!imageUrl ? { "url": `${imageUrl}` } : { "img": imgBase64 }
       let target = {
         url: url,
         headers: {
@@ -643,11 +649,18 @@ Component({
       });
     },
     recognizeIDCard(obj) {
-      obj.success = (res) => {
-        this._identifyIDCard(res);
+      let image = obj.obj.image;
+      if (image.startsWith('data:')) {
+        obj.imgBase64 = image;
+        this._identifyIDCard(obj)
+      } else {
+        obj.success = (res) => {
+          this._identifyIDCard(res);
+        }
+        obj.fail = this.getFailFunction(obj)
+        this._getImageBase64(obj);
       }
-      obj.fail = this.getFailFunction(obj)
-      this._getImageBase64(obj);
+
 
     },
     _identifyIDCard(obj) {
@@ -655,6 +668,16 @@ Component({
       let { appCode, side } = obj.obj;
       let url = 'https://dm-51.data.aliyun.com/rest/160601/ocr/ocr_idcard.json';
       // let appCode = appCode || '397a546045454397bfa68c918df3bb18';
+      if (!!!appCode) {
+        let resource = {
+          action: obj.action,
+          uuid: obj.uuid,
+          code: -1,
+          message: 'appCode is null '
+        }
+        this.sendFailResult(resource)
+        return;
+      }
       let params = {
         "image": imgBase64,
         "configure": {
@@ -697,18 +720,25 @@ Component({
       });
     },
     recognizeBankCard(obj) {
-      obj.success = (res) => {
-        this._identifyBankCard(res);
-      };
-      obj.fail = this.getFailFunction(obj);
+      let src = app.global.localIds[obj.obj.image];
+      if (src.startsWith('data:')) {
+        obj.imgBase64 = src;
+        this._identifyBankCard(obj);
+      } else {
+        obj.success = (res) => {
+          this._identifyBankCard(res);
+        };
+        obj.fail = this.getFailFunction(obj);
 
-      this._getImageBase64(obj);
+        this._getImageBase64(obj);
+      }
+
 
     },
     _identifyBankCard(obj) {
       let { imgBase64 } = obj;
       let url = 'https://yhk.market.alicloudapi.com/rest/160601/ocr/ocr_bank_card.json'
-      let appCode = obj.appCode || '397a546045454397bfa68c918df3bb18';
+      let appCode = obj.obj.appCode || '397a546045454397bfa68c918df3bb18';
       let params = { "image": `${imgBase64}` }
       let target = {
         url: url,
@@ -741,8 +771,8 @@ Component({
           let path = res.path;
           let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
           // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
-          let imgType = 'png';
-          // let prefix = `data:image/${imgType};base64,`
+          let imgType = 'jpg';
+          let prefix = `data:image/${imgType};base64,`
           dd.uploadFile({
             url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
             fileType: 'image',
@@ -751,7 +781,7 @@ Component({
             success: (res) => {
               let data = JSON.parse(res.data);
               let base64ImgCode = data.data;
-              obj.imgBase64 = base64ImgCode;
+              obj.imgBase64 = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
               obj.success && obj.success(obj)
             },
             fail: this.getFailFunction(obj)
@@ -773,7 +803,7 @@ Component({
       }
       dd.getStorage({
         key: domain,
-        success: function(res) {
+        success: function (res) {
           let structs = res.data || {};
           structs[key] = data;
           dd.setStorageSync({
@@ -876,19 +906,30 @@ Component({
 
     },
     addPushListener(obj) {
-      let query = JSON.parse(this.props.query.substring(0, this.props.query.length-1));
-      let pushMsg = {};
-      let { type } = this.props.query;
-      if (type) {
-        pushMsg = this.props.parameters.query;
-      }
-      this.sendSuccessResult({
-        ...obj, ...{
-          data: {
-            msg: pushMsg
-          }
+      try {
+        let query = JSON.parse(this.props.query.substring(0, this.props.query.length - 1));
+        let pushMsg = {};
+        let { type } = this.props.query;
+        if (type) {
+          pushMsg = this.props.parameters.query;
         }
-      });
+        this.sendSuccessResult({
+          ...obj, ...{
+            data: {
+              msg: pushMsg
+            }
+          }
+        });
+      } catch (error) {
+        this.sendSuccessResult({
+          ...obj, ...{
+            data: {
+              msg: {}
+            }
+          }
+        });
+      }
+
     },
   },
 });

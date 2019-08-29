@@ -19,7 +19,13 @@ Page({
       success: res => {
         console.log('success', res);
         if (res.status == 200) {
-          let startPage = res.data.config.startPage;
+          let { startPage, technologyStack } = res.data.config;
+          let port = 3000;
+          if (technologyStack === 'mdf') {
+            port = 3003;
+          }
+          baseUrl = `http://localhost:${port}`
+
           let appCode = res.data.config.ddAppCode;
           if (startPage && startPage.indexOf('http') == -1) {
             res.pageUrl = `${baseUrl}/${startPage}`;
