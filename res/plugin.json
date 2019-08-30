@@ -4,7 +4,7 @@
             "name": "mtl-plugin-faceverify",
             "type": "cordova",
             "parameters": [
-                "LICENSEID_IOS=12312",
+                "LICENSEID_IOS=renliantest-face-ios",
                 "LICENSEID_ANDROID=mtl-android-face-android",
                 "BASE_URL=http://172.20.14.154:80",
                 "PUB_KEY=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJwnm0t5GdNp/Q7fEM+jGMoxK/1S0r0KaMF2vsX2cXRRkb7fGo/uXhtbrDqjzvoqF954idr3vRRJ8jIC7BNxbhSoETIpxqr78Yup5rF6HlA8mEOZWavPNQ6Y1zz+uRS7QV2GrMEy2D/Wdrru6TWFVfhiKM2RvavrdncinYCSmxqQIDAQAB"
