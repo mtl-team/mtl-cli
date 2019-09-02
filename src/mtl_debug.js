@@ -413,7 +413,7 @@ function startAndroid() {
 // const cmdRunDebugApk = "adb shell am start -S com.yyiuap.summer.preview/com.yyuap.summer.core2.SummerWelcomeActivity";
 // const adrAppPath="/sdcard/Android/data/com.yyiuap.summer.preview/preview_android/";
 
-const cmdRunDebugApk = "adb shell am start -S com.yonyou.mtlandroid.debug/com.yonyou.myapis.DebugActivity";
+const cmdRunDebugApk = "adb shell am start -S com.yonyou.mtlandroid.debug/com.yonyou.mtlmain.DebugActivity";
 const adrAppPath = "/sdcard/Android/data/com.yonyou.mtlandroid/preview_android/";
 // var cmd = "adb install -r " + debugApk;
 //     shell.exec(cmd);
