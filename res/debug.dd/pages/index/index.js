@@ -1,8 +1,6 @@
 Page({
   data: {
-    parameter: {
-
-    }
+    
   },
   onLoad(query) {
     // 页面加载
@@ -10,14 +8,15 @@ Page({
       query: JSON.stringify(query)
     });
   },
+  onPostMessage(){
+    return this.data;
+  },
   onReady() {
     let baseUrl = 'http://localhost:3000';
     let url = `${baseUrl}/project.json`;
-    console.log("ready");
     dd.httpRequest({
       url: url,
       success: res => {
-        console.log('success', res);
         if (res.status == 200) {
           let { startPage, technologyStack } = res.data.config;
           let port = 3000;
@@ -34,23 +33,20 @@ Page({
           }
           this.setData({
             url: res.pageUrl,
-            appCode: appCode
+            appCode: appCode,
+            baseUrl: baseUrl,
+            serviceUrl:res.data.config.serviceUrl
           })
-          console.log('url=', this.data.url);
         }
       },
       fail: res => {
         console.log('fail', res);
       }
     });
-
-  },
-  onParameters(data) {
-
+    
   },
   onShow() {
     // 页面显示
-    console.log('url=', this.data.url);
   },
   onHide() {
     // 页面隐藏

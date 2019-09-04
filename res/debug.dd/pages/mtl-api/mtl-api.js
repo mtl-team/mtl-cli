@@ -2,15 +2,37 @@ import uuid from '../../utils/uuid.js'
 let app = getApp();
 
 Component({
+  data: {
+  },
   props: {
     url: "",
-    query: "",
-    appCode: ""
+    //获取传递的数据类
+    onPostMessage: () => { }
   },
   didMount() {
     this.webViewContext = dd.createWebViewContext('mtl-api-webview');
   },
-  didUpdate() { },
+  didUpdate() {
+    if (!!!this.data.pages) {
+      let baseUrl = this.props.onPostMessage().baseUrl;
+      console.log('receiveMessage', this.props.onPostMessage());
+      dd.httpRequest({
+        url: `${baseUrl}/pages.json`,
+        success: (res) => {
+          if (res.status == 200) {
+            res.data.platforms.forEach((element) => {
+              if ("dd" == element.platform) {
+                this.setData({
+                  pages: element.pages
+                });
+              }
+            })
+          }
+        }
+      });
+    }
+
+  },
   didUnmount() { },
   methods: {
     onAlert({ action }) {
@@ -73,7 +95,7 @@ Component({
      * 保留当前页面，跳转到应用内的某个指定页面，可以使用 dd.navigateBack 返回到原来页面。
      * @param {{ page: 'index',parameters: {key: 'value'}}} obj 
      */
-    navigateTo({ obj }) {
+    navigateTo(obj) {
       let target = { url: this._getUrl(obj) }
       dd.navigateTo(target)
     },
@@ -82,7 +104,7 @@ Component({
      * 关闭当前页面，跳转到应用内的某个指定页面。
      * @param {*} obj 
      */
-    redirectTo({ obj }) {
+    redirectTo(obj) {
       let target = { url: this._getUrl(obj) }
       dd.redirectTo(target);
     },
@@ -169,7 +191,17 @@ Component({
      * @param {*} obj 
      */
     uploadFile(obj) {
-      let url = "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/uploadToOSS";
+      let url = this.props.onPostMessage().serviceUrl.uploadUrl;
+      if (!!!url) {
+        let resource = {
+          code: -1,
+          message: '上传服务器地址没有配置，请在project.json配置',
+          action: obj.action,
+          uuid: obj.uuid,
+        }
+        this.sendFailResult(resource);
+        return ;
+      }
       let { fileType, fileName, filePath } = obj;
 
       let target = {
@@ -202,7 +234,18 @@ Component({
 
     downloadFile(obj) {
       let serverId = obj.obj.serverId;
-      let url = `https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download?serviceId=${serverId}`;
+      let url = this.props.onPostMessage().serviceUrl.downloadUrl;
+      if (!!!url) {
+        let resource = {
+          code: -1,
+          message: '下载服务器地址没有配置，请在project.json配置',
+          action: obj.action,
+          uuid: obj.uuid,
+        }
+        this.sendFailResult(resource);
+        return ;
+      }
+       url = `${url}?serviceId=${serverId}`;
 
       //todo 通过serverId请求服务器获取图片链接
       let target = {
@@ -527,14 +570,28 @@ Component({
      * @param {*} obj 
      * @returns string
      */
-    _getUrl({ page, parameters }) {
+    _getUrl(obj) {
       //page统一梳理
       let suffix = "";
-      for (let key in parameters) {
-        suffix += `${key}=${parameters[key]}&`;
+      let { page, parameters } = obj.obj;
+      let pages = this.data.pages;
+      if (pages && pages.hasOwnProperty(page)) {
+        page = pages[page].url;
+        for (let key in parameters) {
+          suffix += `${key}=${parameters[key]}&`;
+        }
+        let url = `${page}?${suffix.substring(0, suffix.length - 1)}`
+        return url;
+      } else {
+        let resource = {
+          code: -1,
+          message: '页面路径没有找到，请配置pages.json',
+          action: obj.action,
+          uuid: obj.uuid,
+        }
+        this.sendFailResult(resource);
       }
-      let url = `${page}?${suffix.substring(0, suffix.length - 1)}`
-      return url;
+
     },
     scanInvoice(obj) {
       dd.chooseImage({
@@ -658,13 +715,14 @@ Component({
           this._identifyIDCard(res);
         }
         obj.fail = this.getFailFunction(obj)
-        this._getImageBase64(obj);
+        obj.src = app.global.localIds[image];
+        this._getImageUrl(obj);
       }
 
 
     },
     _identifyIDCard(obj) {
-      let { imgBase64 } = obj;
+      let { imgBase64, imageUrl } = obj;
       let { appCode, side } = obj.obj;
       let url = 'https://dm-51.data.aliyun.com/rest/160601/ocr/ocr_idcard.json';
       // let appCode = appCode || '397a546045454397bfa68c918df3bb18';
@@ -679,7 +737,7 @@ Component({
         return;
       }
       let params = {
-        "image": imgBase64,
+        "image": `${imgBase64 ? imgBase64 : imageUrl}`,
         "configure": {
           side: side
         }
@@ -713,14 +771,14 @@ Component({
           //todo 生成唯一的UUID
           let localId = uuid(22);
           app.global.localIds[localId] = value;
-          obj.obj.image = localId;
+          obj.src = localId;
           this.recognizeBankCard(obj);
         },
         fail: this.getFailFunction(obj)
       });
     },
     recognizeBankCard(obj) {
-      let src = app.global.localIds[obj.obj.image];
+      let src = app.global.localIds[obj.src];
       if (src.startsWith('data:')) {
         obj.imgBase64 = src;
         this._identifyBankCard(obj);
@@ -729,17 +787,27 @@ Component({
           this._identifyBankCard(res);
         };
         obj.fail = this.getFailFunction(obj);
-
-        this._getImageBase64(obj);
+        obj.src = src;
+        this._getImageUrl(obj);
       }
 
 
     },
     _identifyBankCard(obj) {
-      let { imgBase64 } = obj;
+      let { imgBase64, imageUrl } = obj;
       let url = 'https://yhk.market.alicloudapi.com/rest/160601/ocr/ocr_bank_card.json'
-      let appCode = obj.obj.appCode || '397a546045454397bfa68c918df3bb18';
-      let params = { "image": `${imgBase64}` }
+      let appCode = obj.obj.appCode;
+      if (!!!appCode) {
+        let data = {
+          action: obj.action,
+          uuid: obj.uuid,
+          message: 'appCode 不能为空',
+          code: -1
+        }
+        this.sendFailResult(data);
+        return;
+      }
+      let params = { "image": `${imgBase64 ? imgBase64 : imageUrl}` }
       let target = {
         url: url,
         headers: {
@@ -886,7 +954,7 @@ Component({
       });
     },
     getAppCode(obj) {
-      let appCode = this.props.appCode;
+      let appCode = this.props.onPostMessage().appCode;
       if (appCode) {
         this.sendSuccessResult({
           ...obj, ...{
@@ -907,11 +975,12 @@ Component({
     },
     addPushListener(obj) {
       try {
-        let query = JSON.parse(this.props.query.substring(0, this.props.query.length - 1));
+        let query = this.props.onPostMessage().query;
+        query = JSON.parse(query.substring(0, query.length - 1));
         let pushMsg = {};
-        let { type } = this.props.query;
+        let { type } = query;
         if (type) {
-          pushMsg = this.props.parameters.query;
+          pushMsg = query;
         }
         this.sendSuccessResult({
           ...obj, ...{
