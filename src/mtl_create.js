@@ -281,10 +281,10 @@ var createBegin = function (appname,template) {
  */
 var createBeginApi = function (paramData) {
     
-    var appname = paramData.projectName;
-    var template = paramData.projectTemplate;
+    var appname = paramData.artifact;
+    var template = paramData.template;
     var workSpace = paramData.workSpace;
-    var projectType = paramData.projectType;
+    var projectType = paramData.project;
     var result = [];
     if (projectType === "vue") {
       result.push("1");
