@@ -39,6 +39,10 @@
                 "APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
                 "SECRETKEY=iBzBh459NnqViqaLQUvNF88xi2dqj0U1"
             ]
+        },
+        {     
+            "name": "mtl-plugin-notification",  
+            "type": "cordova"
         }
     ]
 }
