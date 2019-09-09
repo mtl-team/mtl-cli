@@ -15,7 +15,7 @@ const { kill } = require("cross-port-killer");
 // var md5 = crypto.createHash('md5');
 const chokidar = require('chokidar');
 const { spawn } = require('child_process');
-const debugList = [{
+const previewList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX ;4、DD ; 5、Upesn, 用上下箭头选择平台:',
     name: 'platform',
@@ -33,12 +33,60 @@ const debugList = [{
 
 
 /**
-* 执行build react 工程构建
+* 执行preview react 工程构建
 */
-function buildReactProject() {
-    return new Promise((resolve, reject) => {
-        shell.exec(" yarn  build ");
+function previewReactProject() {
+
+    shell.exec(" yarn  preview ");
+
+}
+
+/**
+* 安装服务
+*/
+function installServeForReact() {
+
+    shell.exec(" npm -g install serve");
+
+}
+/**
+* 部署服务
+*/
+// function deployServerForBuild() {
+
+//     shell.exec("serve build ");
+
+// }
+
+
+async function deployServerForBuild() {
+
+    kill(5000).then(pids => {
+        console.log(pids);
+        console.log("开始启动 debug:server");
+        // shell.exec("serve build ");
+
+        deployServer = spawn('serve', ["build"], {
+            cwd: process.cwd(),
+            env: process.env,
+            shell: process.platform === 'win32',
+            detached: true,
+            silent: true
+        });
+
+        deployServer.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+
+        deployServer.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+        });
+
+        deployServer.on('close', (code) => {
+            console.log(`child process deployServer exited with code ${code}`);
+        });
     })
+
 }
 
 var start = function (platform) {
@@ -47,38 +95,10 @@ var start = function (platform) {
         return utils.reportError("不是MTL工程目录")
     }
 
-    var ipAddress = utils.getIP();
-    console.log('ipAddress：'+ipAddress);
-   
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-
-    console.log('technologyStack：'+proj.config.technologyStack);
-
-    if (proj.config.technologyStack == "react") {
-
-        console.log('react工程。');
-        // shell.exec("yarn build");
-        (async function () {
-            try {
-                await buildReactProject();
-            } catch (e) {
-                console.log(e)
-            }
-        })();
-        if (fs.existsSync("./build")) {
-            fs.ensureDirSync('./app');
-            fs.copySync('./build', './app');
-        } else {
-            console.log('react工程build失败。');
-            return;
-        }
-
-    }
-
 
     let plat = utils.checkPlatform(platform);
     if (platform == undefined || plat == "error") {
-        inquirer.prompt(debugList).then(answers => {
+        inquirer.prompt(previewList).then(answers => {
             beginPreview(answers.platform);
         });
     } else {
@@ -87,8 +107,122 @@ var start = function (platform) {
     return utils.SUCCESS;
 }
 
+
+function registerProxyHost() {
+
+
+    var ipAddr = utils.getIP();
+    console.log('ipAddress：' + ipAddr);
+    // shell.exec("yarn build");
+    var ipHost = [];
+    ipHost.push("http://" + ipAddr + ":5000");
+    var FormData = require('form-data');
+    var http = require('https');
+
+    var form = new FormData();
+    form.append("host", JSON.stringify(ipHost));
+    form.append("Content-Type", "application/x-www-form-urlencoded");
+    var headers = form.getHeaders();//这个不能少
+    var request = http.request({
+        method: 'POST',
+        hostname: configFile.CONFIG_PREVIEW_URL,
+        path: configFile.CONFIG_PREVIEW_REGISTER_PROXY_HOST,
+        headers: headers
+    }, (res) => {
+        res.on('data', (buffer) => {
+            console.log("data=" + buffer);
+
+            var responseResult = JSON.parse(buffer);
+            if (responseResult.msg = "success") {
+                var data = responseResult.data;
+
+                //  cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/project.json");
+                console.log(Object.values(data)[0]);
+                updatePackageJsonFileForPreview(Object.values(data)[0]);
+                //工程生成预览静态资源
+                previewReactProject();
+                // 下载server 以及部署静态资源
+
+                installServeForReact();
+                deployServerForBuild();
+                //生成二维码  
+                //  接口请求生成二维码图片 ，并下载到本地
+                console.log("开始生成二维码图片");
+                cloudCreateQRAndDownload("proxy", "https://mdoctor.yonyoucloud.com" + "/mtldebugger/solr/" + Object.values(data)[0] + "/");
+                // cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/project.json");
+            }
+        });
+        res.on('end', () => {
+            console.log("end");
+        });
+    });
+
+    request.on('error', (e) => {
+        console.log(`problem with request: ${e.message}`);
+    });
+    form.pipe(request);
+}
+
+function updatePackageJsonFileForPreview(hostAlias) {
+
+    var packageFile = JSON.parse(fs.readFileSync("./package.json").toString());
+
+
+    //update
+    packageFile.scripts.preview = `PUBLIC_URL='/mtldebugger/solr/${hostAlias}' react-scripts build`;
+
+    fs.writeFileSync("./package.json", formatJson(packageFile), { flag: 'w', encoding: 'utf-8', mode: '0666' });
+
+}
+function formatJson(data) {
+    return JSON.stringify(data, null, 4);
+}
+
+function beginProxyPreview() {
+
+    (async function () {
+        try {
+            await registerProxyHost();
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+
+
+
+
+    // (async function () {
+    //     try {
+    //         await previewReactProject();
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // })();
+    // if (fs.existsSync("./build")) {
+    //     fs.ensureDirSync('./app');
+    //     fs.copySync('./build', './app');
+    // } else {
+    //     console.log('react工程build失败。');
+    //     return;
+    // }
+}
+
+
+
 function beginPreview(plat) {
     //utils.copyHosts("preview");
+
+    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+
+    console.log('technologyStack：' + proj.config.technologyStack);
+
+    if (proj.config.technologyStack == "react") {
+
+        console.log('react工程。');
+        beginProxyPreview();
+        return;
+    }
+
     console.log('选用平台：' + plat);
     switch (plat) {
         case utils.Platform.IOS:
@@ -146,12 +280,12 @@ function chokidarWatch() {
             }
 
             //  更新云端工程文件
-            if(utils.isWindows()){
+            if (utils.isWindows()) {
                 // win 
                 console.log("WIN 系统");
-                path=path.replace(/\\/g,'/');
-                console.log("update file path:"+path);
-            }else{
+                path = path.replace(/\\/g, '/');
+                console.log("update file path:" + path);
+            } else {
                 // mac do nothing
             }
             zipFileAndUploadcloud(path, "false");
@@ -259,7 +393,7 @@ function updateIosPlistFile(plistDir) {
     plist.writeFileSync(plistDir, data);
 }
 function startIOS() {
-   
+
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
     // 启动debug 程序
@@ -646,7 +780,7 @@ function uploadFileToCloud(filePath, isProjectJson) {
     var headers = form.getHeaders();//这个不能少
     var request = http.request({
         method: 'POST',
-        hostname: configFile.CONFIG_PREVIEW_URL ,
+        hostname: configFile.CONFIG_PREVIEW_URL,
         path: configFile.CONFIG_PREVIEW_UPLOAD_FILE_API,
         headers: headers
     }, (res) => {
@@ -723,10 +857,10 @@ function uploadAppCloud(platform) {
                 // 打开浏览器 ，形成二维码
                 // var openbrowser = require('openbrowser');
                 // openbrowser("https://mdoctor.yonyoucloud.com/mtldebugger/mtl/qr/build?code=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
-                
+
                 //  接口请求生成二维码图片 ，并下载到本地
                 // cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage);
-                cloudCreateQRAndDownload(platform,"https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage+"?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/project.json");
+                cloudCreateQRAndDownload(platform, "https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/" + startPage + "?projectJson=https://mdoctor.yonyoucloud.com/debugger/" + projectName + "/app/project.json");
                 // 删除压缩文件
                 fs.removeSync('app.zip');
             }
@@ -765,91 +899,91 @@ function zipFileAndUploadcloud(filePath, isProjectJson) {
 }
 
 
-function cloudCreateQRAndDownload(selectedPlatform,param){
+function cloudCreateQRAndDownload(selectedPlatform, param) {
     // 接口请求
     var FormData = require('form-data');
     var http = require('https');
     var form = new FormData();
-  
-    var file="project.json";
-    var result=JSON.parse(fs.readFileSync(file));
+
+    var file = "project.json";
+    var result = JSON.parse(fs.readFileSync(file));
     var projectName = result.config.projectName;
     var gitUrl = result.config.gitUrl;
-  
-    form.append('code',param);
-   
+
+    form.append('code', param);
+
     var headers = form.getHeaders();//这个不能少
     // headers.Cookie = cookie;//自己的headers属性在这里追加
     var request = http.request({
-      method: 'POST',
-      host: configFile.CONFIG_PREVIEW_URL ,
-    //   port: configFile.CONFIG_BUILDSERVER_PORT , 
-      path: configFile.CONFIG_PREVIEW_CREATE_QR_API ,
-      headers: headers
-    },(res) =>{
-              var outFile= selectedPlatform+'.png'
-              let ws = fs.createWriteStream(outFile,{
-                    highWaterMark:1
-                })
-  
-              res.on('data',(buffer) => {
-                ws.write(buffer) ;  
-              });
-              res.on('end',()=>{
-                
-                //文件下载结束
-                ws.end();
-                console.log("二维码已经下载到本地,并弹出显示。");
-                fs.exists("./output/tempPreview/"+selectedPlatform+'.png', function (exists) {
-                    if (exists) {
-                        // 删除已有的文件
-                        fs.removeSync("./output/tempPreview/"+selectedPlatform+'.png');
-                        fs.move(selectedPlatform+'.png', "./output/tempPreview/"+selectedPlatform+'.png', function (err) {
-                            if (err) return console.error(err)
-                            
-                            // var openbrowser = require('openbrowser');
-                            var pwd = shell.pwd().split(path.sep).join('/');
-                            console.log("二维码地址："+pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+        method: 'POST',
+        host: configFile.CONFIG_PREVIEW_URL,
+        //   port: configFile.CONFIG_BUILDSERVER_PORT , 
+        path: configFile.CONFIG_PREVIEW_CREATE_QR_API,
+        headers: headers
+    }, (res) => {
+        var outFile = selectedPlatform + '.png'
+        let ws = fs.createWriteStream(outFile, {
+            highWaterMark: 1
+        })
 
-                            // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
-                            const opn = require('opn');
-                            opn(pwd +"/output/tempPreview/"+selectedPlatform+'.png').then(() => {
-                                // image viewer closed
-                                console.log("image viewer open");
-                                });
+        res.on('data', (buffer) => {
+            ws.write(buffer);
+        });
+        res.on('end', () => {
 
+            //文件下载结束
+            ws.end();
+            console.log("二维码已经下载到本地,并弹出显示。");
+            fs.exists("./output/tempPreview/" + selectedPlatform + '.png', function (exists) {
+                if (exists) {
+                    // 删除已有的文件
+                    fs.removeSync("./output/tempPreview/" + selectedPlatform + '.png');
+                    fs.move(selectedPlatform + '.png', "./output/tempPreview/" + selectedPlatform + '.png', function (err) {
+                        if (err) return console.error(err)
+
+                        // var openbrowser = require('openbrowser');
+                        var pwd = shell.pwd().split(path.sep).join('/');
+                        console.log("二维码地址：" + pwd + "/output/tempPreview/" + selectedPlatform + '.png');
+
+                        // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+                        const opn = require('opn');
+                        opn(pwd + "/output/tempPreview/" + selectedPlatform + '.png').then(() => {
+                            // image viewer closed
+                            console.log("image viewer open");
                         });
 
-                    }
-                    if (!exists) {
-                        fs.move(selectedPlatform+'.png', "./output/tempPreview/"+selectedPlatform+'.png', function (err) {
-                            if (err) return console.error(err)
-                            
-                            // var openbrowser = require('openbrowser');
-                            var pwd = shell.pwd().split(path.sep).join('/');
-                            console.log("二维码地址："+pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+                    });
 
-                            // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
-                        
-                            const opn = require('opn');
-                            opn(pwd +"/output/tempPreview/"+selectedPlatform+'.png').then(() => {
-                                // image viewer closed
-                                console.log("image viewer open");
+                }
+                if (!exists) {
+                    fs.move(selectedPlatform + '.png', "./output/tempPreview/" + selectedPlatform + '.png', function (err) {
+                        if (err) return console.error(err)
 
-                                });
+                        // var openbrowser = require('openbrowser');
+                        var pwd = shell.pwd().split(path.sep).join('/');
+                        console.log("二维码地址：" + pwd + "/output/tempPreview/" + selectedPlatform + '.png');
+
+                        // openbrowser(pwd +"/output/tempPreview/"+selectedPlatform+'.png');
+
+                        const opn = require('opn');
+                        opn(pwd + "/output/tempPreview/" + selectedPlatform + '.png').then(() => {
+                            // image viewer closed
+                            console.log("image viewer open");
+
                         });
-                    }
-                })
-            
-              });
-          
+                    });
+                }
+            })
+
+        });
+
     });
-  
+
     request.on('error', (e) => {
-      console.log(`problem with request: ${e.message}`);
+        console.log(`problem with request: ${e.message}`);
     });
-    form.pipe(request);  
-  }
+    form.pipe(request);
+}
 
 
 function cloudBuildAndUnzip(selectedPlatform) {
