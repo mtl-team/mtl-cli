@@ -47,6 +47,9 @@ var start = function (platform) {
         return utils.reportError("不是MTL工程目录")
     }
 
+    var ipAddress = utils.getIP();
+    console.log('ipAddress：'+ipAddress);
+   
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
 
     console.log('technologyStack：'+proj.config.technologyStack);
