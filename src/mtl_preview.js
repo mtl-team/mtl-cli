@@ -188,53 +188,31 @@ function beginProxyPreview() {
         }
     })();
 
-
-
-
-    // (async function () {
-    //     try {
-    //         await previewReactProject();
-    //     } catch (e) {
-    //         console.log(e)
-    //     }
-    // })();
-    // if (fs.existsSync("./build")) {
-    //     fs.ensureDirSync('./app');
-    //     fs.copySync('./build', './app');
-    // } else {
-    //     console.log('react工程build失败。');
-    //     return;
-    // }
 }
 
 
 
 function beginPreview(plat) {
     //utils.copyHosts("preview");
-
+    console.log('选用平台：' + plat);
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-
     console.log('technologyStack：' + proj.config.technologyStack);
-
     if (proj.config.technologyStack == "react") {
-
         console.log('react工程。');
         beginProxyPreview();
-        return;
-    }
-
-    console.log('选用平台：' + plat);
-    switch (plat) {
-        case utils.Platform.IOS:
-            return startIOS();
-        case utils.Platform.ANDROID:
-            return startAndroid();
-        case utils.Platform.WEIXIN:
-            return startWX();
-        case utils.Platform.DingDing:
-            return startDD();
-        case utils.Platform.Upesn:
-            return startUpesn();
+    } else {
+        switch (plat) {
+            case utils.Platform.IOS:
+                return startIOS();
+            case utils.Platform.ANDROID:
+                return startAndroid();
+            case utils.Platform.WEIXIN:
+                return startWX();
+            case utils.Platform.DingDing:
+                return startDD();
+            case utils.Platform.Upesn:
+                return startUpesn();
+        }
     }
 }
 
