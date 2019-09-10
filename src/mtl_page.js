@@ -38,6 +38,11 @@ var addView = async function (name, tplname) {
         return utils.reportError("mtl add-page name [template_name]");
     }
 
+    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    if (proj.config.technologyStack == "react") {
+        return utils.reportError("暂不支持添加react页面模板！！！");
+    }
+
     if (conf.get('username')) {
         //开发者中心
         if (!tplname) {
@@ -95,6 +100,7 @@ function addPageApi(projectPath, name, tplname) {
         pageTemplatePath = projectPath + '/' + tplCachePath;
 
     }
+
 
     if (conf.get('localResource') == "true") {
         //本地获取

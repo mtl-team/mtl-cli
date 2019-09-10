@@ -341,7 +341,6 @@ var createBeginApi = function (paramData) {
 
             }
 
-            
             console.log("mtl git url - " + gitClone + tplItem.url);
             shell.exec(gitClone + tplItem.url + " --progress " + appDir);
 
