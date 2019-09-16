@@ -43,6 +43,15 @@
         {     
             "name": "mtl-plugin-notification",  
             "type": "cordova"
-        }
+        },
+        {
+            "name": "mtl-plugin-alinotification",
+            "type": "cordova",
+            "parameters": [
+             "APPKEY=27849543",
+             "APPSECRET=982cb690e885c242ff1db939143fa97e",
+             "CHANNELID_ANDROID=10011"
+            ]
+           }
     ]
 }
