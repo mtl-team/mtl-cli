@@ -771,14 +771,14 @@ Component({
           //todo 生成唯一的UUID
           let localId = uuid(22);
           app.global.localIds[localId] = value;
-          obj.src = localId;
+          obj.obj.image = localId;
           this.recognizeBankCard(obj);
         },
         fail: this.getFailFunction(obj)
       });
     },
     recognizeBankCard(obj) {
-      let src = app.global.localIds[obj.src];
+      let src = app.global.localIds[obj.obj.image];
       if (src.startsWith('data:')) {
         obj.imgBase64 = src;
         this._identifyBankCard(obj);
