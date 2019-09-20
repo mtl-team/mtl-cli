@@ -93,7 +93,7 @@ function addPageApi(projectPath, name, tplname) {
     if(utils.isWindows()){
         // win 
         console.log("WIN 系统");
-        pageTemplatePath = projectPath + '\\' + tplCachePath;
+        pageTemplatePath = projectPath + '\\..\\tpl_caches';
     }else{
         // mac
         console.log("MAC 系统");   
@@ -143,13 +143,13 @@ function addPageApi(projectPath, name, tplname) {
         //开发者中心
         tplPath = "tpl_cache/" + tplname;
     } else {
-        tplPath = projectPath + tplCachePath + "/" + tplname;
+        tplPath = pageTemplatePath + "/" + tplname;
         if(utils.isWindows()){
             // win             
-            tplPath = projectPath + '\\' +tplCachePath + '\\' + tplname;
+            tplPath = pageTemplatePath+ '\\' + tplname;
         }else{
             // mac           
-            tplPath = projectPath + '/' + tplCachePath + "/" + tplname;
+            tplPath = pageTemplatePath + "/" + tplname;
         }
         
     }
@@ -158,6 +158,20 @@ function addPageApi(projectPath, name, tplname) {
         console.log("页面路径 - " + tplPath);
         result.push("1");
         result.push("页面模板 没有找到");
+        return result;
+    }
+
+    var newPagePath ;
+    if(utils.isWindows()){
+        // win             
+        newPagePath = projectPath+ '\\app\\' + name;
+    }else{
+        // mac           
+        newPagePath = projectPath + "/app/" + name;
+    }
+    if (fs.existsSync(newPagePath)){
+        result.push("1");
+        result.push("工程中已经存在该页面，创建失败！！！");
         return result;
     }
     
@@ -221,11 +235,24 @@ function addPage(name, tplname) {
         tplPath = tplCachePath + "/" + tplname;
     }
 
-
     if (!fs.existsSync(tplPath)) {
         console.log("页面路径 - " + tplPath);
         return utils.reportError("模版 " + tplname + " 没有找到");
     }
+
+    var newPagePath ;
+    if(utils.isWindows()){
+        // win             
+        newPagePath = '\\app\\' + name;
+    }else{
+        // mac           
+        newPagePath =   "./app/" + name;
+    }
+    if (fs.existsSync(newPagePath)){
+        return utils.reportError("工程中已经存在该页面，创建失败！！");
+    }
+
+
     console.log("开始添加模版 - " + tplname);
     copyTplDir(name, tplPath, ".");
 }

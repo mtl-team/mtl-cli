@@ -34,6 +34,19 @@ const promptList = [{
 }];
 
 
+/**
+ * MTL工程 验证工程名称是否正确
+ * @param {String} projectName 
+ * 
+ */
+function isVerifyProjectName(projectName) {
+    var patrn=/^[A-Za-z0-9]{1,64}$/; 
+    if(patrn.exec(projectName)&& projectName.length <= 64){
+        return 'true';
+    }else{
+        return 'false';
+    }
+}
 //an == appname
 //tl = template name
 var createApp = async function (an,tl) {
@@ -41,6 +54,11 @@ var createApp = async function (an,tl) {
     if(!an) {
         return utils.reportError(" 必须录入工程名称 ，例如 ：mtl c demo");
     }
+
+    if(isVerifyProjectName(an)=='false') {
+        return utils.reportError("工程名称不能包含特殊字符，长度不能超过64位。");
+    }
+
     if(fse.existsSync(an)){
       
         return utils.reportError("本地已存在- "+ an +" -工程 ,同一目录下工程不能重名！！！");
