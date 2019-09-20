@@ -22,7 +22,35 @@ const buildList = [{
   filter: function (val) { // 使用filter将回答变为小写
     return val.toLowerCase();
   }
-}];
+}
+,
+    {
+        type: 'input',
+        message: '请输入用友云账号绑定的手机号，如果没有账号，请先去用友云注册并绑定手机；\n\r如果账号正确则按回车跳过。\n\r手机号会关联在构建后台上传的证书文件。\n\r请输入手机号：',
+        name: 'buildServerID',
+        default: conf.get('buildServerID'),
+        filter: function (val) { // 使用filter将回答变为小写
+            return val;
+        }
+
+    }
+];
+
+
+const buildIDList = [
+    {
+        type: 'input',
+        message: '请输入用友云账号绑定的手机号，如果没有账号，请先去用友云注册并绑定手机；\n\r如果账号正确则按回车跳过。\n\r手机号会关联在构建后台上传的证书文件。\n\r请输入手机号：',
+        name: 'buildServerID',
+        default: conf.get('buildServerID'),
+        filter: function (val) { // 使用filter将回答变为小写
+            return val;
+        }
+
+    }
+];
+
+
 
 const startList = [{
   type: 'list',
@@ -83,20 +111,20 @@ class mtlBuild {
     }
 
 
-    console.log('当前构建方式：' + conf.get('buildType'));
-    if (conf.get('buildType') == "git") {
+    // console.log('当前构建方式：' + conf.get('buildType'));
+    // if (conf.get('buildType') == "git") {
 
-      if (checkProjectGitConfig() == "error") {
-        return;
-      }
-      selectedBuildPlatform(buildPlatform, "git");
-    } else if (conf.get('buildType') == "uploadZip") {
-      zipAndUploadcloud(buildPlatform, "uploadZip");
-    }
+    //   if (checkProjectGitConfig() == "error") {
+    //     return;
+    //   }
+    //   selectedBuildPlatform(buildPlatform, "git");
+    // } else if (conf.get('buildType') == "uploadZip") {
+    //   zipAndUploadcloud(buildPlatform, "uploadZip");
+    // }
 
-    else {
+    // else {
       zipAndUploadcloud(buildPlatform, "uploadZip");
-    }
+    // }
 
   }
 
@@ -195,7 +223,13 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
 
   var gitUrl = result.config.gitUrl;
 
-  form.append('userName', 'ump');
+  var buildID = conf.get('buildServerID')
+  if(buildID==''||buildID== undefined){
+    buildID='ump';
+  }else{
+    buildID = 'HRC'+buildID;
+  }
+  form.append('userName', buildID);
   form.append('buildType', selectedPlatform);
   form.append('buildStyle', buildType);
   form.append('certName', certName);
@@ -431,6 +465,9 @@ function selectedBuildPlatform(buildPlatform, buildType) {
   if (buildPlatform == undefined) {
     inquirer.prompt(buildList).then(answers => {
       console.log('选用平台：' + answers.platform); // 返回的结果
+      console.log('构建账号：' + answers.buildServerID); // 返回的结果
+      conf.set('buildServerID', answers.buildServerID);
+
       if (answers.platform == "ios") {
         cloudBuildAndUnzip(answers.platform, 'UAPMOBILE_DIS_299', buildType);
       } else {
@@ -438,17 +475,20 @@ function selectedBuildPlatform(buildPlatform, buildType) {
       }
     });
   } else if (utils.checkPlatform(buildPlatform) == "iOS".toLowerCase()) {
+    inquirer.prompt(buildIDList).then(answers => {
+      console.log('构建账号：' + answers.buildServerID); // 返回的结果
+      conf.set('buildServerID', answers.buildServerID);
+      cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299', buildType);
+    });
 
-
-    cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'UAPMOBILE_DIS_299', buildType);
   } else if (utils.checkPlatform(buildPlatform) == "Android".toLowerCase()) {
-
-    cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump', buildType);
-  } else if (utils.checkPlatform(buildPlatform) == "WX".toLowerCase()) {
-    console.log('暂时不可用');
-  } else if (utils.checkPlatform(buildPlatform) == "EApp".toLowerCase()) {
-    console.log('暂时不可用');
-  } else {
+      inquirer.prompt(buildIDList).then(answers => {
+      console.log('构建账号：' + answers.buildServerID); // 返回的结果
+      conf.set('buildServerID', answers.buildServerID);
+      cloudBuildAndUnzip(buildPlatform.toLowerCase(), 'ump', buildType);
+    });
+    
+  }  else {
     inquirer.prompt(buildList).then(answers => {
       console.log('选用平台：' + answers.platform); // 返回的结果
       if (answers.platform == "ios") {
