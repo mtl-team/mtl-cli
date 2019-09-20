@@ -345,6 +345,14 @@ var createBeginApi = function (paramData) {
             shell.exec(gitClone + tplItem.url + " --progress " + appDir);
 
             //创建文件夹
+            if (fse.existsSync(workSpace + '/' + appname)){
+                // 删除模板文件
+                fse.removeSync(workSpace + '/' + template);
+                result.push("1");
+                result.push("工作空间中已经存在该工程，工程名称重名，创建失败！！！");
+                return result;
+            }
+
             fse.ensureDirSync(workSpace + '/' + appname);
         
             //需要这些文件和目录存在
