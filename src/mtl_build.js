@@ -26,7 +26,7 @@ const buildList = [{
 ,
     {
         type: 'input',
-        message: '请输入用友云账号绑定的手机号，如果没有账号，请先去用友云注册并绑定手机；\n\r如果账号正确则按回车跳过。\n\r手机号会关联在构建后台上传的证书文件。\n\r请输入手机号：',
+        message: '请输入 用友云账号 ,如果账号不清楚是什么，可以登录友互通查询。\n\r友互通地址：https://euc.yonyoucloud.com。\n\r进入到友互通页面 ，点击左面菜单中 基本设置-->个人资料，可以查找到用友云账号。\n\r用友云账号会关联在构建后台上传的证书文件。\n\r请输入用友云账号：',
         name: 'buildServerID',
         default: conf.get('buildServerID'),
         filter: function (val) { // 使用filter将回答变为小写
@@ -40,7 +40,7 @@ const buildList = [{
 const buildIDList = [
     {
         type: 'input',
-        message: '请输入用友云账号绑定的手机号，如果没有账号，请先去用友云注册并绑定手机；\n\r如果账号正确则按回车跳过。\n\r手机号会关联在构建后台上传的证书文件。\n\r请输入手机号：',
+        message: '请输入 用友云账号 ,如果账号不清楚是什么，可以登录友互通查询。\n\r友互通地址：https://euc.yonyoucloud.com。\n\r进入到友互通页面 ，点击左面菜单中 基本设置-->个人资料，可以查找到用友云账号。\n\r用友云账号会关联在构建后台上传的证书文件。\n\r请输入用友云账号：',
         name: 'buildServerID',
         default: conf.get('buildServerID'),
         filter: function (val) { // 使用filter将回答变为小写
@@ -226,8 +226,6 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   var buildID = conf.get('buildServerID')
   if(buildID==''||buildID== undefined){
     buildID='ump';
-  }else{
-    buildID = 'HRC'+buildID;
   }
   form.append('userName', buildID);
   form.append('buildType', selectedPlatform);
