@@ -28,6 +28,21 @@ var promptList = [{
     }
 }];
 
+
+/**
+ * MTL工程 验证页面名称是否正确
+ * @param {String} projectName 
+ * 
+ */
+function isVerifyPageName(pageName) {
+    var patrn=/^[A-Za-z0-9]{1,64}$/; 
+    if(patrn.exec(pageName)&& pageName.length <= 64){
+        return 'true';
+    }else{
+        return 'false';
+    }
+}
+
 var addView = async function (name, tplname) {
     console.log("添加页面");
     if (!utils.isProject()) {
@@ -36,6 +51,11 @@ var addView = async function (name, tplname) {
     if (!name) {
         console.log("必须输入添加页面的名称")
         return utils.reportError("mtl add-page name [template_name]");
+    }
+
+    if (isVerifyPageName(name)=='false') {
+       
+        return utils.reportError("页面名称不能包含特殊字符，长度不能超过64位。");
     }
 
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
@@ -87,7 +107,15 @@ var addView = async function (name, tplname) {
 
 //根据js api 接口 添加页面模板
 function addPageApi(projectPath, name, tplname) {
+
+ 
     var result = [];
+
+    if (isVerifyPageName(name)=='false') {
+        result.push("1");
+        result.push("页面名称不能包含特殊字符，长度不能超过64位。 ");
+        return result;
+    }
     // 页面模板本地和网络获取
     var pageTemplatePath = projectPath + tplCachePath;
     if(utils.isWindows()){
