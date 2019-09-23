@@ -40,10 +40,6 @@
                 "SECRETKEY=iBzBh459NnqViqaLQUvNF88xi2dqj0U1"
             ]
         },
-        {     
-            "name": "mtl-plugin-notification",  
-            "type": "cordova"
-        },
         {
             "name": "mtl-plugin-alinotification",
             "type": "cordova",
