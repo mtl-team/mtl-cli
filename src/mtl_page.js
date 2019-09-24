@@ -271,11 +271,12 @@ function addPage(name, tplname) {
     var newPagePath ;
     if(utils.isWindows()){
         // win             
-        newPagePath = '\\app\\' + name;
+        newPagePath = '.\\app\\' + name;
     }else{
         // mac           
         newPagePath =   "./app/" + name;
     }
+    console.log("新页面路径 - " + newPagePath);
     if (fs.existsSync(newPagePath)){
         return utils.reportError("工程中已经存在该页面，创建失败！！");
     }
