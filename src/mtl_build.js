@@ -543,10 +543,12 @@ function zipDir(platform, buildType) {
 
   // 从子目录追加文件并将其命名为“新子dir”在存档中
 
-
-
   let pwd = shell.pwd().split(path.sep).join('/');
-  fs.copySync("./app/", "./" + projectName + "/www/");
+  if(result.config.startPage.indexOf("http") != -1){
+    fs.copySync("./app/css/themes/", "./" + projectName + "/www/css/themes/");
+  }else{
+    fs.copySync("./app/", "./" + projectName + "/www/");
+  }
   fs.copySync("./project.json", "./" + projectName + "/www/config.json");
   var dir = "./" + projectName + "/www/";
 
@@ -554,8 +556,6 @@ function zipDir(platform, buildType) {
   archive.finalize();
 
 }
-
-
 
 
 
