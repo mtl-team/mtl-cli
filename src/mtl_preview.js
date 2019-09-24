@@ -37,7 +37,8 @@ const previewList = [{
 */
 function previewReactProject() {
 
-    shell.exec(" yarn  preview ");
+    // shell.exec(" yarn  preview ");
+    shell.exec("npm run build");
     
     if (fs.existsSync("./project.json")) {
         fs.copySync('./project.json', "./build/project.json");
@@ -50,9 +51,9 @@ function previewReactProject() {
 * 安装服务
 */
 function installServeForReact() {
-
-    shell.exec(" npm -g install serve");
-
+    if(shell.exec("npm ls serve -g").code !== 0){
+        shell.exec("npm -g install serve");
+    }
 }
 /**
 * 部署服务
@@ -64,20 +65,26 @@ function installServeForReact() {
 // }
 
 
-async function deployServerForBuild() {
+async function deployServerForBuild(projectType) {
 
     kill(5000).then(pids => {
         console.log(pids);
         console.log("开始启动 debug:server");
         // shell.exec("serve build ");
-
-        deployServer = spawn('serve', ["build"], {
-            cwd: process.cwd(),
-            env: process.env,
-            shell: process.platform === 'win32',
-            detached: true,
-            silent: true
-        });
+        let deployServer,
+            option = {
+                cwd: process.cwd(),
+                env: process.env,
+                shell: process.platform === 'win32',
+                detached: true,
+                silent: true
+            };
+        if(projectType === 'react'){
+            deployServer = spawn('serve', ["build"], option);
+            // deployServer = spawn('serve', ["dist"], option);
+        }else if(projectType === 'mdf'){
+            deployServer = spawn('npm run startMobileProxy', [], option);
+        }
 
         deployServer.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
@@ -100,7 +107,6 @@ var start = function (platform) {
         return utils.reportError("不是MTL工程目录")
     }
 
-
     let plat = utils.checkPlatform(platform);
     if (platform == undefined || plat == "error") {
         inquirer.prompt(previewList).then(answers => {
@@ -114,8 +120,6 @@ var start = function (platform) {
 
 
 function registerProxyHost() {
-
-
     var ipAddr = utils.getIP();
     console.log('ipAddress：' + ipAddr);
     // shell.exec("yarn build");
@@ -136,22 +140,19 @@ function registerProxyHost() {
     }, (res) => {
         res.on('data', (buffer) => {
             console.log("data=" + buffer);
-
             var responseResult = JSON.parse(buffer);
             if (responseResult.msg = "success") {
                 var data = responseResult.data;
                 console.log(Object.values(data)[0]);
-                updatePackageJsonFileForPreview(Object.values(data)[0]);
+                updatePackageJsonFileForPreview(Object.values(data)[0],'react');
                 //工程生成预览静态资源
                 previewReactProject();
-                // 下载server 以及部署静态资源
-
+                // 下载serve 以及部署静态资源
                 installServeForReact();
-                deployServerForBuild();
-                //生成二维码  
+                deployServerForBuild('react');
+                //生成二维码
                 //  接口请求生成二维码图片 ，并下载到本地
                 console.log("开始生成二维码图片");
-
                 cloudCreateQRAndDownload("proxy", "https://mdoctor.yonyoucloud.com" + "/mtldebugger/solr/" + Object.values(data)[0] + "/" + "?projectJson=https://mdoctor.yonyoucloud.com/mtldebugger/solr/" + Object.values(data)[0] + "/project.json");
              }
         });
@@ -166,16 +167,21 @@ function registerProxyHost() {
     form.pipe(request);
 }
 
-function updatePackageJsonFileForPreview(hostAlias) {
+function updatePackageJsonFileForPreview(hostAlias,projectType) {
 
-    var packageFile = JSON.parse(fs.readFileSync("./package.json").toString());
-
-
+    var packageFile = fs.readJSONSync("./package.json");
     //update
-    packageFile.scripts.preview = `PUBLIC_URL='/mtldebugger/solr/${hostAlias}' react-scripts build`;
-
+    if(projectType === 'react'){
+        // packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' react-scripts build`;
+        packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' npm run start`;
+    }else if(projectType === 'mdf'){
+        // packageFile.scripts.preview = `cross-env NODE_ENV=production SERVER_ENV=prod PUBLIC_URL='/mtldebugger/solr/${hostAlias}' babel-node --only=src,node_modules/@mdf bin/mobile/server/index.js`;
+        packageFile.scripts.buildMobileServer4Proxy =  `cross-env BABEL_ENV=production NODE_ENV=production MDF_TARGET=mobile babel src -d bin --ignore client && echo '后端程序：编译完成'`;
+        packageFile.scripts.buildMobileClient4Proxy =  `cross-env BABEL_ENV=production NODE_ENV=production PROXY_URL='https://mdoctor.yonyoucloud.com/mtldebugger/solr/${hostAlias}'  MDF_TARGET=mobile webpack --config webpack.config.js --colors --progress && echo '移动程序：编译完成'`;
+        packageFile.scripts.build4Proxy =  "concurrently \"npm run buildMobileServer4Proxy\" \"npm run buildMobileClient4Proxy\"";
+        packageFile.scripts.startMobileProxy =  `cross-env NODE_ENV=production SERVER_ENV=prod PROXY_URL='https://mdoctor.yonyoucloud.com/mtldebugger/solr/${hostAlias}' babel-node --only=src,node_modules/@mdf bin/mobile/server/index.js`;
+    }
     fs.writeFileSync("./package.json", formatJson(packageFile), { flag: 'w', encoding: 'utf-8', mode: '0666' });
-
 }
 function formatJson(data) {
     return JSON.stringify(data, null, 4);
@@ -193,17 +199,34 @@ function beginProxyPreview() {
 
 }
 
-
-
 function beginPreview(plat) {
     //utils.copyHosts("preview");
     console.log('选用平台：' + plat);
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+    var proj = fs.readJsonSync("./project.json");
+    let technologyStack = proj.config.technologyStack;
     console.log('technologyStack：' + proj.config.technologyStack);
-    if (proj.config.technologyStack == "react") {
+    if (technologyStack == "react") {
         console.log('react工程。');
         beginProxyPreview();
-    } else {
+    } else if(technologyStack === 'mdf' ){
+        console.log('preview mdf');
+        registerProxyHostPromise().then(proxyStr=>{
+            console.log('rp proxyStr===',proxyStr);
+            updatePackageJsonFileForPreview(proxyStr,'mdf');
+            //工程生成预览静态资源
+            buildProject('mdf');
+            // 下载server 以及部署静态资源
+            // installServeForReact();
+
+            deployServerForBuild('mdf');
+            //生成二维码
+            //  接口请求生成二维码图片 ，并下载到本地
+            console.log("开始生成二维码图片");
+            cloudCreateQRAndDownload("proxy", "https://mdoctor.yonyoucloud.com" + "/mtldebugger/solr/" + proxyStr + "/" + "?projectJson=https://mdoctor.yonyoucloud.com/mtldebugger/solr/" + proxyStr + "/project.json");
+        }).catch(err=>{
+            console.log('rp err===',err);
+        });
+    }else {
         switch (plat) {
             case utils.Platform.IOS:
                 return startIOS();
@@ -219,6 +242,44 @@ function beginPreview(plat) {
     }
 }
 
+function registerProxyHostPromise() {
+    let ipAddr = utils.getIP();
+    let ipHost = [];
+    ipHost.push("http://" + ipAddr + ":5000");
+    let rp = require('request-promise');
+    let option = {
+        method: 'POST',
+        uri: 'https://' + configFile.CONFIG_PREVIEW_URL + configFile.CONFIG_PREVIEW_REGISTER_PROXY_HOST ,
+        form: {
+            host: JSON.stringify(ipHost)
+        },
+        json: true // Automatically stringifies the body to JSON
+    }
+    // return rp(option);
+   return rp(option).then(res=>{
+       console.log('registerProxyHostPromise res===',res);
+        if(res.code === 0){
+            let data = res.data;
+            let proxyStr = Object.values(data)[0];
+            return Promise.resolve(proxyStr)
+        }else{
+            return Promise.reject(res);
+        }
+    }).catch(err=>{
+        return Promise.reject(err);
+    });
+}
+
+function buildProject(projectType){
+    if(projectType === 'mdf'){
+        if (fs.existsSync("./project.json")) {
+            fs.copySync('./project.json', "./build/project.json");
+        }else{
+            console.log("不是mtl工程 ，找不到 project.json 文件！！！！！！");
+        }
+        shell.exec("npm run build4Proxy");
+    }
+}
 
 function chokidarWatch() {
 
