@@ -23,7 +23,7 @@ var addPlugin = function () {
 
     var result = JSON.parse(fs.readFileSync("./project.json").toString());
 
-    var defPlugins = result.config.cordovaPlugins;
+    var defPlugins = result.config.mtlPlugins;
     if (defPlugins.length) {
         for (var i = 0; i < defPlugins.length; i++) {
             defaultPlugins.push(defPlugins[i].name);
@@ -32,9 +32,9 @@ var addPlugin = function () {
     console.log('已选插件：' + defaultPlugins);
 
 
-    if (allPluginFile.cordovaPlugins.length) {
-        for (var i = 0; i < allPluginFile.cordovaPlugins.length; i++) {
-            allPlugins.push(allPluginFile.cordovaPlugins[i].name);
+    if (allPluginFile.mtlPlugins.length) {
+        for (var i = 0; i < allPluginFile.mtlPlugins.length; i++) {
+            allPlugins.push(allPluginFile.mtlPlugins[i].name);
         }
         console.log('所有插件：' + allPlugins);
     } else {
@@ -76,8 +76,8 @@ function addPluginsToJson(projfile, name) {
     var proj = JSON.parse(fs.readFileSync(projfile).toString());
     var app = proj["config"];
     if (!app) app = {};
-    if (!app["cordovaPlugins"]) {
-        console.log('请检查config.json,缺少cordovaPlugins');
+    if (!app["mtlPlugins"]) {
+        console.log('请检查config.json,缺少 mtlPlugins 参数。');
         return;
     };
 
@@ -85,19 +85,19 @@ function addPluginsToJson(projfile, name) {
     var pluginslist = [];
     var indexof;
     for (var i = 0; i < name.length; i++) {
-        for (var j = 0; j < allPluginFile.cordovaPlugins.length; j++) {
-            if (allPluginFile.cordovaPlugins[j].name == name[i]) {
+        for (var j = 0; j < allPluginFile.mtlPlugins.length; j++) {
+            if (allPluginFile.mtlPlugins[j].name == name[i]) {
                 var mPluginItem = new pluginItem(
-                    allPluginFile.cordovaPlugins[j].name,
-                    allPluginFile.cordovaPlugins[j].type,
-                    allPluginFile.cordovaPlugins[j].parameters);
+                    allPluginFile.mtlPlugins[j].name,
+                    allPluginFile.mtlPlugins[j].type,
+                    allPluginFile.mtlPlugins[j].parameters);
 
                 pluginslist.push(mPluginItem);
             }
         }
     }
 
-    app.cordovaPlugins = pluginslist;
+    app.mtlPlugins = pluginslist;
 
     //回写
     proj["config"] = app;

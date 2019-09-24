@@ -1,5 +1,5 @@
 {
-    "cordovaPlugins": [
+    "mtlPlugins": [
         {
             "name": "mtl-plugin-faceverify",
             "type": "cordova",
