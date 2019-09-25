@@ -420,13 +420,13 @@ var createBeginApi = function (paramData) {
 
     //处理基本属性
     app["appName"] = appname;
-    if(paramData.bundleId != ""||paramData.bundleId!=undefined){
+    if(paramData.bundleId!=undefined){
         app["bundleID"]= paramData.bundleId;
     }
-    if(paramData.packageName != ""|| paramData.packageName!= undefined){
+    if(paramData.packageName!= undefined){
         app["packageName"]= paramData.packageName;
     }
-    if(paramData.version != ""|| paramData.version!= undefined){
+    if(paramData.version!= undefined){
         app["versionName"]=paramData.version;
     }
     app["projectName"]=appname;
