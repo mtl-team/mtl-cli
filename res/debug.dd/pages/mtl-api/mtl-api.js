@@ -13,6 +13,7 @@ Component({
     this.webViewContext = dd.createWebViewContext('mtl-api-webview');
   },
   didUpdate() {
+    console.log('component-url', this.props.url);
     if (!!!this.data.pages) {
       let baseUrl = this.props.onPostMessage().baseUrl;
       console.log('receiveMessage', this.props.onPostMessage());
@@ -172,17 +173,10 @@ Component({
       obj.fileType = 'image';
       // let localId = obj.localId;
       let src = app.global.localIds[obj.obj.localId];
-      dd.getImageInfo({
-        src: src,
-        success: (res) => {
-          // {"width":200,"height":200,"path":"temp://1559014415464.jpeg"}
-          let path = res.path;
-          obj.fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
-          obj.filePath = path;
-          this.uploadFile(obj)
-        },
-        fail: this.getFailFunction(obj),
-      });
+      let path = src;
+      obj.fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+      obj.filePath = path;
+      this.uploadFile(obj)
 
     },
 
@@ -191,7 +185,7 @@ Component({
      * @param {*} obj 
      */
     uploadFile(obj) {
-      let url = this.props.onPostMessage().serviceUrl.uploadUrl;
+      let url = (this.props.onPostMessage().serviceUrl && this.props.onPostMessage().serviceUrl.uploadUrl) || "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/uploadToOSS";
       if (!!!url) {
         let resource = {
           code: -1,
@@ -200,7 +194,7 @@ Component({
           uuid: obj.uuid,
         }
         this.sendFailResult(resource);
-        return ;
+        return;
       }
       let { fileType, fileName, filePath } = obj;
 
@@ -234,7 +228,8 @@ Component({
 
     downloadFile(obj) {
       let serverId = obj.obj.serverId;
-      let url = this.props.onPostMessage().serviceUrl.downloadUrl;
+      let url = (this.props.onPostMessage().serviceUrl && this.props.onPostMessage().serviceUrl.downloadUrl) || 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download';
+
       if (!!!url) {
         let resource = {
           code: -1,
@@ -243,10 +238,9 @@ Component({
           uuid: obj.uuid,
         }
         this.sendFailResult(resource);
-        return ;
+        return;
       }
-       url = `${url}?serviceId=${serverId}`;
-
+      url = `${url}?serviceId=${serverId}`;
       //todo 通过serverId请求服务器获取图片链接
       let target = {
         url: url
@@ -299,39 +293,33 @@ Component({
     getLocalImgData(obj) {
       let src = app.global.localIds[obj.obj.localId];
       if (src) {
-        dd.getImageInfo({
-          src: src,
-          success: (res) => {
-            // {"width":200,"height":200,"path":"temp://1559014415464.image"}
-            let path = res.path;
-            let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
-            // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
-            let imgType = 'png';
-            let prefix = `data:image/${imgType};base64,`
-            let target = {
-              url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
-              fileType: 'image',
-              fileName: fileName,
-              filePath: path,
-            };
-            target.success = (res) => {
-              let result = JSON.parse(res.data);
-              let base64ImgCode = result.data;
-              let src = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
+        src = src.replace('other','image');
+        let fileName = src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
+        // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
+        let imgType = 'png';
+        let prefix = `data:image/${imgType};base64,`
+        let target = {
+          url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
+          fileType: 'image',
+          fileName: fileName,
+          filePath: src,
+        };
+        
+        target.success = (res) => {
+          let result = JSON.parse(res.data);
+          let base64ImgCode = result.data;
+          let localData = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
 
-              this.sendSuccessResult({
-                ...obj, ...{
-                  data: {
-                    localData: src
-                  }
-                }
-              });
-            };
-            target.fail = this.getFailFunction(obj);
-            dd.uploadFile(target);
-          },
-          fail: this.getFailFunction(obj),
-        });
+          this.sendSuccessResult({
+            ...obj, ...{
+              data: {
+                localData: localData
+              }
+            }
+          });
+        };
+        target.fail = this.getFailFunction(obj);
+        dd.uploadFile(target);
       } else {
         let resource = {
           action: obj.action,
@@ -629,28 +617,20 @@ Component({
 
     _getImageUrl(obj) {
       let { src } = obj;
-      dd.getImageInfo({
-        src: src,
+      // {"width":200,"height":200,"path":"temp://1559014415464.jpeg"}
+      let fileName = src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
+      dd.uploadFile({
+        url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/upload',
+        fileType: 'image',
+        fileName: fileName,
+        filePath: src,
         success: (res) => {
-          // {"width":200,"height":200,"path":"temp://1559014415464.jpeg"}
-          let path = res.path;
-          let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
-          dd.uploadFile({
-            url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/upload',
-            fileType: 'image',
-            fileName: fileName,
-            filePath: path,
-            success: (res) => {
-              let data = res.data;
-              let imageUrl = `https://mdoctor.yonyoucloud.com/${JSON.parse(data).data}`;
-              obj.imageUrl = imageUrl;
-              obj.success && obj.success(obj);
-            },
-            fail: this.getFailFunction(obj)
-          });
+          let data = res.data;
+          let imageUrl = `https://mdoctor.yonyoucloud.com/${JSON.parse(data).data}`;
+          obj.imageUrl = imageUrl;
+          obj.success && obj.success(obj);
         },
         fail: this.getFailFunction(obj)
-
       });
     },
     _identifyInvoice(obj) {
@@ -832,31 +812,27 @@ Component({
 
     _getImageBase64(obj) {
       let src = app.global.localIds[obj.obj.image];
-      dd.getImageInfo({
-        src: src,
+
+      // {"width":200,"height":200,"path":"temp://1559014415464.image"}
+      let path = src;
+      let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+      // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
+      let imgType = 'jpg';
+      let prefix = `data:image/${imgType};base64,`
+      dd.uploadFile({
+        url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
+        fileType: 'image',
+        fileName: fileName,
+        filePath: path,
         success: (res) => {
-          // {"width":200,"height":200,"path":"temp://1559014415464.image"}
-          let path = res.path;
-          let fileName = path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
-          // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
-          let imgType = 'jpg';
-          let prefix = `data:image/${imgType};base64,`
-          dd.uploadFile({
-            url: 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/convertBase64',
-            fileType: 'image',
-            fileName: fileName,
-            filePath: path,
-            success: (res) => {
-              let data = JSON.parse(res.data);
-              let base64ImgCode = data.data;
-              obj.imgBase64 = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
-              obj.success && obj.success(obj)
-            },
-            fail: this.getFailFunction(obj)
-          });
+          let data = JSON.parse(res.data);
+          let base64ImgCode = data.data;
+          obj.imgBase64 = (base64ImgCode.startsWith('data:') ? "" : prefix) + base64ImgCode;
+          obj.success && obj.success(obj)
         },
-        fail: this.getFailFunction(obj),
+        fail: this.getFailFunction(obj)
       });
+
     },
     setStorage(obj) {
       let { domain = 'domain.default', key, data } = obj.obj;
@@ -871,7 +847,7 @@ Component({
       }
       dd.getStorage({
         key: domain,
-        success: function (res) {
+        success: function(res) {
           let structs = res.data || {};
           structs[key] = data;
           dd.setStorageSync({
