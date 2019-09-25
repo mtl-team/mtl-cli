@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.54",
+  "version": "1.0.57",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,7 +28,7 @@
     "git-clone-promise": "^1.0.0",
     "https": "^1.0.0",
     "https-request": "^1.1.0",
-    "inquirer": "^6.2.2",
+    "inquirer": "^7.0.0",
     "needle": "^2.2.4",
     "openbrowser": "^1.0.2",
     "opn": "^6.0.0",
