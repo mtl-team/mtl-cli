@@ -389,7 +389,7 @@ function startIOS() {
         //  第一次启动debug 开始下载debug 程序
         if (!fs.existsSync(pwd + "/iOSDebug/debug.app")) {
 
-            console.log("开始下载android调试程序,请稍后...");
+            console.log("开始下载iOS调试程序,请稍后...");
             let debugLibs = require("../res/debug.json");
             shell.exec("git clone " + debugLibs.iOSDebug + " --progress ");
         }
