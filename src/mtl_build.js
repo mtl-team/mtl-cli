@@ -110,7 +110,7 @@ class mtlBuild {
         }
         if (!fs.existsSync("./build/css/themes/")) {
           fs.ensureDirSync('./app/css/themes/');
-          fs.copySync('./pubilc/css/themes/', './app/css/themes/');
+          fs.copySync('./public/css/themes/', './app/css/themes/');
       } 
 
     }
