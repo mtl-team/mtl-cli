@@ -299,7 +299,8 @@ var createBegin = function (appname,template) {
  */
 var createBeginApi = function (paramData) {
     
-    var appname = paramData.artifact;
+    var appname = paramData.appName;
+    var projectName = paramData.projectName;
     var template = paramData.template;
     var workSpace = paramData.workSpace;
     var projectType = paramData.project;
@@ -321,7 +322,7 @@ var createBeginApi = function (paramData) {
         return result;
     }
 
-    console.log("开始创建名称为 - " + appname + "- 的工程");
+    console.log("开始创建名称为 - " + projectName + "- 的工程");
 
 
     if (fse.existsSync(template)) {
@@ -334,7 +335,7 @@ var createBeginApi = function (paramData) {
 
     if (conf.get('localResource') == "true") {
         try {
-            fse.copySync(configFile.CONFIG_PROJECT_TEMPLATE_PATH + template, appname);
+            fse.copySync(configFile.CONFIG_PROJECT_TEMPLATE_PATH + template, projectName);
         } catch (e) {
             console.log(e);
             result.push("1");
@@ -363,7 +364,7 @@ var createBeginApi = function (paramData) {
             shell.exec(gitClone + tplItem.url + " --progress " + appDir);
 
             //创建文件夹
-            if (fse.existsSync(workSpace + '/' + appname)){
+            if (fse.existsSync(workSpace + '/' + projectName)){
                 // 删除模板文件
                 fse.removeSync(workSpace + '/' + template);
                 result.push("1");
@@ -371,14 +372,14 @@ var createBeginApi = function (paramData) {
                 return result;
             }
 
-            fse.ensureDirSync(workSpace + '/' + appname);
+            fse.ensureDirSync(workSpace + '/' + projectName);
         
             //需要这些文件和目录存在
-            fse.copySync(workSpace + '/' + template , workSpace + '/' + appname );
+            fse.copySync(workSpace + '/' + template , workSpace + '/' + projectName );
 
-            fse.removeSync(workSpace + '/' +appname+"/.git"); 
-            fse.removeSync(workSpace + '/' +appname+"/.gitignore"); 
-            fse.removeSync(workSpace + '/' +appname+"/LICENSE"); 
+            fse.removeSync(workSpace + '/' +projectName+"/.git"); 
+            fse.removeSync(workSpace + '/' +projectName+"/.gitignore"); 
+            fse.removeSync(workSpace + '/' +projectName+"/LICENSE"); 
             // 删除模板文件
             fse.removeSync(workSpace + '/' + template);
         } catch (e) {
@@ -389,27 +390,27 @@ var createBeginApi = function (paramData) {
         }
     }
 
-    console.log("开始更新本地配置 - " + appname);
+    console.log("开始更新本地配置 - " + projectName);
     // updateConfig(workSpace + "/" + appname);
     
-    console.log("初始化调试环境 - " + appname);
-    console.log("--本地创建完成--先执行 cd " + appname + " 进入目标目录--");
-    shell.exec("cd  " + workSpace + '/' + appname);
+    console.log("初始化调试环境 - " + projectName);
+    console.log("--本地创建完成--先执行 cd " + projectName + " 进入目标目录--");
+    shell.exec("cd  " + workSpace + '/' + projectName);
     shell.exec("npm --save install express")
     shell.exec("cd ..");
 
 
-    var projfile = workSpace + '/' + appname+ '/project.json';
+    var projfile = workSpace + '/' + projectName+ '/project.json';
             if(utils.isWindows()){
                 // win 
                 console.log("WIN 系统");
               
-                projfile = workSpace + '\\' + appname+ '\\project.json';
+                projfile = workSpace + '\\' + projectName+ '\\project.json';
             }else{
                 // mac
                 console.log("MAC 系统");
                 
-                projfile = workSpace + '/' + appname+ '/project.json';
+                projfile = workSpace + '/' + projectName+ '/project.json';
                 
 
             }
@@ -419,7 +420,7 @@ var createBeginApi = function (paramData) {
     var app =proj["config"];
 
     //处理基本属性
-    app["appName"] = appname;
+    
     if(paramData.bundleId!=undefined){
         app["bundleID"]= paramData.bundleId;
     }
@@ -429,17 +430,17 @@ var createBeginApi = function (paramData) {
     if(paramData.version!= undefined){
         app["versionName"]=paramData.version;
     }
-    app["projectName"]=appname;
-
+    app["projectName"]=projectName;
+    app["appName"] = appname;
     
     //回写
     proj["config"] = app;
     
     fse.writeFileSync(projfile, formatJson(proj),{flag:'w',encoding:'utf-8',mode:'0666'});
 
-    if (fse.existsSync(workSpace + "/" + appname)) {
+    if (fse.existsSync(workSpace + "/" + projectName)) {
         result.push("0");
-        result.push(workSpace + "/" + appname);
+        result.push(workSpace + "/" + projectName);
         return result;
     } else {
         result.push("1");

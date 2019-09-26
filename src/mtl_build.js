@@ -101,6 +101,7 @@ class mtlBuild {
             }
         })();
         if (fs.existsSync("./build")) {
+            fs.removeSync('./app');
             fs.ensureDirSync('./app');
             fs.copySync('./build', './app');
         } else {
