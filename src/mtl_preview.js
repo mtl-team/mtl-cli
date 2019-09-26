@@ -15,6 +15,7 @@ const { kill } = require("cross-port-killer");
 // var md5 = crypto.createHash('md5');
 const chokidar = require('chokidar');
 const { spawn } = require('child_process');
+const iconv = require('iconv-lite');
 const previewList = [{
     type: 'list',
     message: '请选择项目平台：1、iOS；2、Android ；3、WX ;4、DD ; 5、Upesn, 用上下箭头选择平台:',
@@ -87,16 +88,17 @@ async function deployServerForBuild(projectType) {
         }
 
         deployServer.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
+            console.log('stdout', iconv.decode(data, 'cp936'));
         });
 
         deployServer.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
+            console.log('stderr', iconv.decode(data, 'cp936'));
         });
 
         deployServer.on('close', (code) => {
-            console.log(`child process deployServer exited with code ${code}`);
+            console.log('close', iconv.decode(code, 'cp936'));
         });
+
     })
 
 }
