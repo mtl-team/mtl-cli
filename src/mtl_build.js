@@ -108,6 +108,11 @@ class mtlBuild {
             console.log('react工程build失败。');
             return;
         }
+        if (!fs.existsSync("./build/css/themes/")) {
+          fs.ensureDirSync('./app/css/themes/');
+          fs.copySync('./pubilc/css/themes/', './app/css/themes/');
+      } 
+
     }
     zipAndUploadcloud(buildPlatform, "uploadZip");
   }
