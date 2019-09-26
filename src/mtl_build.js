@@ -107,25 +107,8 @@ class mtlBuild {
             console.log('react工程build失败。');
             return;
         }
-
     }
-
-
-    // console.log('当前构建方式：' + conf.get('buildType'));
-    // if (conf.get('buildType') == "git") {
-
-    //   if (checkProjectGitConfig() == "error") {
-    //     return;
-    //   }
-    //   selectedBuildPlatform(buildPlatform, "git");
-    // } else if (conf.get('buildType') == "uploadZip") {
-    //   zipAndUploadcloud(buildPlatform, "uploadZip");
-    // }
-
-    // else {
-      zipAndUploadcloud(buildPlatform, "uploadZip");
-    // }
-
+    zipAndUploadcloud(buildPlatform, "uploadZip");
   }
 
   static start(startPlatform) {
@@ -202,27 +185,6 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   var result = JSON.parse(fs.readFileSync(file));
   var projectName = result.config.projectName;
   var appName = result.config.appName;
-
-  if (selectedPlatform == "ios") {
-    console.log('iOS 构建ipa包的描述文件和证书，请先在云构建服务器上传！！！');
-    console.log('iOS 构建需要的描述文件和证书，会关联iOS bundleID！！！');
-    console.log('当前构建 bundleID：' + result.config.bundleID);
-    console.log("如果没有设置bundleID ，会使用系统默认的描述文件和证书去构建！！！");
-    console.log("设置bundleID命令：mtl set-bundleID ！！！");
-    console.log('iOS项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-  }else{
-    console.log('android 构建apk包的签名文件，请先在云构建服务器上传！！！');
-    console.log('android 构建签名文件，会关联android packageID ！！！');
-    console.log('当前构建 packageID：' + result.config.packageName);
-    console.log("如果没有设置packageID ，会使用系统默认的签名文件去构建！！！");
-    console.log("设置packageID命令：mtl set-packageName ！！！");
-    console.log('android项目工程编译中，请稍候  🚀 🚀 🚀 ...');
-  }
-
-
-
-  var gitUrl = result.config.gitUrl;
-
   var buildID = conf.get('buildServerID')
   if(buildID==''||buildID== undefined){
     buildID='ump';
@@ -231,36 +193,13 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
   form.append('buildType', selectedPlatform);
   form.append('buildStyle', buildType);
   form.append('certName', certName);
-
-  if (buildType != "git") {
-    form.append('request', fs.createReadStream(projectName + ".zip"));//'request'是服务器接受的key
-  }
-
+  form.append('request', fs.createReadStream(projectName + ".zip"));//'request'是服务器接受的key
   form.append('projectName', projectName);
   form.append('appName', appName);
-  if (buildType == "git") {
-    form.append('gitUrl', conf.get('git-url'));
-    if (conf.get('git-branch') == "") {
-      form.append('gitBranch', '');
-
-    } else {
-
-      form.append('gitBranch', conf.get('git-branch'));
-    }
-
-    form.append('gitUser', conf.get('git-user'));
-    form.append('gitPassword', conf.get('git-password'));
-
-  } else {
-    form.append('gitUrl', "");
-    form.append('gitBranch', '');
-    form.append('gitUser', "");
-    form.append('gitPassword', "");
-
-  }
-
-
   form.append('isDebug', "false");
+  console.log('构建android 的签名文件、iOS的描述文件和证书，请先在云构建服务器上传！！！');
+  console.log("如果没有上传，会使用系统默认的签名文件或描述文件和证书去构建，但不能用于商用！！！");
+  console.log('项目工程编译中，请稍候  🚀 🚀 🚀 ...');
   var headers = form.getHeaders();//这个不能少
   // headers.Cookie = cookie;//自己的headers属性在这里追加
   var request = http.request({
@@ -287,11 +226,11 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
           if (exists) {
             // 删除 原有的输出文件目录
             fs.removeSync('./output/android/release');
-            if (buildType != "git") {
+            
               //删除 上传源码文件
               fs.removeSync(projectName + '.zip');
               fs.removeSync('./' + projectName);
-            }
+            
 
             (async function () {
               try {
@@ -345,11 +284,11 @@ function cloudBuildAndUnzip(selectedPlatform, certName, buildType) {
           if (exists) {
             // 删除 原有的输出文件目录
             fs.removeSync('./output/ios/release');
-            if (buildType != "git") {
+           
               //删除 上传源码文件
               fs.removeSync(projectName + '.zip');
               fs.removeSync('./' + projectName);
-            }
+            
             (async function () {
               try {
                 await unzipSync('ios.zip', './output/ios/release');

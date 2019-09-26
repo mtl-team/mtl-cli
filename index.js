@@ -35,12 +35,12 @@ program
     mCreate.createApp(appname,template);
   });
 
-program
-  .command('set-git').alias('sg') // 命令简写
-  .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。 ')
-  .action(function () {
-    mSetgit.setGit();
-  });   
+// program
+//   .command('set-git').alias('sg') // 命令简写
+//   .description('用于对用户开发的工程源码进行云构建打包服务，\n\r云构建服务器根据配置好的git仓库信息 ，进行git代码更新，提高构建效率。 ')
+//   .action(function () {
+//     mSetgit.setGit();
+//   });   
   program
   .command('set-buildType').alias('s-bt') // 命令简写
   .description('设置对工程源码进行云构建打包方式： 1 源码上传 | 2 git   ')
@@ -174,13 +174,13 @@ program
   })
 
 
-program
-  .command('clearUser') // 清除用户信息
-  .alias('cu') // 命令简写
-  .description('清除用户信息 。')
-  .action(function () { // 执行命令的的函数
-    mConfig.clearUserInfo();
-  })
+// program
+//   .command('clearUser') // 清除用户信息
+//   .alias('cu') // 命令简写
+//   .description('清除用户信息 。')
+//   .action(function () { // 执行命令的的函数
+//     mConfig.clearUserInfo();
+//   })
 
   program
   .command('readme') // 清除用户信息
