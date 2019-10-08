@@ -293,7 +293,7 @@ Component({
     getLocalImgData(obj) {
       let src = app.global.localIds[obj.obj.localId];
       if (src) {
-        src = src.replace('other','image');
+        src = src.replace('other', 'image');
         let fileName = src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
         // 钉钉的图片后缀名为image，base64编码加上image不识别，默认采用png格式
         let imgType = 'png';
@@ -304,7 +304,7 @@ Component({
           fileName: fileName,
           filePath: src,
         };
-        
+
         target.success = (res) => {
           let result = JSON.parse(res.data);
           let base64ImgCode = result.data;
@@ -847,7 +847,7 @@ Component({
       }
       dd.getStorage({
         key: domain,
-        success: function(res) {
+        success: function (res) {
           let structs = res.data || {};
           structs[key] = data;
           dd.setStorageSync({
@@ -976,5 +976,27 @@ Component({
       }
 
     },
+    request(obj) {
+      let { url, params, data, headers, method, responseType, timeout } = obj.obj;
+      let target = {
+        url: url,
+        method: method,
+        data: method.toLowerCase() == "get" ? params : JSON.stringify(data),
+        headers: headers || {
+          "Content-Type": "application/json"
+        },
+        dataType: responseType || "json",
+        timeout: timeout || 30000,
+      };
+      target.fail = this.getFailFunction(obj);
+      target.success = res => {
+        this.sendSuccessResult({
+          ...obj, ...{
+            data: res.data
+          }
+        });
+      }
+      dd.httpRequest(target);
+    }
   },
 });
