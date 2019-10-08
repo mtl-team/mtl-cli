@@ -173,13 +173,62 @@ function beginDebug(plat) {
 }
 
 
+function hotLoderFileToOutput(path) {
+  
+    var start = 0;
+    var pwd = shell.pwd().split(path.sep).join('/');
+    if (utils.isWindows()) {
+        // win 
+        console.log("WIN 系统");
+        start = path.indexOf("\\app\\");
+    } else {
+        // mac
+        console.log("MAC 系统");
+        start = path.indexOf("/app/");
+    }
+
+    console.log("文件目录起始位置：" + start);
+
+    let relativeFileDir = path.substring(start);
+    console.log("目的修改文件的相对文件路径：" + relativeFileDir);
+    if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
+
+        let absoluteFileDir = pwd + "/output/wx/debug" + relativeFileDir;
+        console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
+        fs.copySync(path, absoluteFileDir);
+
+    }
+    if (fs.existsSync(shell.pwd() + "/output/ios/debug/")) {
+        
+        let absoluteFileDir = pwd + "/output/ios/debug" + relativeFileDir;
+        console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
+        fs.copySync(path, absoluteFileDir);
+    }
+    if (fs.existsSync(shell.pwd() + "/output/android/debug/")) {
+        let absoluteFileDir = pwd + "/output/android/debug" + relativeFileDir;
+        console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
+        fs.copySync(path, absoluteFileDir);
+
+    }
+    if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
+        let absoluteFileDir = pwd + "/output/dd/debug" + relativeFileDir;
+        console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
+        fs.copySync(path, absoluteFileDir);
+
+    }
+
+}
+
+
+
 function chokidarWatch() {
 
     let dir = shell.pwd() + "/app/";
     // Initialize watcher.
     const watcher = chokidar.watch(dir, {
         ignored: /(^|[\/\\])\../,
-        persistent: true
+        persistent: true,
+        ignoreInitial: true 
     });
 
     // Something to use when events are received.
@@ -188,57 +237,16 @@ function chokidarWatch() {
 
     watcher
         .on('add', function (path) {
-            // log('File', path, 'has been added');
-
+            log('File', path, 'has been added');
+            hotLoderFileToOutput(path);
         })
         .on('addDir', function (path) {
-            // log('Directory', path, 'has been added'); 
-
+            log('Directory', path, 'has been added'); 
+            hotLoderFileToOutput(path);
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
-
-            var start = 0;
-            var pwd = shell.pwd().split(path.sep).join('/');
-            if (utils.isWindows()) {
-                // win 
-                console.log("WIN 系统");
-                start = path.indexOf("\\app\\");
-            } else {
-                // mac
-                console.log("MAC 系统");
-                start = path.indexOf("/app/");
-            }
-
-            console.log("文件目录起始位置：" + start);
-
-            let relativeFileDir = path.substring(start);
-            console.log("目的修改文件的相对文件路径：" + relativeFileDir);
-            if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
-
-                let absoluteFileDir = pwd + "/output/wx/debug" + relativeFileDir;
-                console.log("wx目的修改文件的绝对文件路径：" + absoluteFileDir);
-                fs.copySync(path, absoluteFileDir);
-
-            }
-            if (fs.existsSync(shell.pwd() + "/output/ios/debug/")) {
-                copyAndInstallDebugIOS("false");
-                let absoluteFileDir = pwd + "/output/ios/debug" + relativeFileDir;
-                console.log("ios目的修改文件的绝对文件路径：" + absoluteFileDir);
-                fs.copySync(path, absoluteFileDir);
-            }
-            if (fs.existsSync(shell.pwd() + "/output/android/debug/")) {
-                let absoluteFileDir = pwd + "/output/android/debug" + relativeFileDir;
-                console.log("android目的修改文件的绝对文件路径：" + absoluteFileDir);
-                fs.copySync(path, absoluteFileDir);
-
-            }
-            if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                let absoluteFileDir = pwd + "/output/dd/debug" + relativeFileDir;
-                console.log("dd目的修改文件的绝对文件路径：" + absoluteFileDir);
-                fs.copySync(path, absoluteFileDir);
-
-            }
+            hotLoderFileToOutput(path);       
 
         })
 
@@ -356,36 +364,9 @@ function startIOS() {
     if (os.platform() != "darwin") {
         console.log("ios debug调试程序必须在苹果电脑系统下运行！！！");
         return;
-    }
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    console.log('technologyStack：' + proj.config.technologyStack);
-    if (proj.config.technologyStack == "mdf") {
-
-        console.log('mdf工程。');
-        debugMDFServer();
-        debugMDFMobile();
-
-    } else if (proj.config.technologyStack == "react") {
-        console.log('react工程。');
-        debugReact();
-    } else {
-        //  监听工程源码 ，给debug 实时更新
-        chokidarWatch();
-    }
+    } 
         // 启动debug 程序
-        // 临时530演示使用debug.app add begin
         let pwd = shell.pwd().split(path.sep).join('/');
-        // if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
-        //     updateConfigFileToDebug();
-        //     if(commitAndPushConfigFile()== "error"){
-        //         return;
-        //     }
-
-        //     cloudBuildAndUnzip("ios");
-        // }else{
-        // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
-        // 临时530演示使用debug.app end
-
         //  第一次启动debug 开始下载debug 程序
         if (!fs.existsSync(pwd + "/iOSDebug/debug.app")) {
 
@@ -394,8 +375,14 @@ function startIOS() {
             shell.exec("git clone " + debugLibs.iOSDebug + " --progress ");
         }
 
-        copyAndInstallDebugIOS("true");
-    
+        (async function () {
+            try {
+                await copyAndInstallDebugIOS("true");
+            } catch (e) {
+                console.log(e)
+            }
+        })();
+        runDebugOrWatch();  
 }
 
 // xcrun instruments -w 'iPhone 6 Plus'
@@ -410,21 +397,30 @@ function startIOS() {
 
 function startAndroid() {
     let pwd = shell.pwd().split(path.sep).join('/');
+    //  第一次启动debug 开始下载debug 程序
+    if (!fs.existsSync(pwd + "/androidDebug/debug.apk")) {
 
-    // 临时530演示使用debug.app add begin
-    // if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
-    //     updateConfigFileToDebug();
-    //     if(commitAndPushConfigFile()== "error"){
-    //         return;
-    //     }
-
-    //     cloudBuildAndUnzip("android");
-    // }
-    // 临时530演示使用debug.app end
+        console.log("开始下载android调试程序,请稍后...");
+        let debugLibs = require("../res/debug.json");
+        shell.exec("git clone " + debugLibs.androidDebug + " --progress ");
+    }
 
 
+    (async function () {
+        try {
+            await copyAndInstallDebugAndroid("true");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+    
+    runDebugOrWatch();
+}
+
+function runDebugOrWatch() {
     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
     console.log('technologyStack：' + proj.config.technologyStack);
+   
     if (proj.config.technologyStack == "mdf") {
 
         console.log('mdf工程。');
@@ -438,18 +434,9 @@ function startAndroid() {
         //  监听工程源码 ，给debug 实时更新
         chokidarWatch();
     }
-
-    //  第一次启动debug 开始下载debug 程序
-    if (!fs.existsSync(pwd + "/androidDebug/debug.apk")) {
-
-        console.log("开始下载android调试程序,请稍后...");
-        let debugLibs = require("../res/debug.json");
-        shell.exec("git clone " + debugLibs.androidDebug + " --progress ");
-    }
-    
-    copyAndInstallDebugAndroid("true");
-
 }
+
+
 
 
 
@@ -548,16 +535,11 @@ function copyAndDebugWeixin(isStartNode) {
     console.log("准备开始生成微信工程...");
     var path = getPathByPlatform(utils.Platform.WEIXIN);
     var objPath = "./" + path + "/";
-
     var projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
     fs.ensureDirSync(projPath);
-    if (!fs.existsSync(projPath + "app.json")) {
-        fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.wx/', projPath);
-        console.log("WX proj 工程创建完毕！");
-    } else {
-        console.log("WX proj 工程已经存在！");
-    }
-
+    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.wx/', projPath);
+    console.log("WX proj 工程创建完毕！");
+   
     if (fs.existsSync("./wx/")) {
         fs.copySync('./wx/', projPath);
     }
@@ -587,14 +569,9 @@ function copyAndDebugDD(isStartNode) {
     let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
     fs.ensureDirSync(projPath);
     // 拷贝 添加页面到 dd/proj  目录下
-    if (!fs.existsSync(projPath + "app.json")) {
-        fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', projPath);
-        console.log("DD proj 工程创建完毕！");
-    } else {
-        console.log("DD proj 工程已经存在！");
-    }
-
-
+    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', projPath);
+    console.log("DD proj 工程创建完毕！");
+  
     if (fs.existsSync("./dd/")) {
         //复制dd 页面到工程
         fs.copySync('./dd/', projPath);
@@ -1146,72 +1123,32 @@ function formatJson(data) {
 
 //开始调试微信Web小程序
 function startWX() {
-    // console.log("准备开始生成微信工程...");
-    // let path = getPathByPlatform(utils.Platform.WEIXIN);
-    // let objPath = "./" + path +"/";
-    // let wxproj = objPath + "../proj/";
-    // fs.ensureDirSync(objPath);
-    // fs.ensureDirSync(wxproj);
+    
+    (async function () {
+        try {
+            await copyAndDebugWeixin("true");;
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+    runDebugOrWatch();
 
-    // // 拷贝 添加页面到 wx/proj  目录下
-    // fs.copySync(__dirname.split(path.sep).join('/')+ '/../res/debug.wx/', wxproj);
-
-    // let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
-    // fs.ensureDirSync(projPath);
-    // if(fs.existsSync("./wx/")) {
-    //     //shell.exec("cp -rf ./wx/* " + projPath); //复制wx mdd页面到工程
-    //     fs.copySync('./wx/', projPath);
-    // }
-
-    // copyProjectToOutput(objPath,utils.Platform.WEIXIN);
-    // let appJs = createAppJsFile(path);
-    // // console.log(appJs);
-    // if(fs.exists(appJs, function(exists) {
-    //     if(!exists) {
-    //         return utils.reportError("没有找到app.js");
-    //     }
-    //     startNode(appJs);
-    // }))
-    //  监听工程源码 ，给debug 实时更新
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    console.log('technologyStack：' + proj.config.technologyStack);
-    if (proj.config.technologyStack == "mdf") {
-
-        console.log('mdf工程。');
-        debugReactServer();
-        debugReactMobile();
-
-    }else if (proj.config.technologyStack == "react") {
-        console.log('react工程。');
-        debugReact();
-    } else {
-        //  监听工程源码 ，给debug 实时更新
-        chokidarWatch();
-    }
-
-    copyAndDebugWeixin("true");
     return utils.SUCCESS;
 }
 
 
 //开始调试钉钉Web小程序
 function startDD() {
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    console.log('technologyStack：' + proj.config.technologyStack);
-    if (proj.config.technologyStack == "mdf") {
+  
+    (async function () {
+        try {
+            await copyAndDebugDD("true");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+    runDebugOrWatch();
 
-        console.log('mdf工程。');
-        debugReactServer();
-        debugReactMobile();
-
-    }else if (proj.config.technologyStack == "react") {
-        console.log('react工程。');
-        debugReact();
-    } else {
-        //  监听工程源码 ，给debug 实时更新
-        chokidarWatch();
-    }
-    copyAndDebugDD("true");
     return utils.SUCCESS;
 }
 
@@ -1221,7 +1158,14 @@ function getPathByPlatform(platform) {
 }
 
 function copyProjectToOutput(objPath, platform) {
+
+    // 在复制到output工程之前 ，先删除原先的工程,
+    if (fs.existsSync(objPath)) {
+        fs.removeSync(objPath);
+    }
+    fs.ensureDirSync(objPath);
     //开始复制文件
+
     fs.copySync('./app/', objPath);
     let pltPath = "./" + platform + "/";
     if (fs.existsSync(pltPath)) {
