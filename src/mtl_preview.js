@@ -96,7 +96,7 @@ async function deployServerForBuild(projectType) {
         });
 
         deployServer.on('close', (code) => {
-            console.log('close', iconv.decode(code, 'cp936'));
+            console.log(`子进程使用代码 ${code} 退出 `);
         });
 
     })
