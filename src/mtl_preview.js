@@ -38,8 +38,8 @@ const previewList = [{
 */
 function previewReactProject() {
 
-    // shell.exec(" yarn  preview ");
-    shell.exec("npm run build");
+    shell.exec(" yarn  preview ");
+    // shell.exec("npm run build");
     
     if (fs.existsSync("./project.json")) {
         fs.copySync('./project.json', "./build/project.json");
@@ -174,8 +174,8 @@ function updatePackageJsonFileForPreview(hostAlias,projectType) {
     var packageFile = fs.readJSONSync("./package.json");
     //update
     if(projectType === 'react'){
-        // packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' react-scripts build`;
-        packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' npm run start`;
+        packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' react-scripts build`;
+        // packageFile.scripts.preview = `cross-env PUBLIC_URL='/mtldebugger/solr/${hostAlias}' npm run start`;
     }else if(projectType === 'mdf'){
         // packageFile.scripts.preview = `cross-env NODE_ENV=production SERVER_ENV=prod PUBLIC_URL='/mtldebugger/solr/${hostAlias}' babel-node --only=src,node_modules/@mdf bin/mobile/server/index.js`;
         packageFile.scripts.buildMobileServer4Proxy =  `cross-env BABEL_ENV=production NODE_ENV=production MDF_TARGET=mobile babel src -d bin --ignore client && echo '后端程序：编译完成'`;
@@ -198,7 +198,6 @@ function beginProxyPreview() {
             console.log(e)
         }
     })();
-
 }
 
 function beginPreview(plat) {
@@ -289,7 +288,8 @@ function chokidarWatch() {
     // Initialize watcher.
     const watcher = chokidar.watch(dir, {
         ignored: /(^|[\/\\])\../,
-        persistent: true
+        persistent: true,
+        ignoreInitial: true 
     });
 
     // Something to use when events are received.
@@ -298,31 +298,16 @@ function chokidarWatch() {
 
     watcher
         .on('add', function (path) {
-            // log('File', path, 'has been added');
-
+            log('File', path, 'has been added');
+            zipFileAndUploadcloud(path, "false");
         })
         .on('addDir', function (path) {
-            // log('Directory', path, 'has been added'); 
-
+            log('Directory', path, 'has been added'); 
+            zipFileAndUploadcloud(path, "false");
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
-            if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
-                copyAndDebugWeixin("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
-                copyAndInstallDebugIOS("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
-                copyAndInstallDebugAndroid("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                copyAndDebugDD("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/upesn/debug/app/project.json")) {
-                copyAndInstallDebugUpesn("false");
-            }
-
+           
             //  更新云端工程文件
             if (utils.isWindows()) {
                 // win 
@@ -333,7 +318,7 @@ function chokidarWatch() {
                 // mac do nothing
             }
             zipFileAndUploadcloud(path, "false");
-            // uploadFileToCloud(path,"false");
+            
         })
 
     const watcherProjectJson = chokidar.watch(shell.pwd() + "/project.json", {
@@ -352,73 +337,57 @@ function chokidarWatch() {
         })
         .on('change', function (path) {
             log('File', path, 'has been changed');
-            if (fs.existsSync(shell.pwd() + "/output/wx/debug/proj/project.config.json")) {
-                copyAndDebugWeixin("false");
-
-            }
-            if (fs.existsSync(shell.pwd() + "/output/ios/debug/debug.app")) {
-                copyAndInstallDebugIOS("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/android/debug/debug.apk")) {
-                copyAndInstallDebugAndroid("false");
-            }
-            if (fs.existsSync(shell.pwd() + "/output/dd/debug/proj/app.js")) {
-                copyAndDebugDD("false");
-            }
             //  更新云端project.json 文件
-            if (fs.existsSync(shell.pwd() + "/output/upesn/debug/app/project.json")) {
-                copyAndInstallDebugUpesn("false");
-            }
             zipFileAndUploadcloud(path, "true");
-            // uploadFileToCloud(path,"true");
+            
         })
 }
 
-function chokidarWatchOutputDebugDir(platform) {
-    var dir = null;
-    console.log("chokidarWatchOutputDebugDir_platform==" + platform);
-    switch (platform) {
-        case utils.Platform.IOS:
-            dir = shell.pwd() + "/output/ios/debug/app/";
-            break;
-        case utils.Platform.ANDROID:
-            dir = shell.pwd() + "/output/android/debug/app/";
-            break;
-        case utils.Platform.WEIXIN:
-            dir = shell.pwd() + "/output/wx/debug/app/";
-            break;
-        case utils.Platform.DingDing:
-            dir = shell.pwd() + "/output/dd/debug/app/";
-            break;
-    }
+// function chokidarWatchOutputDebugDir(platform) {
+//     var dir = null;
+//     console.log("chokidarWatchOutputDebugDir_platform==" + platform);
+//     switch (platform) {
+//         case utils.Platform.IOS:
+//             dir = shell.pwd() + "/output/ios/debug/app/";
+//             break;
+//         case utils.Platform.ANDROID:
+//             dir = shell.pwd() + "/output/android/debug/app/";
+//             break;
+//         case utils.Platform.WEIXIN:
+//             dir = shell.pwd() + "/output/wx/debug/app/";
+//             break;
+//         case utils.Platform.DingDing:
+//             dir = shell.pwd() + "/output/dd/debug/app/";
+//             break;
+//     }
 
 
-    // Initialize watcher.
-    const watcher = chokidar.watch(dir, {
-        ignored: /(^|[\/\\])\../,
-        persistent: true
-    });
+//     // Initialize watcher.
+//     const watcher = chokidar.watch(dir, {
+//         ignored: /(^|[\/\\])\../,
+//         persistent: true
+//     });
 
-    // Something to use when events are received.
-    const log = console.log.bind(console);
-    // Add event listeners.
+//     // Something to use when events are received.
+//     const log = console.log.bind(console);
+//     // Add event listeners.
 
-    watcher
-        .on('add', function (path) {
-            // log('File', path, 'has been added');
+//     watcher
+//         .on('add', function (path) {
+//             // log('File', path, 'has been added');
 
-        })
-        .on('addDir', function (path) {
-            // log('Directory', path, 'has been added'); 
+//         })
+//         .on('addDir', function (path) {
+//             // log('Directory', path, 'has been added'); 
 
-        })
-        .on('change', function (path) {
-            log('outputFile', path, 'has been changed');
+//         })
+//         .on('change', function (path) {
+//             log('outputFile', path, 'has been changed');
 
 
-        })
+//         })
 
-}
+// }
 
 
 function updateIosPlistFile(plistDir) {
@@ -437,75 +406,61 @@ function updateIosPlistFile(plistDir) {
     plist.writeFileSync(plistDir, data);
 }
 function startIOS() {
-
+    // copyAndInstallDebugIOS("true");
+    (async function () {
+        try {
+            await zipAndUploadcloud("ios");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    // 启动debug 程序
-    // 临时530演示使用debug.app add begin
-    let pwd = shell.pwd().split(path.sep).join('/');
-    // if(!fs.existsSync(pwd +"/output/ios/debug/debug.app")) {
-    //     updateConfigFileToDebug();
-    //     if(commitAndPushConfigFile()== "error"){
-    //         return;
-    //     }
-
-    //     cloudBuildAndUnzip("ios");
-    // }else{
-    // fs.copySync(__dirname.split(path.sep).join('/') + '/../res/ios/debug.app', pwd + "/output/ios/debug/debug.app");
-    // 临时530演示使用debug.app end
-    copyAndInstallDebugIOS("true");
-    // }
 
 }
 
-// xcrun instruments -w 'iPhone 6 Plus'
-
-// 在已经启动好的模拟器中安装应用：
-
-// xcrun simctl install booted Calculator.app （这里要特别注意，是app，不是ipa 安装时需要提供的是APP的文件路径）
-
-// 例如：xcrun simctl install booted /Users/xiexuemei/Downloads/DingTalk.app
-
-// const debugPath = __dirname + "/../res/";
-
 function startAndroid() {
-    let pwd = shell.pwd().split(path.sep).join('/');
-
-    // 临时530演示使用debug.app add begin
-    // if(!fs.existsSync(pwd +"/output/android/debug/debug.apk")) {
-    //     updateConfigFileToDebug();
-    //     if(commitAndPushConfigFile()== "error"){
-    //         return;
-    //     }
-
-    //     cloudBuildAndUnzip("android");
-    // }else{
-    // 临时530演示使用debug.app end
+    // let pwd = shell.pwd().split(path.sep).join('/');
+    
+    // copyAndInstallDebugAndroid("true");
+    
+    (async function () {
+        try {
+            await zipAndUploadcloud("android");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+    //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    copyAndInstallDebugAndroid("true");
-    // }
 }
 
 function startUpesn() {
-
+    // copyAndInstallDebugUpesn("true");
+    (async function () {
+        try {
+            await zipAndUploadcloud("upesn");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
+    //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    copyAndInstallDebugUpesn("true");
-
 }
 
-function copyAndInstallDebugUpesn(isStartNode) {
-    let path = getPathByPlatform(utils.Platform.Upesn);
-    let objPath = "./" + path + "/";
+// function copyAndInstallDebugUpesn(isStartNode) {
+//     let path = getPathByPlatform(utils.Platform.Upesn);
+//     let objPath = "./" + path + "/";
 
-    copyProjectToOutput(objPath, utils.Platform.Upesn);
+//     copyProjectToOutput(objPath, utils.Platform.Upesn);
 
-    if (isStartNode == "true") {
+//     if (isStartNode == "true") {
 
-        zipAndUploadcloud("upesn");
-    } else {
-        console.log("请到upesn刷新进行调试");
-    }
-}
+//         zipAndUploadcloud("upesn");
+//     } else {
+//         console.log("请到upesn刷新进行调试");
+//     }
+// }
 
 
 
@@ -515,111 +470,108 @@ function copyAndInstallDebugUpesn(isStartNode) {
 const cmdRunDebugApk = "adb shell am start -S com.yonyou.mtlandroid/com.yonyou.myapis.DebugActivity";
 const adrAppPath = "/sdcard/Android/data/com.yonyou.mtlandroid/preview_android/";
 
-function runDebugAndroid(objPath) {
-    //运行apk
-    var cmd = "adb push " + objPath + "* " + adrAppPath + "www/";
-    shell.exec(cmd);
-    //console.log("push->" + cmd);
-    cmd = "adb push " + objPath + "/project.json " + adrAppPath;
-    shell.exec(cmd);
-    //console.log("push->" + cmd);
-    shell.exec(cmdRunDebugApk);
-}
+// function runDebugAndroid(objPath) {
+//     //运行apk
+//     var cmd = "adb push " + objPath + "* " + adrAppPath + "www/";
+//     shell.exec(cmd);
+//     //console.log("push->" + cmd);
+//     cmd = "adb push " + objPath + "/project.json " + adrAppPath;
+//     shell.exec(cmd);
+//     //console.log("push->" + cmd);
+//     shell.exec(cmdRunDebugApk);
+// }
 
-function copyAndInstallDebugIOS(isStartNode) {
-    let path = getPathByPlatform(utils.Platform.IOS);
-    let objPath = "./" + path + "/";
-    copyProjectToOutput(objPath, utils.Platform.IOS);
-    if (isStartNode == "true") {
-        // shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
-        let debugApp = "./" + path + "/../debug.app";
-        // if(!fs.existsSync(debugApp)) {
-        console.log("开始安装调试应用");
-        // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
-        // shell.exec(cmd);
-        let cmdInstallApp = "xcrun simctl install booted " + debugApp;
-        // shell.exec(cmdInstallApp);
-        // }
-        console.log("开始运行调试应用");
-        // shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
-        zipAndUploadcloud("ios");
+// function copyAndInstallDebugIOS(isStartNode) {
+//     let path = getPathByPlatform(utils.Platform.IOS);
+//     let objPath = "./" + path + "/";
+//     copyProjectToOutput(objPath, utils.Platform.IOS);
+//     if (isStartNode == "true") {
+//         // shell.exec("open \"/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/\"");
+//         let debugApp = "./" + path + "/../debug.app";
+//         // if(!fs.existsSync(debugApp)) {
+//         console.log("开始安装调试应用");
+//         // let cmd = "cp -rf "+debugPath+"debug.app " + debugApp;
+//         // shell.exec(cmd);
+//         let cmdInstallApp = "xcrun simctl install booted " + debugApp;
+//         // shell.exec(cmdInstallApp);
+//         // }
+//         console.log("开始运行调试应用");
+//         // shell.exec("xcrun simctl launch booted \"com.cscec3.mdmpush\"");
+//         zipAndUploadcloud("ios");
 
-    } else {
-        console.log("请到iOS模拟器刷新进行调试");
-    }
+//     } else {
+//         console.log("请到iOS模拟器刷新进行调试");
+//     }
+//     return utils.SUCCESS;
 
+// }
 
+// function copyAndInstallDebugAndroid(isStartNode) {
+//     let path = getPathByPlatform(utils.Platform.ANDROID);
+//     let objPath = "./" + path + "/";
 
-    return utils.SUCCESS;
+//     copyProjectToOutput(objPath, utils.Platform.ANDROID);
+//     let debugApk = "./" + path + "/../debug.apk";
 
-}
+//     if (isStartNode == "true") {
+//         zipAndUploadcloud("android");
+//     } else {
+//         console.log("请到android刷新进行调试");
+//     }
+// }
 
-function copyAndInstallDebugAndroid(isStartNode) {
-    let path = getPathByPlatform(utils.Platform.ANDROID);
-    let objPath = "./" + path + "/";
+// function copyAndDebugWeixin(isStartNode) {
+//     console.log("准备开始生成微信工程...");
+//     let path = getPathByPlatform(utils.Platform.WEIXIN);
+//     let objPath = "./" + path + "/";
+//     let wxproj = objPath + "../proj/";
+//     fs.ensureDirSync(objPath);
+//     fs.ensureDirSync(wxproj);
 
-    copyProjectToOutput(objPath, utils.Platform.ANDROID);
-    let debugApk = "./" + path + "/../debug.apk";
+//     // 拷贝 添加页面到 wx/proj  目录下
+//     fs.copySync(__dirname.split(path.sep).join('/') + '/../res/preview.wx/', wxproj);
 
-    if (isStartNode == "true") {
-        zipAndUploadcloud("android");
-    } else {
-        console.log("请到android刷新进行调试");
-    }
-}
+//     let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
+//     fs.ensureDirSync(projPath);
+//     if (fs.existsSync("./wx/")) {
+//         fs.copySync('./wx/', projPath);
+//     }
 
-function copyAndDebugWeixin(isStartNode) {
-    console.log("准备开始生成微信工程...");
-    let path = getPathByPlatform(utils.Platform.WEIXIN);
-    let objPath = "./" + path + "/";
-    let wxproj = objPath + "../proj/";
-    fs.ensureDirSync(objPath);
-    fs.ensureDirSync(wxproj);
+//     copyProjectToOutput(objPath, utils.Platform.WEIXIN);
+//     if (isStartNode == "true") {
+//         zipAndUploadcloud("wx");
+//     } else {
+//         console.log("请到微信小程序工具刷新进行调试");
+//     }
+//     // 开始上传云端  10.3.13.7 服务器debugger
 
-    // 拷贝 添加页面到 wx/proj  目录下
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/preview.wx/', wxproj);
+// }
 
-    let projPath = "output/" + utils.Platform.WEIXIN + "/debug/proj/";
-    fs.ensureDirSync(projPath);
-    if (fs.existsSync("./wx/")) {
-        fs.copySync('./wx/', projPath);
-    }
+// function copyAndDebugDD(isStartNode) {
+//     console.log("准备开始生成钉钉工程...");
+//     let path = getPathByPlatform(utils.Platform.DingDing);
+//     let objPath = "./" + path + "/";
+//     let ddproj = objPath + "../proj/";
+//     fs.ensureDirSync(objPath);
+//     fs.ensureDirSync(ddproj);
 
-    copyProjectToOutput(objPath, utils.Platform.WEIXIN);
-    if (isStartNode == "true") {
-        zipAndUploadcloud("wx");
-    } else {
-        console.log("请到微信小程序工具刷新进行调试");
-    }
-    // 开始上传云端  10.3.13.7 服务器debugger
+//     // 拷贝 添加页面到 dd/proj  目录下
+//     fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', ddproj);
 
-}
+//     let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
+//     fs.ensureDirSync(projPath);
+//     if (fs.existsSync("./dd/")) {
+//         //复制dd 页面到工程
+//         fs.copySync('./dd/', projPath);
+//     }
 
-function copyAndDebugDD(isStartNode) {
-    console.log("准备开始生成钉钉工程...");
-    let path = getPathByPlatform(utils.Platform.DingDing);
-    let objPath = "./" + path + "/";
-    let ddproj = objPath + "../proj/";
-    fs.ensureDirSync(objPath);
-    fs.ensureDirSync(ddproj);
-
-    // 拷贝 添加页面到 dd/proj  目录下
-    fs.copySync(__dirname.split(path.sep).join('/') + '/../res/debug.dd/', ddproj);
-
-    let projPath = "output/" + utils.Platform.DingDing + "/debug/proj/";
-    fs.ensureDirSync(projPath);
-    if (fs.existsSync("./dd/")) {
-        //复制dd 页面到工程
-        fs.copySync('./dd/', projPath);
-    }
-
-    copyProjectToOutput(objPath, utils.Platform.DingDing);
-    if (isStartNode == "true") {
-        zipAndUploadcloud("dd");
-    } else {
-        console.log("请到钉钉小程序工具刷新进行调试");
-    }
-}
+//     copyProjectToOutput(objPath, utils.Platform.DingDing);
+//     if (isStartNode == "true") {
+//         zipAndUploadcloud("dd");
+//     } else {
+//         console.log("请到钉钉小程序工具刷新进行调试");
+//     }
+// }
 function zipDir(platform) {
     var archiver = require('archiver');
     var output = fs.createWriteStream('app.zip');
@@ -640,6 +592,7 @@ function zipDir(platform) {
     output.on('close', function () {
         console.log(archive.pointer() + ' total bytes');
         console.log('archiver has been finalized and the output file descriptor has closed.');
+        fs.removeSync("./app/project.json");
         uploadAppCloud(platform);
     });
     // 存档出错
@@ -650,25 +603,25 @@ function zipDir(platform) {
 
     // 从子目录追加文件并将其命名为“新子dir”在存档中
 
-
-    var dir = null;
-    switch (platform) {
-        case utils.Platform.IOS:
-            dir = "./output/ios/debug/app/";
-            break;
-        case utils.Platform.ANDROID:
-            dir = "./output/android/debug/app/";
-            break;
-        case utils.Platform.WEIXIN:
-            dir = "./output/wx/debug/app/";
-            break;
-        case utils.Platform.DingDing:
-            dir = "./output/dd/debug/app/";
-            break;
-        case utils.Platform.Upesn:
-            dir = "./output/upesn/debug/app/";
-            break;
-    }
+    fs.copySync('project.json',  './app/project.json');
+    var dir = "./app/";
+    // switch (platform) {
+    //     case utils.Platform.IOS:
+    //         dir = "./output/ios/debug/app/";
+    //         break;
+    //     case utils.Platform.ANDROID:
+    //         dir = "./output/android/debug/app/";
+    //         break;
+    //     case utils.Platform.WEIXIN:
+    //         dir = "./output/wx/debug/app/";
+    //         break;
+    //     case utils.Platform.DingDing:
+    //         dir = "./output/dd/debug/app/";
+    //         break;
+    //     case utils.Platform.Upesn:
+    //         dir = "./output/upesn/debug/app/";
+    //         break;
+    // }
 
     archive.directory(dir, 'app')
     archive.finalize();
@@ -773,6 +726,8 @@ function uploadFileToCloud(filePath, isProjectJson) {
 
     request.on('error', (e) => {
         console.log(`problem with request: ${e.message}`);
+        // 删除压缩文件
+        fs.removeSync('file.zip');
     });
     form.pipe(request);
 }
@@ -822,6 +777,8 @@ function uploadAppCloud(platform) {
 
     request.on('error', (e) => {
         console.log(`problem with request: ${e.message}`);
+        // 删除压缩文件
+        fs.removeSync('app.zip');
     });
     form.pipe(request);
 }
@@ -1138,39 +1095,39 @@ function getFilesDir(filePath) {
     return filesDir;
 }
 
-function updateConfigFileToDebug() {
-    // 修改project.json  
-    var proj = JSON.parse(fs.readFileSync("./project.json").toString());
-    // proj.config.appName ="快速预览";
-    // proj.config.packageName="com.yyiuap.summer.preview";
-    proj.config.debuggerEnable = "true";
-    // proj.config.packageName ="com.yonyou.mtl.debugger";
-    fs.writeFileSync("./project.json", formatJson(proj), { flag: 'w', encoding: 'utf-8', mode: '0666' });
-    //修改./app/config.xml
-    // let xmlFile = "./app/config.xml";
-    // var builder = new xml2js.Builder();
-    // var xml = builder.buildObject(proj);
-    // fs.writeFileSync(xmlFile, xml, { flag: 'w', encoding: 'utf-8', mode: '0666' });
-}
+// function updateConfigFileToDebug() {
+//     // 修改project.json  
+//     var proj = JSON.parse(fs.readFileSync("./project.json").toString());
+//     // proj.config.appName ="快速预览";
+//     // proj.config.packageName="com.yyiuap.summer.preview";
+//     proj.config.debuggerEnable = "true";
+//     // proj.config.packageName ="com.yonyou.mtl.debugger";
+//     fs.writeFileSync("./project.json", formatJson(proj), { flag: 'w', encoding: 'utf-8', mode: '0666' });
+//     //修改./app/config.xml
+//     // let xmlFile = "./app/config.xml";
+//     // var builder = new xml2js.Builder();
+//     // var xml = builder.buildObject(proj);
+//     // fs.writeFileSync(xmlFile, xml, { flag: 'w', encoding: 'utf-8', mode: '0666' });
+// }
 
 /**
  * MTL工程 提交远程仓库
  * 
  */
-function commitAndPushConfigFile() {
-    let pwd = shell.pwd().split(path.sep).join('/');
-    console.log('调试程序源码正在整理中，请稍候 🚀 🚀 🚀 ...');
-    if (!fs.existsSync(".git")) {
-        return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
-    }
-    //first commit
-    shell.exec("git add -A");
-    shell.exec("git commit -m update  -q");
-    shell.exec("git push");
+// function commitAndPushConfigFile() {
+//     let pwd = shell.pwd().split(path.sep).join('/');
+//     console.log('调试程序源码正在整理中，请稍候 🚀 🚀 🚀 ...');
+//     if (!fs.existsSync(".git")) {
+//         return utils.reportError("未找到远程git仓库 ,请执行: mtl pushRemote 命令创建远程代码托管后，再进行debug。  ");
+//     }
+//     //first commit
+//     shell.exec("git add -A");
+//     shell.exec("git commit -m update  -q");
+//     shell.exec("git push");
 
-    return utils.SUCCESS;
+//     return utils.SUCCESS;
 
-}
+// }
 
 
 
@@ -1210,85 +1167,35 @@ function formatJson(data) {
 
 //开始调试微信Web小程序
 function startWX() {
-    console.log("准备开始生成微信工程...");
+    // copyAndDebugWeixin("true");
 
+    (async function () {
+        try {
+            await zipAndUploadcloud("wx");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    copyAndDebugWeixin("true");
+
     return utils.SUCCESS;
 }
 
 
 //开始调试钉钉Web小程序
 function startDD() {
-
+    // copyAndDebugDD("true");
+    (async function () {
+        try {
+            await zipAndUploadcloud("dd");
+        } catch (e) {
+            console.log(e)
+        }
+    })();
     //  监听工程源码 ，给debug 实时更新
     chokidarWatch();
-    copyAndDebugDD("true");
     return utils.SUCCESS;
-}
-
-
-function getPathByPlatform(platform) {
-    return "output/" + platform + "/debug/app";
-}
-
-function copyProjectToOutput(objPath, platform) {
-    //开始复制文件
-    fs.copySync('./app/', objPath);
-    let pltPath = "./" + platform + "/";
-    if (fs.existsSync(pltPath)) {
-        fs.copySync(pltPath, objPath);
-    }
-
-    fs.copySync('project.json', objPath + '/project.json');
-}
-var cp1;
-async function startNode(appJs) {
-
-    kill(PORT).then(pids => {
-        console.log(pids);
-        console.log("开始启动node");
-        shell.exec("npm --save install express")
-        // shell.exec("node " + appJs);
-
-        cp1 = spawn('node', [appJs], {
-            cwd: process.cwd(),
-            env: process.env,
-
-            detached: true,
-            silent: true
-        });
-
-        cp1.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-
-        cp1.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-        });
-
-        cp1.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-        });
-    })
-
-}
-
-function createAppJsFile(path) {
-    let appJs = "./" + path + "/app-node.js";
-    if (!fs.existsSync(appJs)) {
-        //创建appJs
-        // console.log("正在为第一次启动作准备……");
-        // console.log(appJs);
-        var content = "const express = require('express');\r";
-        content += "const app = express();\r";
-        content += "app.use(express.static('" + path + "'));\r";
-        content += "app.listen(3000, () => console.log('Debug the App listening on port 3000!'));";
-        fs.writeFileSync(appJs, content);
-        console.log("app-node.js创建完成");
-    }
-    return appJs;
 }
 
 

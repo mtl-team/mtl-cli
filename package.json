@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.61",
+  "version": "1.0.66",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,6 +28,7 @@
     "git-clone-promise": "^1.0.0",
     "https": "^1.0.0",
     "https-request": "^1.1.0",
+    "iconv-lite": "^0.4.24",
     "inquirer": "^7.0.0",
     "needle": "^2.2.4",
     "openbrowser": "^1.0.2",
@@ -43,8 +44,7 @@
     "tracer": "^0.9.8",
     "unzip-stream": "^0.3.0",
     "utility": "^1.16.1",
-    "xml2js": "^0.4.19",
-    "iconv-lite": "^0.4.24"
+    "xml2js": "^0.4.19"
   },
   "bin": {
     "mtl": "./index.js"
