@@ -37,15 +37,29 @@ const previewList = [{
 * 执行preview react 工程构建
 */
 function previewReactProject() {
-
-    shell.exec(" yarn  preview ");
-    // shell.exec("npm run build");
+    
+    try {
+      shell.exec(" yarn  preview  > compile.log");
+        // shell.exec("npm run build");
+    } catch (e) {
+        console.log(e);
+        return utils.ERROR;
+    }
+    if (fs.existsSync("./compile.log")) {
+        var compileFile = fs.readFileSync("./compile.log");
+        if (compileFile.indexOf("Failed to compile") >= 0){
+            console.log("预览编译报错 ，预览失败！！");
+            return utils.ERROR;
+        }
+    }
     
     if (fs.existsSync("./project.json")) {
         fs.copySync('./project.json', "./build/project.json");
     }else{
         console.log("不是mtl工程 ，找不到 project.json 文件！！！！！！");
+        return utils.ERROR;
     }
+    return utils.SUCCESS;
 }
 
 /**
@@ -56,15 +70,6 @@ function installServeForReact() {
         shell.exec("npm -g install serve");
     }
 }
-/**
-* 部署服务
-*/
-// function deployServerForBuild() {
-
-//     shell.exec("serve build ");
-
-// }
-
 
 async function deployServerForBuild(projectType) {
 
@@ -148,9 +153,13 @@ function registerProxyHost() {
                 console.log(Object.values(data)[0]);
                 updatePackageJsonFileForPreview(Object.values(data)[0],'react');
                 //工程生成预览静态资源
-                previewReactProject();
+               var isCompileSuccess = previewReactProject();
+               if(isCompileSuccess == utils.ERROR){
+                   return;
+               }
                 // 下载serve 以及部署静态资源
                 installServeForReact();
+              
                 deployServerForBuild('react');
                 //生成二维码
                 //  接口请求生成二维码图片 ，并下载到本地
@@ -165,6 +174,7 @@ function registerProxyHost() {
 
     request.on('error', (e) => {
         console.log(`problem with request: ${e.message}`);
+        console.log("预览代理请求报错，代理失败！！！");
     });
     form.pipe(request);
 }
@@ -190,12 +200,15 @@ function formatJson(data) {
 }
 
 function beginProxyPreview() {
-
+    // 首先删除build 目录
+    fs.removeSync("./build/");
     (async function () {
         try {
             await registerProxyHost();
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            console.log("preview 预览异常，已经退出介绍！！！");
+            return;
         }
     })();
 }
