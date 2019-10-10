@@ -39,7 +39,7 @@ const previewList = [{
 function previewReactProject() {
     
     try {
-      shell.exec(" yarn  preview  > compile.log");
+      shell.exec(" npm run  preview  > compile.log");
         // shell.exec("npm run build");
     } catch (e) {
         console.log(e);
