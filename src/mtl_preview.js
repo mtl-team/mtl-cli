@@ -200,6 +200,12 @@ function formatJson(data) {
 }
 
 function beginProxyPreview() {
+
+    if(!fs.existsSync("./node_modules/")){
+        return utils.reportError("react 工程没有添加依赖包，请在工程更目录下执行 npm install  命令安装依赖！！！");
+        //     
+
+    }
     // 首先删除build 目录
     fs.removeSync("./build/");
     (async function () {
