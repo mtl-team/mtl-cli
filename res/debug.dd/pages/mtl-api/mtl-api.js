@@ -66,8 +66,9 @@ Component({
     sendFailResult(data) {
       this.webViewContext.postMessage(data);
     },
-    getFailFunction({ action, uuid }) {
+    getFailFunction({ action, uuid, callback }) {
       return res => {
+        callback && callback();
         this.sendFailResult({
           action: action,
           uuid: uuid,
@@ -227,7 +228,10 @@ Component({
     },
 
     downloadFile(obj) {
-      let serverId = obj.obj.serverId;
+      let { serverId, isShowProgressTips = 0 } = obj.obj;
+      if (isShowProgressTips == 1) {
+        dd.showLoading({});
+      }
       let url = (this.props.onPostMessage().serviceUrl && this.props.onPostMessage().serviceUrl.downloadUrl) || 'https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download';
 
       if (!!!url) {
@@ -237,6 +241,7 @@ Component({
           action: obj.action,
           uuid: obj.uuid,
         }
+        dd.hideLoading();
         this.sendFailResult(resource);
         return;
       }
@@ -246,6 +251,7 @@ Component({
         url: url
       }
       target.success = ({ filePath }) => {
+        dd.hideLoading();
         let localId = uuid(22);
         app.global.localIds[localId] = filePath;
         this.sendSuccessResult({
@@ -256,7 +262,14 @@ Component({
           }
         });
       }
-      target.fail = this.getFailFunction(obj);
+
+
+
+      target.fail = this.getFailFunction({
+        ...obj, callback: () => {
+          dd.hideLoading();
+        }
+      });
       dd.downloadFile(target);
     },
 
@@ -836,7 +849,7 @@ Component({
     },
     setStorage(obj) {
       let { domain = 'domain.default', key, data } = obj.obj;
-      if (typeof key != 'string') {
+      if (typeof key != 'string' || !!!key) {
         this.sendFailResult({
           action: obj.action,
           uuid: obj.uuid,
@@ -850,10 +863,20 @@ Component({
         success: function (res) {
           let structs = res.data || {};
           structs[key] = data;
-          dd.setStorageSync({
+          dd.setStorage({
             key: domain,
-            data: structs
+            data: structs,
+            success: ()=>{
+              this.sendSuccessResult({
+                ...obj, ...{
+                  data: {
+                  }
+                }
+              });
+            },
+            fail:this.getFailFunction(obj)
           });
+          
         },
         fail: this.getFailFunction(obj)
       });
@@ -890,14 +913,21 @@ Component({
       let { domain = 'domain.default', key } = obj.obj;
       dd.getStorage({
         key: domain,
-        success: res => {
+        success: () => {
           let structs = res.data || {};
           delete structs[key];
           dd.setStorageSync({
             key: domain,
             data: structs
           });
+          this.sendSuccessResult({
+            ...obj, ...{
+              data: {
+              }
+            }
+          });
         },
+        fail: this.getFailFunction(obj)
 
       });
 
@@ -906,7 +936,14 @@ Component({
       let { domain = 'domain.default' } = obj.obj;
       dd.removeStorage({
         key: domain,
-        success: res => { },
+        success: () => {
+          this.sendSuccessResult({
+            ...obj, ...{
+              data: {
+              }
+            }
+          });
+        },
         fail: this.getFailFunction(obj)
       });
     },
