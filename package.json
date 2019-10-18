@@ -30,6 +30,7 @@
     "https-request": "^1.1.0",
     "iconv-lite": "^0.4.24",
     "inquirer": "^7.0.0",
+    "mtl-dev-sdk": "^1.1.28",
     "needle": "^2.2.4",
     "openbrowser": "^1.0.2",
     "opn": "^6.0.0",

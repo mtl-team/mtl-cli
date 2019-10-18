@@ -22,6 +22,9 @@ const getAutoUpdate = require('./src/update');
 var mHelp = require('./src/mtl_help');
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
 
+
+
+
 // getAutoUpdate();
 
 program

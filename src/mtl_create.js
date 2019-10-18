@@ -25,8 +25,8 @@ const promptList = [{
     message: '请选择工程模板:',
     name: 'name',
     choices: [
-        "empty",
-        "ERP",
+        "html",
+        "react",
     ],
     filter: function (val) { // 使用filter将回答变为小写
         return val.toLowerCase();
