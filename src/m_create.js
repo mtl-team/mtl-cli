@@ -2,13 +2,14 @@ const fse = require("fs-extra"); // fs-extra 扩展包
 const mtldev = require("mtl-dev-sdk");
 const utils = require("./m_util.js");
 const inquirer = require("inquirer");
+const shell = require("shelljs");
 
 const promptList = [
   {
     type: "list",
     message: "请选择工程模板:",
     name: "name",
-    choices: ["empty", "ERP"],
+    choices: ["html", "react"],
     filter: function(val) {
       // 使用filter将回答变为小写
       return val.toLowerCase();
@@ -26,7 +27,7 @@ async function createApp(an, tl) {
   if (!an) {
     return utils.consoleLog(" 必须录入工程名称 ，例如 ：mtl c demo");
   }
-  if (isVerifyProjectName(an) == "false") {
+  if (!utils.isVerifyProjectName(an)) {
     return utils.consoleLog("工程名称不能包含特殊字符，长度不能超过64位。");
   }
   if (fse.existsSync(an)) {
@@ -38,28 +39,44 @@ async function createApp(an, tl) {
   if (!projects) {
     return utils.consoleLog("当前没有模板");
   }
+  getProjectOptionByTl(tl, projects, an);
+}
+/**
+ * 选择模板，生成配置文件
+ */
+function getProjectOptionByTl(tl, projects, an) {
+    let options = {
+        projectName: an
+      };
+  if (tl) {
+    downloadProject(tl,options);
+    return;
+  }
   let list = Object.keys(projects);
   utils.consoleLog(list);
   promptList[0].choices = list;
   inquirer.prompt(promptList).then(answers => {
+    options.staticFilePath = answers.name == "react" ? "build/" : "app/";
     promptList[0].choices = Object.keys(projects[answers.name]);
     inquirer.prompt(promptList).then(answers => {
       utils.consoleLog(answers.name);
+      downloadProject(answers.name, options);
     });
   });
 }
 
-
-
-function isVerifyProjectName(projectName) {
-  var patrn = /^[A-Za-z0-9]{1,64}$/;
-  if (patrn.exec(projectName) && projectName.length <= 64) {
-    return "true";
+//根据模板下载工程
+function downloadProject(tl, options) {
+  let workspace = shell.pwd().toString();
+  mtldev.initWorkspace(workspace);
+  let result = mtldev.downloadProjectByTemplate(workspace, tl, options);
+  let code = result.code;
+  if (code == 200) {
+    utils.consoleLog(`工程创建完成： ${options.projectName}`);
   } else {
-    return "false";
+    utils.consoleLog(JSON.stringify(result));
   }
 }
-
 
 module.exports = {
   createApp

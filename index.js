@@ -2,24 +2,26 @@
 
 const program = require('commander');
 
-var mCreate = require('./src/mtl_create');
-var mLogin =  require('./src/mtl_login');
-var mConfig = require('./src/mtl_config');
-var mTemplate = require('./src/mtl_template');
-var mPage = require('./src/mtl_page');
-var mPlugin = require('./src/mtl_addPlugin');
-var mSetPackageName = require('./src/mtl_setPackageName');
-var mSetBundleID = require('./src/mtl_setBundleID');
-var mViewpage = require('./src/mtl_viewpage');
+var mCreate = require('./src/m_create');//已修改
+var mLogin =  require('./src/mtl_login');//登录未修改
+var mConfig = require('./src/mtl_config');//配置未修改
+var mPage = require('./src/m_page');//已修改
+var mPlugin = require('./src/m_plugin');//已修改
+// var mSetPackageName = require('./src/mtl_setPackageName');统一修改mtlProjectConfig
+// var mSetBundleID = require('./src/mtl_setBundleID');统一修改mtlProjectConfig
+// var mSetStartPage = require('./src/mtl_setStartPage');
+
+const mtlProjectConfig = require('./src/m_project_config');//统一修改mtlProjectConfig
 var mBuild = require('./src/mtl_build');
 var mDebug = require('./src/mtl_debug');
 var mPreview= require('./src/mtl_preview');
+var mSetBuildType = require('./src/mtl_setBuildType');//未修改
+var mHelp = require('./src/mtl_help');
+
 var mPluginManger = require('./src/mtl_plugin');
 var mSetgit = require('./src/mtl_setgit');
-var mSetBuildType = require('./src/mtl_setBuildType');
-var mSetStartPage = require('./src/mtl_setStartPage');
 const getAutoUpdate = require('./src/update');
-var mHelp = require('./src/mtl_help');
+var mViewpage = require('./src/mtl_viewpage');
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
 
 
@@ -86,13 +88,6 @@ program
     mConfig.config(key, value);
   });
 
-// program
-//   .command('template [cmd] [name] [file]').alias('tpl') // 命令简写
-//   .description('管理模板。')
-//   .action(function (cmd, name, file) {
-//     mTemplate.run(cmd, name, file);
-//   });
-
 program
   .command('add-page [name] [tplname]').alias('ap') // 命令简写
   .description('添加页面')
@@ -112,7 +107,7 @@ program
   .command('set-packageName [packageName]').alias('s-packageName') // 命令简写
   .description('设置android包名。')
   .action(function (packageName) {
-    mSetPackageName.setPackageName(packageName);
+    mtlProjectConfig.writeConfig("packageName",packageName,"请android包名");
   });
 
 
@@ -120,15 +115,15 @@ program
   .command('set-bundleID [bundleID]').alias('s-bundleID') // 命令简写
   .description('设置iOS bundleID。')
   .action(function (bundleID) {
-    mSetBundleID.setBundleID(bundleID);
+    mtlProjectConfig.writeConfig("bundleID",bundleID,"请设置iOS bundleID");
   }); 
 
 
   program
   .command('set-startPage [startPage]').alias('s-startPage') // 命令简写
-  .description('设置android包名。')
+  .description('设置启动页面。')
   .action(function (startPage) {
-    mSetStartPage.setStartPage(startPage);
+    mtlProjectConfig.writeConfig("startPage",startPage,"请设置启动页面。");
   });
 
 // program
