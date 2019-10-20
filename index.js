@@ -12,7 +12,7 @@ var mPlugin = require('./src/m_plugin');//已修改
 // var mSetStartPage = require('./src/mtl_setStartPage');
 
 const mtlProjectConfig = require('./src/m_project_config');//统一修改mtlProjectConfig
-var mBuild = require('./src/mtl_build');
+var mBuild = require('./src/m_build');
 var mDebug = require('./src/mtl_debug');
 var mPreview= require('./src/mtl_preview');
 var mSetBuildType = require('./src/mtl_setBuildType');//未修改
