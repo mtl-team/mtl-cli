@@ -13,10 +13,12 @@ var mPlugin = require("./src/m_plugin"); //已修改
 
 const mtlProjectConfig = require("./src/m_project_config"); //统一修改mtlProjectConfig
 var mBuild = require("./src/m_build"); //已修改
-var mDebug = require("./src/mtl_debug");
+var mDebug = require("./src/m_debug");
 var mPreview = require("./src/m_preview");
 var mSetBuildType = require("./src/mtl_setBuildType"); //未修改
 var mHelp = require("./src/mtl_help");
+
+const {evalJs,isMtlProject} = require("./src/m_util");
 
 var mPluginManger = require("./src/mtl_plugin");
 var mSetgit = require("./src/mtl_setgit");
@@ -153,7 +155,7 @@ program
   .description("运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 EApp ")
   .action(function(platform) {
     // 执行命令的的函数
-    mBuild.start(platform);
+    mDebug.startEmulator(platform);
   });
 
 program
@@ -190,6 +192,16 @@ program
   .action(function() {
     // 执行命令的的函数
     mHelp.helpInfo();
+  });
+
+  program
+  .command("execScript") // 清除用户信息
+  .description("执行脚本")
+  .action(function(path) {
+    // 执行命令的的函数
+    if(isMtlProject()){
+      evalJs(path);
+    }
   });
 
 program.parse(process.argv);

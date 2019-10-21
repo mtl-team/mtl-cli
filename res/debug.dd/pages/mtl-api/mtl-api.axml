@@ -1,1 +1,0 @@
-<web-view id="mtl-api-webview" src="{{url}}" onMessage="onAction"></web-view>

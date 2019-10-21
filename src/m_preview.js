@@ -8,6 +8,7 @@ function start(platform) {
   }
   if (platform) {
     utils.consoleLog(platform);
+    preview(mtldev.technologyStack());
     return;
   }
   let preList = utils.platformList();

@@ -3,6 +3,7 @@ const mtldev = require("mtl-dev-sdk");
 const utils = require("./m_util.js");
 const inquirer = require("inquirer");
 const shell = require("shelljs");
+const join = require("path").join;
 
 const promptList = [
   {
@@ -73,6 +74,10 @@ function downloadProject(tl, options) {
   let code = result.code;
   if (code == 200) {
     utils.consoleLog(`工程创建完成： ${options.projectName}`);
+    utils.consoleLog(`正在更新脚本`);
+
+    fse.copySync(join(__dirname,`../res/script/${mtldev.technologyStack()}`),join(workspace,options.projectName,'script'));
+    utils.consoleLog("脚本更新完成");
   } else {
     utils.consoleLog(JSON.stringify(result));
   }

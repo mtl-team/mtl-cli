@@ -1,21 +1,17 @@
 "use strict";
 const mtldev = require("mtl-dev-sdk");
 const join = require('path').join;
-const {consoleLog} = require("./m_util.js");
-const mtlLog =  consoleLog;
+const { consoleLog, getWorkSpace, evalJs } = require("./m_util.js");
+const mtlLog = consoleLog;
+const mtlProject = {
+  workspace: getWorkSpace(),
+  building: undefined
+};
 
 const execJs = url => {
-  try {
-    let jsfile = join(path, url);
-    let jsctx = fs.readFileSync(jsfile, {
-      encoding: "utf-8"
-    });
-    eval(jsctx);
-  } catch (e) {
-    mtlLog(e);
-  }
+  evalJs(url);
 };
-function execCommand(cmd){
+function execCommand(cmd) {
   mtlLog(cmd);
   mtldev.shellExec(cmd);
 }
@@ -26,4 +22,5 @@ module.exports = {
   mtlLog,
   execJs,
   execCommand,
+  mtlProject
 };
