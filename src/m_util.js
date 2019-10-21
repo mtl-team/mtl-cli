@@ -1,20 +1,25 @@
 const mtldev = require("mtl-dev-sdk");
-const shell = require('shelljs');
-
-
+const shell = require("shelljs");
+const fse = require("fs-extra");
+const join = require("path").join;
+const projectConfig = {
+  workspace:""
+}
 
 function consoleLog(msg) {
   console.log(msg);
 }
-function isMtlProject(){
-
-  let workspace = shell.pwd().toString();
-  mtldev.initWorkspace(workspace);
-  if(mtldev.technologyStack()){
+function isMtlProject() {
+  projectConfig.workspace = shell.pwd().toString();
+  mtldev.initWorkspace(projectConfig.workspace);
+  if (mtldev.technologyStack()) {
     return true;
   }
   consoleLog(`The current path is not MTL-Project`);
   return false;
+}
+function getWorkSpace(){
+  return projectConfig.workspace;
 }
 
 //校验工程名称
@@ -27,8 +32,43 @@ function isVerifyProjectName(projectName) {
   }
 }
 
+const _platformList = [
+  {
+    type: "list",
+    message: "请选择项目平台：1、iOS；2、Android , 用上下箭头选择平台:",
+    name: "platform",
+    choices: [],
+    filter: function(val) {
+      // 使用filter将回答变为小写
+      return val.toLowerCase();
+    }
+  }
+];
+
+function platformList(mobile) {
+  mobile
+    ? (_platformList[0].choices = ["iOS", "android"])
+    : (_platformList[0].choices = ["iOS", "android", "wx", "dd", "upesn"]);
+  return _platformList;
+}
+
+function evalJs(jsfile){
+  try {
+    let _jsfile = join(getWorkSpace(), jsfile);
+    let jsctx = fse.readFileSync(_jsfile, {
+      encoding: "utf-8"
+    });
+    eval(jsctx);
+  } catch (e) {
+    consoleLog(e);
+  }
+}
+
 module.exports = {
-    consoleLog,
-    isMtlProject,
-    isVerifyProjectName
+  consoleLog,
+  isMtlProject,
+  isVerifyProjectName,
+  platformList,
+  getWorkSpace,
+  evalJs
 };
