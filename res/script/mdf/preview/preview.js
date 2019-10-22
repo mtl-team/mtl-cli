@@ -8,14 +8,13 @@ const proxyProt = 3003;
 
 //开始预览
 startPreview();
-
+//默认为3003 先杀死本地服务
+mtldev.killNode(proxyProt);
 
 /**
  * 启动本地服务
  */
 function startLocaServer() {
-  //默认为3000 先杀死本地服务
-  mtldev.killNode(proxyProt);
   execCommand("npm run debug:mobile");
 }
 

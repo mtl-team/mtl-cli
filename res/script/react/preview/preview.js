@@ -6,7 +6,8 @@ const { mtldev, mtlLog, execCommand } = require("../src/mtlDev");
 const proxyProt = 3000;
 
 //启动本地服务
-// startLocaServer();
+//默认为3000 先杀死本地服务
+mtldev.killNode(proxyProt);
 //开始预览
 startPreview();
 
@@ -15,8 +16,7 @@ startPreview();
  * 启动本地服务
  */
 function startLocaServer() {
-  //默认为3000 先杀死本地服务
-  mtldev.killNode(proxyProt);
+  
   execCommand("npm run start");
 }
 

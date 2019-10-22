@@ -94,7 +94,6 @@ function cpScript(workspace){
 }
 
 const defConfig = {
-  appName: "",
   setStatusBar: {
     showStatusBar: true,
     isScreenEdge: false,
@@ -115,8 +114,6 @@ const defConfig = {
   debugServerAddress: "mdoctor.yonyoucloud.com",
   buildServerAddress: "123.103.9.204",
   buildServerAddressPort: "8050",
-  bundleID: "",
-  packageName: "",
   IOSCerAndProvision: {
     name: "UAPMOBILE_DIS_299",
     pwd: ""
