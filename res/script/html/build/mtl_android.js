@@ -11,7 +11,10 @@ const config = {
 
 //打包安卓
 mtldev.buildAndroid(config, function(res) {
-  mtlLog(JSON.stringify(res));
+  if(res.code != 200 ){
+    mtlLog(JSON.stringify(res));
+    return;
+  }
   if (!res.data.app) {
     mtlLog(fs.readFileSync(res.data.log, "utf-8")); //打印日志
   } else {

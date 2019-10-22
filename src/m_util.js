@@ -11,6 +11,7 @@ function consoleLog(msg) {
 }
 function isMtlProject() {
   projectConfig.workspace = shell.pwd().toString();
+  consoleLog(`MTL-Project workspace ${projectConfig.workspace}`);
   mtldev.initWorkspace(projectConfig.workspace);
   if (mtldev.technologyStack()) {
     return true;
@@ -60,6 +61,7 @@ function evalJs(jsfile){
     });
     eval(jsctx);
   } catch (e) {
+    consoleLog(`可以先执行 mtl cp-s 生成 script `);
     consoleLog(e);
   }
 }

@@ -9,6 +9,10 @@ const config = {
 
 //打包ios
 mtldev.buildIOS(config, function(res) {
+  if(res.code != 200 ){
+    mtlLog(JSON.stringify(res));
+    return;
+  }
   if (res.data.app) {
     mtlLog(`app 生成目录， ${res.data.app} 安装到手机, `); //如果有app 输出APP
   } else {

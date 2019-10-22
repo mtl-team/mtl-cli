@@ -48,10 +48,16 @@ function downQr(qrURL) {
     callback: function(res) {
       mtlLog(JSON.stringify(res));
       //预览
-      mtldev.showImage(res.data);
+      mtldev.showImage(res.data,function () {
 
-      mtlLog("本地代理已经注册完成。。。正在启动本地服务");
-      startLocaServer()
+        setTimeout(() => {
+          mtlLog("本地代理已经注册完成。。。正在启动本地服务");
+          startLocaServer()
+        }, 300);
+      });
+
+     
+      
     }
   });
 }

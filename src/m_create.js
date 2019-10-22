@@ -46,11 +46,12 @@ async function createApp(an, tl) {
  * 选择模板，生成配置文件
  */
 function getProjectOptionByTl(tl, projects, an) {
-    let options = {
-        projectName: an
-      };
+  let options = {
+    ...defConfig,
+    projectName: an
+  };
   if (tl) {
-    downloadProject(tl,options);
+    downloadProject(tl, options);
     return;
   }
   let list = Object.keys(projects);
@@ -74,15 +75,59 @@ function downloadProject(tl, options) {
   let code = result.code;
   if (code == 200) {
     utils.consoleLog(`工程创建完成： ${options.projectName}`);
-    utils.consoleLog(`正在更新脚本`);
 
-    fse.copySync(join(__dirname,`../res/script/${mtldev.technologyStack()}`),join(workspace,options.projectName,'script'));
+    cpScript(join(workspace,options.projectName));
     utils.consoleLog("脚本更新完成");
   } else {
     utils.consoleLog(JSON.stringify(result));
   }
 }
 
+function cpScript(workspace){
+  workspace = workspace || shell.pwd().toString();
+  utils.consoleLog(`正在更新脚本`);
+  fse.copySync(
+    join(__dirname, `../res/script/${mtldev.technologyStack()}`),
+    join(workspace, "script")
+  );
+  utils.consoleLog(`更新脚本完成`);
+}
+
+const defConfig = {
+  appName: "",
+  setStatusBar: {
+    showStatusBar: true,
+    isScreenEdge: false,
+    color: "",
+    isStatusBarDefault: true
+  },
+  serviceUrl: {
+    uploadUrl:
+      "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/uploadToOSS",
+    downloadUrl:
+      "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download"
+  },
+  userInfo: {
+    userName: "ump",
+    passWord: "",
+    appCode: ""
+  },
+  debugServerAddress: "mdoctor.yonyoucloud.com",
+  buildServerAddress: "123.103.9.204",
+  buildServerAddressPort: "8050",
+  bundleID: "",
+  packageName: "",
+  IOSCerAndProvision: {
+    name: "UAPMOBILE_DIS_299",
+    pwd: ""
+  },
+  AndroidCer: {
+    name: "ump",
+    pwd: ""
+  }
+};
+
 module.exports = {
-  createApp
+  createApp,
+  cpScript
 };

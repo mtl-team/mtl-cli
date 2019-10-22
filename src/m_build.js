@@ -11,14 +11,23 @@ function build(platform) {
     return;
   }
   if (platform == "android" || platform == "ios") {
-    mtldev.build(platform, callback);
+    buildPlat(platform);
     return
   }
   let buildList = utils.platformList(true);
   inquirer.prompt(buildList).then(answers => {
     utils.consoleLog('选用平台：' + answers.platform); // 返回的结果
-    mtldev.build(answers.platform, callback);
+    buildPlat(answers.platform);
   });
+}
+
+function buildPlat(platform){
+
+  if(platform ==  "ios"){
+    utils.evalJs(`./script/build/mtl_ios.js`);
+  }else{
+    utils.evalJs(`./script/build/mtl_android.js`);
+  }
 }
 
 function callback(res) {
