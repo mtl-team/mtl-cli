@@ -90,7 +90,7 @@ function cpScript(workspace){
     join(__dirname, `../res/script/${mtldev.technologyStack()}`),
     join(workspace, "script")
   );
-  utils.consoleLog(`更新脚本完成`);
+ 
 }
 
 const defConfig = {

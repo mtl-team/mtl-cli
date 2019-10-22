@@ -1,9 +1,12 @@
 /**
  * 反向代理的预览方式
  */
-const { mtldev, mtlLog, execCommand } = require("../src/mtlDev");
-
+const { mtldev, mtlLog, execCommand,mtlProject } = require("../src/mtlDev");
+const fs = require("fs");
+const path = require("path");
 const proxyProt = 3000;
+const reactStaticPath = "public/"
+const workspace = mtlProject.workspace;
 
 //启动本地服务
 //默认为3000 先杀死本地服务
@@ -16,7 +19,12 @@ startPreview();
  * 启动本地服务
  */
 function startLocaServer() {
-  
+  let pro = "project.json";
+  mtlLog(`copy ${pro} to staticFilePath :${reactStaticPath}`);
+  fs.copyFileSync(
+    path.join(workspace, pro),
+    path.join(path.join(workspace, reactStaticPath), pro)
+  );
   execCommand("npm run start");
 }
 
@@ -42,6 +50,7 @@ function startPreview() {
 }
 
 function downQr(qrURL) {
+  qrURL = `${qrURL}?projectJson=${qrURL}/project.json`
   mtlLog(`qrURL: ${qrURL}`);
   // 下载二维码
   mtldev.downloadPreviewQRFile({

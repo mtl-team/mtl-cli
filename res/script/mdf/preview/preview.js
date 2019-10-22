@@ -1,10 +1,12 @@
 /**
  * 反向代理的预览方式
  */
-const { mtldev, mtlLog, execCommand } = require("../src/mtlDev");
-
+const { mtldev, mtlLog, execCommand,mtlProject } = require("../src/mtlDev");
+const fs = require("fs");
+const path = require("path");
 const proxyProt = 3003;
-
+const reactStaticPath = "public/"
+const workspace = mtlProject.workspace;
 
 //开始预览
 startPreview();
@@ -15,6 +17,12 @@ mtldev.killNode(proxyProt);
  * 启动本地服务
  */
 function startLocaServer() {
+  let pro = "project.json";
+  mtlLog(`copy ${pro} to staticFilePath :${reactStaticPath}`);
+  fs.copyFileSync(
+    path.join(workspace, pro),
+    path.join(path.join(workspace, reactStaticPath), pro)
+  );
   execCommand("npm run debug:mobile");
 }
 

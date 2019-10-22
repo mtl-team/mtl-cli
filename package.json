@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.70",
+  "version": "1.0.72",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,14 +12,14 @@
     "clibuild",
     "clibuildapp"
   ],
-  "author": "xugang_hot",
+  "author": "mtl",
   "license": "ISC",
   "dependencies": {
     "commander": "^2.19.0",
     "configstore": "^4.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^7.0.0",
-    "mtl-dev-sdk": "^1.1.31",
+    "mtl-dev-sdk": "^1.1.37",
     "openbrowser": "^1.0.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
