@@ -2,6 +2,7 @@ const mtldev = require("mtl-dev-sdk");
 const shell = require("shelljs");
 const fse = require("fs-extra");
 const join = require("path").join;
+const os = require("os");
 const projectConfig = {
   workspace:""
 }
@@ -65,6 +66,14 @@ function evalJs(jsfile){
     consoleLog(e);
   }
 }
+function isWindows() {
+  let sysType = os.type();
+  if (sysType === "Windows_NT") {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 module.exports = {
   consoleLog,
@@ -72,5 +81,6 @@ module.exports = {
   isVerifyProjectName,
   platformList,
   getWorkSpace,
-  evalJs
+  evalJs,
+  isWindows
 };

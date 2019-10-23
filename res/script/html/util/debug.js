@@ -1,11 +1,10 @@
-const { mtldev, mtlLog, mtlProject, execJs } = require("../src/mtlDev");
+const { mtldev, mtlLog, mtlProject, execJs,isWindows } = require("../src/mtlDev");
 const path = require("path");
 const fs = require("fs");
 
 const { platform, workspace, staticFilePath, port = 3000 } = mtlProject;
-
 mtlLog(`debug 当前编译平台 ： ${platform}`, true);
-
+mtldev.initWorkspace(workspace,mtlLog);
 if (!platform) {
   mtlLog(`我选择 platform 请选择编译平台： 例如 ： 执行android.js `);
 } else {
@@ -36,7 +35,7 @@ function startNode() {
   let file1 = { value: staticFilePath };
   let pro = "project.json";
   mtlLog(`copy ${pro} to staticFilePath :${staticFilePath}`);
-  fs.copyFileSync(path.join(workspace, pro), path.join(file1.value, pro));
+  fs.copyFileSync(path.join(workspace, pro), path.join(workspace,file1.value, pro));
   let options = {
     staticPatas: [file1],
     port: port
@@ -55,8 +54,13 @@ function startEmulator() {
       execJs("/script/util/startAndroidEmulator.js");
       break;
     case "ios":
-      mtlLog("正在启动模拟器");
-      execJs("/script/util/startiosEmulator.js");
+      if(isWindows()){
+        mtlLog("当前为Win 不支持启动 ios 相关模拟器");
+      }else{
+        mtlLog("正在启动模拟器");
+        execJs("/script/util/startiosEmulator.js");
+      }
+      
       break;
     default:
       mtlLog(`当前平台 ${platform} ，无模拟器`);

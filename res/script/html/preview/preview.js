@@ -9,7 +9,7 @@ const path = require("path");
 const platform = "android";
 mtldev.setStaticFilePath("app/");
 
-mtlLog(`preview 当前编译平台 ： ${platform}`, true);
+mtlLog(`正在编译 preview`, true);
 
 //开始预览
 startPreview();
@@ -35,8 +35,8 @@ function startPreview() {
             //预览 4
             mtlLog(`正在打开二维码`);
             mtldev.showImage(res.data, function() {
+              startWatch();
             });
-            startWatch();
           }
         });
       }

@@ -1,11 +1,14 @@
 /**
  */
-const { mtldev, mtlLog } = require("../src/mtlDev");
+const { mtldev, mtlLog,execCommand } = require("../src/mtlDev");
 const fs = require("fs");
 const config = {
   host: "123.103.9.204",
   port: "8050"
 };
+
+//编译文件
+execCommand("npm run build");
 
 //打包ios
 mtldev.buildIOS(config, function(res) {
