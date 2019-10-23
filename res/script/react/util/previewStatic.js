@@ -1,13 +1,16 @@
 /**
  * 静态文件上传的方式预览
  */
-const { mtldev, mtlLog, mtlProject } = require("../src/mtlDev");
+const { mtldev, mtlLog, mtlProject,execCommand } = require("../src/mtlDev");
 const fs = require("fs");
 const pla = "android";
 //静态文件路径
 mtldev.setStaticFilePath("build/");
 
 mtlLog(`preview 当前编译平台 ： ${pla}`, true);
+
+//编译文件
+execCommand("npm run build");
 
 execPreview();
 

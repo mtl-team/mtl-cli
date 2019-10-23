@@ -78,6 +78,7 @@ function downloadProject(tl, options) {
 
     cpScript(join(workspace,options.projectName));
     utils.consoleLog("脚本更新完成");
+    fse.removeSync(join(workspace,options.projectName,".git"));
   } else {
     utils.consoleLog(JSON.stringify(result));
   }
