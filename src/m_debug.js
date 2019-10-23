@@ -12,7 +12,7 @@ function start(platform) {
         debug(platform);
         return;
     }
-    let preList = utils.platformList();
+    let preList = utils.platformListDebug();
 
     inquirer.prompt(preList).then(answers => {
         utils.consoleLog("选用平台：" + answers.platform); // 返回的结果

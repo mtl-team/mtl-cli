@@ -5,7 +5,7 @@ const { mtldev, mtlLog, execCommand,mtlProject } = require("../src/mtlDev");
 const fs = require("fs");
 const path = require("path");
 const proxyProt = 3003;
-const reactStaticPath = "public/"
+const reactStaticPath = "static/"
 const workspace = mtlProject.workspace;
 
 //开始预览

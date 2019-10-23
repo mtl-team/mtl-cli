@@ -53,6 +53,10 @@ function platformList(mobile) {
     : (_platformList[0].choices = ["iOS", "android", "wx", "dd", "upesn"]);
   return _platformList;
 }
+function platformListDebug(mobile) {
+ 
+  return _platformList[0].choices = ["iOS", "android", "wx", "dd"];
+}
 
 function evalJs(jsfile){
   try {
@@ -82,5 +86,6 @@ module.exports = {
   platformList,
   getWorkSpace,
   evalJs,
+  platformListDebug,
   isWindows
 };
