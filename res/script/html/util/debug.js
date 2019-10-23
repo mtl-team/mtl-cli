@@ -12,6 +12,11 @@ if (!platform) {
 }
 
 function startDebug() {
+
+  if(platform == "ios" && isWindows()){
+      mtlLog("当前为Win 不支持启动 ios 相关模拟器");
+    return
+  }
   let script = "npm install express --save-dev ";
   let promise = new Promise(function(resolve, reject) {
     mtlLog(`正在检测 express 插件是否安装....`)

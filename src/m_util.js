@@ -53,9 +53,9 @@ function platformList(mobile) {
     : (_platformList[0].choices = ["iOS", "android", "wx", "dd", "upesn"]);
   return _platformList;
 }
-function platformListDebug(mobile) {
- 
-  return _platformList[0].choices = ["iOS", "android", "wx", "dd"];
+function platformListDebug() {
+  _platformList[0].choices = ["iOS", "android", "wx", "dd"]
+  return _platformList;
 }
 
 function evalJs(jsfile){

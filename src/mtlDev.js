@@ -1,6 +1,6 @@
 "use strict";
 const mtldev = require("mtl-dev-sdk");
-const { consoleLog, getWorkSpace, evalJs } = require("./m_util.js");
+const { consoleLog, getWorkSpace, evalJs,isWindows } = require("./m_util.js");
 const mtlLog = consoleLog;
 const mtlProject = {
   workspace: getWorkSpace(),
@@ -44,5 +44,6 @@ module.exports = {
   mtlLog,
   execJs,
   execCommand,
-  mtlProject
+  mtlProject,
+  isWindows
 };
