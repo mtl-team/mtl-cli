@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.76",
+  "version": "1.0.78",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,7 +19,7 @@
     "configstore": "^4.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^7.0.0",
-    "mtl-dev-sdk": "^1.1.39",
+    "mtl-dev-sdk": "^1.1.41",
     "openbrowser": "^1.0.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
