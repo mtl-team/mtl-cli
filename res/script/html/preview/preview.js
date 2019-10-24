@@ -35,7 +35,9 @@ function startPreview() {
             //预览 4
             mtlLog(`正在打开二维码`);
             mtldev.showImage(res.data, function() {
-              startWatch();
+              setTimeout(function () {
+                startWatch();
+              },400)
             });
           }
         });
