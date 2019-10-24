@@ -29,7 +29,7 @@ function addPlugin(){
         utils.consoleLog(name)
         let ret = mtldev.setMTLPlugin(allPluginFile[name]);
         utils.consoleLog(ret)
-        utils.consoleLog("添加成功")
+        utils.consoleLog("操作完成")
 
 
     })
