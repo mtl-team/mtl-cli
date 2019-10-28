@@ -61,12 +61,15 @@ function platformListDebug() {
 function evalJs(jsfile){
   try {
     let _jsfile = join(getWorkSpace(), jsfile);
+    if(!fse.existsSync(_jsfile)){
+      consoleLog(`可以先执行 mtl cp-s 生成 script `);
+      return;
+    }
     let jsctx = fse.readFileSync(_jsfile, {
       encoding: "utf-8"
     });
     eval(jsctx);
   } catch (e) {
-    consoleLog(`可以先执行 mtl cp-s 生成 script `);
     consoleLog(e);
   }
 }

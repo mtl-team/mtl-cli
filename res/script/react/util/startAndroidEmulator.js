@@ -12,20 +12,17 @@ cloneApp();
 
 function cloneApp(){    
     if(fs.existsSync(appPath)){
-        execCommand(`cd ${savePath}`);
-        execCommand("git pull")
-        execCommand(`cd ${workspace}`);
-
+        execCommand("git pull",savePath)
 
     }else{
         execCommand(`git clone ${mtldev.debugAndroidConfig.androidDebugAPPURL} ${savePath}`);
 
     }
-
+    mtldev.startEmulator("android",appPath)
 }
 
 
-//安装安装配置文件 也可以自行手动安装
-execCommand(`adb install -r ${appPath}`);
-//启动debug应用
-execCommand(mtldev.debugAndroidConfig.cmdRunDebugApk);
+// //安装安装配置文件 也可以自行手动安装
+// execCommand(`adb install -r ${appPath}`);
+// //启动debug应用
+// execCommand(mtldev.debugAndroidConfig.cmdRunDebugApk);

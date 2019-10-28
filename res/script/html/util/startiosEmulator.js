@@ -17,20 +17,19 @@ cloneApp();
 
 function cloneApp(){    
     if(fs.existsSync(appPath)){
-        execCommand(`cd ${savePath}`);
-        execCommand("git pull")
-        execCommand(`cd ${workspace}`);
+        execCommand("git pull",savePath)
 
     }else{
         execCommand(`git clone ${mtldev.debugIOSConfig.IOSDebugAPPURL} ${savePath}`);
 
     }
-
+    mtldev.startEmulator("ios",appPath)
 }
 
-let cmdInstallApp =
-  "xcrun simctl install booted " + appPath;
-execCommand(cmdInstallApp);
 
-execCommand(mtldev.debugIOSConfig.cmdRun);
+// let cmdInstallApp =
+//   "xcrun simctl install booted " + appPath;
+// execCommand(cmdInstallApp);
+
+// execCommand(mtldev.debugIOSConfig.cmdRun);
 

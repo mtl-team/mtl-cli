@@ -10,9 +10,9 @@ const mtlProject = {
 const execJs = url => {
   evalJs(url);
 };
-function execCommand(cmd) {
-  mtlLog(cmd);
-  mtldev.shellExec(cmd);
+function execCommand(cmd,path) {
+  consoleLog("------shell");
+  mtldev.shellExec(cmd,path);
 }
 
 mtldev.buildAndroid = function(options, callback) {

@@ -22,8 +22,8 @@ function start(platform) {
 
 function debug(platform) {
     if (mtldev.technologyStack() != "html") {
-        let res = mtldev.compile(platform);
-        utils.consoleLog(`编译完成 ${JSON.stringify(res)}`);
+        // let res = mtldev.compile(platform);
+        // utils.consoleLog(`编译完成 ${JSON.stringify(res)}`);
         return utils.consoleLog("请使用该平台对应的服务启动debug, npm run start \n mtl start ios/android 启动模拟器");
     }
     utils.consoleLog(`debug platform: ${platform}`);
