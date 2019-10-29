@@ -52,8 +52,15 @@ function getPagesOptionByTl(tl, pages, an) {
     downloadPage(tl,an);
     return;
   }
-  let list = Object.keys(pages);
-  utils.consoleLog(list);
+  let list = [];
+  
+  let names ={};
+  for (let key in pages){
+    let va = pages[key].name;
+    names[va] = key;
+    list.push(key)
+  }
+  utils.consoleLog(JSON.stringify(names));
   promptList[0].choices = list;
   inquirer.prompt(promptList).then(answers => {
     utils.consoleLog(answers.name);

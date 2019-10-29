@@ -21,7 +21,7 @@ function compile() {
 
 //打包ios
 function build() {
-  mtldev.buildIOS(config, function(res) {
+  mtldev.buildAndroid(config, function(res) {
     if (res.code != 200) {
       mtlLog(JSON.stringify(res));
       return;
