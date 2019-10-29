@@ -39,8 +39,8 @@ async function addView(an, tl) {
     );
   }
   let pages = mtldev.getPageInfos(mtldev.technologyStack());
-  if (!pages) {
-    return utils.consoleLog("当前没有模板可用");
+  if (!pages || pages.length <= 0) {
+    return utils.consoleLog("当前没有模板可用-");
   }
   getPagesOptionByTl(tl, pages, an);
 }
@@ -59,6 +59,9 @@ function getPagesOptionByTl(tl, pages, an) {
     let va = pages[key].name;
     names[va] = key;
     list.push(key)
+  }
+  if(list.length <=0 ){
+    return utils.consoleLog("前没有模板可用");
   }
   utils.consoleLog(JSON.stringify(names));
   promptList[0].choices = list;

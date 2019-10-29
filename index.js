@@ -139,7 +139,7 @@ program
   .description("执行脚本")
   .action(function(path) {
     // 执行命令的的函数
-    if(isMtlProject()){
+    if(isMtlProject() || path.indexOf("summer") != -1){
       evalJs(path);
     }
   });
