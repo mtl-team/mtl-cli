@@ -10,9 +10,6 @@ const appPath = path.join(savePath,"debug.app");
 
 
 
-execCommand(
-  'open "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/"'
-);
 cloneApp();
 
 function cloneApp(){    
