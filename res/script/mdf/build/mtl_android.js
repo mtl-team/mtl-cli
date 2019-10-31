@@ -3,7 +3,7 @@
 const { mtldev, mtlLog, execCommand } = require("../src/mtlDev");
 const fs = require("fs");
 const config = {
-  host: "123.103.9.204",
+  host: "mtlb.yyuap.com",
   port: "8050",
   script: "npm run build"
 };

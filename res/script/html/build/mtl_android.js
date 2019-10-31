@@ -5,7 +5,7 @@ const { mtldev, mtlLog } = require("../src/mtlDev");
 const fs = require("fs");
 
 const config = {
-  host: "123.103.9.204",
+  host: "mtlb.yyuap.com",
   port: "8050"
 };
 

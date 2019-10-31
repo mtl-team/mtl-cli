@@ -113,7 +113,7 @@ const defConfig = {
     appCode: ""
   },
   debugServerAddress: "mdoctor.yonyoucloud.com",
-  buildServerAddress: "123.103.9.204",
+  buildServerAddress: "mtlb.yyuap.com",
   buildServerAddressPort: "8050",
   IOSCerAndProvision: {
     name: "UAPMOBILE_DIS_299",
