@@ -58,8 +58,8 @@ program
   .command("add-plugin")
   .alias("a-plugin") // 命令简写
   .description("在插件列表中，选择需要添加的插件。")
-  .action(function() {
-    mPlugin.addPlugin();
+  .action(function(pName) {
+    mPlugin.addPlugin(pName);
   });
 
 program

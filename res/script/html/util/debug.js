@@ -36,13 +36,12 @@ function startDebug() {
 
 /**启动本地node */
 function startNode() {
-  
-  let file1 = { value: staticFilePath };
   let pro = "project.json";
-  mtlLog(`copy ${pro} to staticFilePath :${staticFilePath}`);
-  fs.copyFileSync(path.join(workspace, pro), path.join(workspace,file1.value, pro));
+  let file1 = { value: staticFilePath };
+  let file2 = { path: `/${pro}`,value: path.join(workspace, pro) };
+  
   let options = {
-    staticPatas: [file1],
+    staticPatas: [file1,file2],
     port: port
   };
   mtldev.startNode(options);
