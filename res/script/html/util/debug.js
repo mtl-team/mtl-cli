@@ -43,10 +43,15 @@ function startNode() {
   
   let options = {
     staticPatas: [file1,file2],
-    port: port
+    port: port,
+    callback: res=>{
+      if(res.code == 200){
+        startEmulator();
+      }
+    }
   };
   mtldev.startNode(options);
-  startEmulator();
+ 
 }
 
 /**
