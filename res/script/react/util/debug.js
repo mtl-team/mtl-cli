@@ -26,8 +26,8 @@ function startNode() {
     path.join(workspace, pro),
     path.join(path.join(workspace, reactStaticPath), pro)
   );
-  mtlLog(`本地服务已开启 请在命令行查看 ${script} 运行结果`);
-  execCommand(script,"script-ide");
+  mtlLog(`本地服务已开启 请在命令行执行自己 例如：${script} 运行结果`);
+  // execCommand(script,"script-ide");
   startEmulator();
 }
 

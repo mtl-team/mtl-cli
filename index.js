@@ -13,10 +13,8 @@ var mPreview = require("./src/m_preview");//已修改
 var mHelp = require("./src/mtl_help");
 
 const {evalJs,isMtlProject} = require("./src/m_util");
-const getAutoUpdate = require("./src/update");
+const update = require("./src/update");
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
-
-// getAutoUpdate();
 
 program.version(require("./package").version);
 
@@ -55,7 +53,7 @@ program
   });
 
 program
-  .command("add-plugin")
+  .command("add-plugin [pName]")
   .alias("a-plugin") // 命令简写
   .description("在插件列表中，选择需要添加的插件。")
   .action(function(pName) {
@@ -152,5 +150,14 @@ program
       mCreate.cpScript();
     }
   });
+  program
+  .command("updateRegistry") // 清除用户信息
+  .alias("upr") // 命令简写
+  .description("copy默认脚本到工程")
+  .action(function() {
+      mCreate.updateRegistry();
+  });
+  
 
 program.parse(process.argv);
+update.checkVersion();

@@ -14,16 +14,15 @@ const promptList = [
     }
   }
 ];
-
 function addPlugin(pluginName) {
   if (!utils.isMtlProject()) {
     return;
   }
-
   if (pluginName) {
     mtldev.serchPlugins({ cordovaName: pluginName }, res => {
       if (res.code == 200) {
         let plugins = res.data.plugins || [];
+        utils.consoleLog("plugins-------------:  ",plugins);
         selectPlugin(plugins);
       } else {
         utils.consoleLog(`cli : ${JSON.stringify(res)}`);
@@ -34,7 +33,7 @@ function addPlugin(pluginName) {
   selectPlugin(allPluginFile);
 }
 function selectPlugin(plugins) {
-    utils.consoleLog(plugins.length);
+  utils.consoleLog(plugins.length);
   if (!plugins || plugins.length <= 0) return utils.consoleLog("没有可用模板");
   let _newPlugins = plugins.map(item => {
     let newItem = item.name
@@ -44,7 +43,7 @@ function selectPlugin(plugins) {
           value: {
             name: item.cordovaName,
             owner: item.userId,
-            parameters: item.parameters
+            parameters: item.parameters || []
           }
         };
     return newItem;

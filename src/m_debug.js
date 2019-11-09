@@ -1,6 +1,7 @@
 const mtldev = require("mtl-dev-sdk");
 const utils = require("./m_util.js");
 const inquirer = require("inquirer");
+const boxen = require("boxen");
 
 function start(platform) {
     if (!utils.isMtlProject()) {
@@ -22,8 +23,10 @@ function start(platform) {
 
 function debug(platform) {
     if (mtldev.technologyStack() != "html") {
-        // let res = mtldev.compile(platform);
-        // utils.consoleLog(`编译完成 ${JSON.stringify(res)}`);
+        utils.consoleLog(`------------compile start-----------------------`)
+        let res = mtldev.compile(platform);
+        utils.consoleLog(boxen(`编译工程返回:  ${JSON.stringify(res)}`, { padding: 1 }));
+        
         return utils.consoleLog("请使用该平台对应的服务启动debug, npm run start \n mtl start ios/android 启动模拟器");
     }
     utils.consoleLog(`debug platform: ${platform}`);

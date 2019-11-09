@@ -94,6 +94,12 @@ function cpScript(workspace){
  
 }
 
+function updateRegistry(){
+  mtldev.updateRegistry(res =>{
+    utils.consoleLog(res);
+  });
+}
+
 const defConfig = {
   setStatusBar: {
     showStatusBar: true,
@@ -127,5 +133,6 @@ const defConfig = {
 
 module.exports = {
   createApp,
-  cpScript
+  cpScript,
+  updateRegistry
 };

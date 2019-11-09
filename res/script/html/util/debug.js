@@ -17,21 +17,22 @@ function startDebug() {
       mtlLog("当前为Win 不支持启动 ios 相关模拟器");
     return
   }
-  let script = "npm install express --save-dev ";
-  let promise = new Promise(function(resolve, reject) {
-    mtlLog(`正在检测 express 插件是否安装....`)
-    setTimeout(() => {
-      if(!mtlProject.express){
-        mtldev.shellExec(script);
-      }
-      resolve();
-    }, 300);
-  });
-  promise.then(function() {
-    mtlLog(`express 插件 已经正常安装 ....`)
-    mtlProject.express = true;
-    startNode();
-  });
+  startNode();
+  // let script = "npm install express --save-dev ";
+  // let promise = new Promise(function(resolve, reject) {
+  //   mtlLog(`正在检测 express 插件是否安装....`)
+  //   setTimeout(() => {
+  //     if(!mtlProject.express){
+  //       mtldev.shellExec(script);
+  //     }
+  //     resolve();
+  //   }, 300);
+  // });
+  // promise.then(function() {
+  //   mtlLog(`express 插件 已经正常安装 ....`)
+  //   mtlProject.express = true;
+    
+  // });
 }
 
 /**启动本地node */

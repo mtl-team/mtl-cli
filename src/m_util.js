@@ -7,7 +7,10 @@ const projectConfig = {
   workspace:""
 }
 
-function consoleLog(msg) {
+function consoleLog(msg,msg2) {
+  if(msg2){
+    return console.log(msg,msg2);
+  }
   console.log(msg);
 }
 function isMtlProject() {

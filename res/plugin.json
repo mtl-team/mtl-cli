@@ -2,7 +2,7 @@
     {
         "name": "mtl-plugin-faceverify",
         "type": "cordova",
-        "owner": "mtl",
+        "owner": "cordova",
         "parameters": [
             "LICENSEID_IOS=renliantest-face-ios",
             "LICENSEID_ANDROID=mtl-android-face-android",
@@ -13,19 +13,20 @@
     {
         "name": "mtl-plugin-bdlocation",
         "type": "cordova",
-        "owner": "mtl",
+        "owner": "cordova",
         "parameters": [
             "BDMAP_KEY_ANDROID=hvontoOPpe0YWDgGVrtLHel8mSm6ibhG"
         ]
     },
     {
         "name": "mtl-plugin-terminal",
-        "type": "cordova"
+        "type": "cordova",
+        "owner":"cordova"
     },
     {
         "name": "mtl-plugin-umeng",
         "type": "cordova",
-        "owner": "mtl",
+        "owner": "cordova",
         "parameters": [
             "WEXIN-APPKEY=wxe1406439b46007d4",
             "WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
@@ -36,7 +37,7 @@
     {
         "name": "mtl-plugin-vui",
         "type": "cordova",
-        "owner": "mtl",
+        "owner": "cordova",
         "parameters": [
             "APPID=11152975",
             "APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
@@ -46,7 +47,7 @@
     {
         "name": "mtl-plugin-alinotification",
         "type": "cordova",
-        "owner": "mtl",
+        "owner": "cordova",
         "parameters": [
             "APPKEY=27849543",
             "APPSECRET=982cb690e885c242ff1db939143fa97e",
