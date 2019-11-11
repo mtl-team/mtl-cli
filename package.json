@@ -1,6 +1,6 @@
 {
   "name": "mtl-cli",
-  "version": "1.0.92",
+  "version": "1.0.93",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

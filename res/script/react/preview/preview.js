@@ -71,6 +71,7 @@ function downQr(qrURL) {
       }
       let outFile = res.data.outFile;
       let qrURL = res.data.qrURL;
+      fs.writeFileSync(path.join(path.dirname(outFile),'url.log'),qrURL);
       mtlLog(`生成二维码qrURL: ${qrURL}`);
       //预览 4
       mtlLog(`正在打开二维码：${outFile}`);
