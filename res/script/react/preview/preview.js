@@ -65,9 +65,16 @@ function downQr(qrURL) {
   mtldev.downloadPreviewQRFile({
     qrURL,
     callback: function(res) {
-      mtlLog(JSON.stringify(res));
+      if(res.code != 200){
+        mtlLog(`生成二维码失败`);
+      }
+      let outFile = res.data.outFile;
+      let qrURL = res.data.qrURL;
+      mtlLog(`生成二维码qrURL: ${qrURL}完成`);
+      //预览 4
+      mtlLog(`正在打开二维码：${outFile}`);
       //预览
-      mtldev.showImage(res.data, res => {
+      mtldev.showImage(outFile, res => {
         mtlLog("----------------");
         mtlLog(`-----本地代理已经注册完成，二维码已打开， 正在启动本地服务配置默认脚本 ${previewConfig.startScript}`);
         mtlLog(`-----${des}`);

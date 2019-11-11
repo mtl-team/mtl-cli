@@ -36,10 +36,15 @@ function execPreview() {
           platform: pla,
           callback: function(res) {
             mtlLog(JSON.stringify(res));
-            mtlLog(`生成二维码完成`);
+            if(res.code != 200){
+              mtlLog(`生成二维码失败`);
+            }
+            let outFile = res.data.outFile;
+            let qrURL = res.data.qrURL;
+            mtlLog(`生成二维码qrURL: ${qrURL}`);
             //预览 4
-            mtlLog(`正在打开二维码`);
-            mtldev.showImage(res.data, function() {
+            mtlLog(`正在打开二维码：${outFile}`);
+            mtldev.showImage(outFile, function() {
             });
           }
         });
