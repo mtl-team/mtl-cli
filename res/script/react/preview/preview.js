@@ -66,11 +66,12 @@ function downQr(qrURL) {
     qrURL,
     callback: function(res) {
       if(res.code != 200){
-        mtlLog(`生成二维码失败`);
+        mtlLog(`生成二维码失败: ${JSON.stringify(res)}`);
+        return
       }
       let outFile = res.data.outFile;
       let qrURL = res.data.qrURL;
-      mtlLog(`生成二维码qrURL: ${qrURL}完成`);
+      mtlLog(`生成二维码qrURL: ${qrURL}`);
       //预览 4
       mtlLog(`正在打开二维码：${outFile}`);
       //预览

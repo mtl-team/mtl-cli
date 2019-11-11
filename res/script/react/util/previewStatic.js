@@ -35,9 +35,9 @@ function execPreview() {
         mtldev.downloadPreviewQRFile({
           platform: pla,
           callback: function(res) {
-            mtlLog(JSON.stringify(res));
             if(res.code != 200){
-              mtlLog(`生成二维码失败`);
+              mtlLog(`生成二维码失败: ${JSON.stringify(res)}`);
+              return
             }
             let outFile = res.data.outFile;
             let qrURL = res.data.qrURL;
