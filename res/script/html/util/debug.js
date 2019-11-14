@@ -39,7 +39,7 @@ function startDebug() {
 function startNode() {
   let pro = "project.json";
   let file1 = { value: staticFilePath };
-  let file2 = { path: `/${pro}`,value: path.join(workspace, pro) };
+  let file2 = { path: `/${pro}`,value: pro };
   
   let options = {
     staticPatas: [file1,file2],
