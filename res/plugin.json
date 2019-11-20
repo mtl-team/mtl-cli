@@ -1,8 +1,10 @@
 [
     {
-        "name": "mtl-plugin-faceverify",
+        "name": "人脸验证插件",
+        "cordovaName": "mtl-plugin-faceverify",
         "type": "cordova",
-        "owner": "cordova",
+        "userId": "cordova",
+        "description": "",
         "parameters": [
             "LICENSEID_IOS=renliantest-face-ios",
             "LICENSEID_ANDROID=mtl-android-face-android",
@@ -11,22 +13,28 @@
         ]
     },
     {
-        "name": "mtl-plugin-bdlocation",
+        "name": "地理位置",
+        "cordovaName": "mtl-plugin-bdlocation",
         "type": "cordova",
-        "owner": "cordova",
+        "userId": "cordova",
+        "description": "",
         "parameters": [
             "BDMAP_KEY_ANDROID=hvontoOPpe0YWDgGVrtLHel8mSm6ibhG"
         ]
     },
     {
-        "name": "mtl-plugin-terminal",
+        "name": "多端协同",
+        "cordovaName": "mtl-plugin-terminal",
         "type": "cordova",
-        "owner":"cordova"
+        "userId": "cordova",
+        "description": ""
     },
     {
-        "name": "mtl-plugin-umeng",
+        "name": "友盟分享",
+        "cordovaName": "mtl-plugin-umeng",
         "type": "cordova",
-        "owner": "cordova",
+        "userId": "cordova",
+        "description": "",
         "parameters": [
             "WEXIN-APPKEY=wxe1406439b46007d4",
             "WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
@@ -35,9 +43,11 @@
         ]
     },
     {
-        "name": "mtl-plugin-vui",
+        "name": "小友智能语音",
+        "cordovaName": "mtl-plugin-vui",
         "type": "cordova",
-        "owner": "cordova",
+        "userId": "cordova",
+        "description": "",
         "parameters": [
             "APPID=11152975",
             "APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
@@ -45,9 +55,11 @@
         ]
     },
     {
-        "name": "mtl-plugin-alinotification",
+        "name": "阿里推送通知",
+        "cordovaName": "mtl-plugin-alinotification",
         "type": "cordova",
-        "owner": "cordova",
+        "userId": "cordova",
+        "description": "",
         "parameters": [
             "APPKEY=27849543",
             "APPSECRET=982cb690e885c242ff1db939143fa97e",

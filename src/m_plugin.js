@@ -22,7 +22,6 @@ function addPlugin(pluginName) {
     mtldev.serchPlugins({ cordovaName: pluginName }, res => {
       if (res.code == 200) {
         let plugins = res.data.plugins || [];
-        utils.consoleLog("plugins-------------:  ",plugins);
         selectPlugin(plugins);
       } else {
         utils.consoleLog(`cli : ${JSON.stringify(res)}`);
@@ -33,21 +32,26 @@ function addPlugin(pluginName) {
   selectPlugin(allPluginFile);
 }
 function selectPlugin(plugins) {
-  utils.consoleLog(plugins.length);
+  utils.consoleLog(`plugins size : ${plugins.length}`);
   if (!plugins || plugins.length <= 0) return utils.consoleLog("没有可用模板");
   let _newPlugins = plugins.map(item => {
-    let newItem = item.name
-      ? { name: item.name, value: item }
-      : {
-          name: item.cordovaName,
-          value: {
-            name: item.cordovaName,
-            owner: item.userId,
-            parameters: item.parameters || []
-          }
-        };
+    let = { cordovaName, cordovaName: id, userId: owner } = item;
+    let newItem = {
+      name: cordovaName,
+      value: {
+        id,
+        name: item.name || cordovaName,
+        cordovaName,
+        owner,
+        parameters: item.parameters || [],
+        description: item.description || ""
+      }
+    };
+
+    console.log("new: ", newItem);
     return newItem;
   });
+  console.log("_newPlugins: ", _newPlugins);
   promptList[0].choices = _newPlugins;
   inquirer.prompt(promptList).then(answers => {
     let name = answers.cordovaName;
