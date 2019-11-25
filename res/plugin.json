@@ -4,7 +4,7 @@
         "cordovaName": "mtl-plugin-faceverify",
         "type": "cordova",
         "userId": "cordova",
-        "description": "",
+        "description": "包含了人脸验证、人脸识别等",
         "parameters": [
             "LICENSEID_IOS=renliantest-face-ios",
             "LICENSEID_ANDROID=mtl-android-face-android",
@@ -17,7 +17,7 @@
         "cordovaName": "mtl-plugin-bdlocation",
         "type": "cordova",
         "userId": "cordova",
-        "description": "",
+        "description": "定位、打开地图查看指定坐标位置",
         "parameters": [
             "BDMAP_KEY_ANDROID=hvontoOPpe0YWDgGVrtLHel8mSm6ibhG"
         ]
@@ -27,14 +27,14 @@
         "cordovaName": "mtl-plugin-terminal",
         "type": "cordova",
         "userId": "cordova",
-        "description": ""
+        "description": "同时登录多个设备，通过PC可以操作手机进行拍照、定位，并把照片回传到PC端，同时还支持PC端、iPad端、TV端和手机端互相进行通信，创新产品，新一代的人机交互方式"
     },
     {
         "name": "友盟分享",
         "cordovaName": "mtl-plugin-umeng",
         "type": "cordova",
         "userId": "cordova",
-        "description": "",
+        "description": "提供了多平台的分享",
         "parameters": [
             "WEXIN-APPKEY=wxe1406439b46007d4",
             "WEXIN-SECRET=2096cf6c6fa5149c20ddd970ea302048",
@@ -47,7 +47,7 @@
         "cordovaName": "mtl-plugin-vui",
         "type": "cordova",
         "userId": "cordova",
-        "description": "",
+        "description": "小友智能语音",
         "parameters": [
             "APPID=11152975",
             "APIKEY=AtWb2xKCTZqnCOnYIovoXaqF",
@@ -59,7 +59,7 @@
         "cordovaName": "mtl-plugin-alinotification",
         "type": "cordova",
         "userId": "cordova",
-        "description": "",
+        "description": "阿里移动推送（Alibaba Cloud Mobile Push）是基于大数据的移动智能推送服务，帮助App快速集成移动推送的功能，在实现高效、精确、实时的移动推送的同时，极大地降低了开发成本",
         "parameters": [
             "APPKEY=27849543",
             "APPSECRET=982cb690e885c242ff1db939143fa97e",
