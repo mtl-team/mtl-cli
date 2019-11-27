@@ -35,8 +35,8 @@ function selectPlugin(plugins) {
   utils.consoleLog(`plugins size : ${plugins.length}`);
   if (!plugins || plugins.length <= 0) return utils.consoleLog("没有可用模板");
   let _newPlugins = plugins.map(item => {
-    let = { cordovaName, cordovaName: id, userId: owner } = item;
-    let newItem = {
+    let { cordovaName, cordovaName: id, userId: owner } = item;
+    const newItem = {
       name: cordovaName,
       value: {
         id,
