@@ -58,7 +58,7 @@ function getProjectOptionByTl(tl, projects, an) {
   utils.consoleLog(list);
   promptList[0].choices = list;
   inquirer.prompt(promptList).then(answers => {
-    options.staticFilePath = answers.name == "react" ? "build/" : "app/";
+    options.staticFilePath = answers.name == "html" ? "app/" : "build/";
     promptList[0].choices = Object.keys(projects[answers.name]);
     inquirer.prompt(promptList).then(answers => {
       utils.consoleLog(answers.name);
