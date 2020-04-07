@@ -1,0 +1,51 @@
+[
+    {
+        "name": "友空间PDA扫描插件",
+        "cordovaName": "upesn-plugin-pdascan",
+        "type": "cordova",
+        "userId": "cordova",
+        "description": "包含友空间PDA扫描能力"
+    },
+    {
+        "name": "友空间分享插件",
+        "cordovaName": "upesn-plugin-share",
+        "type": "cordova",
+        "userId": "cordova",
+        "description": "友空间分享能力",
+        "parameters": [
+            "ANDROID_UMENG_APPKEY=55f3be8267e58e4f600028b3",
+            "ANDROID_WX_APP_ID=wx1483dac67cc44409",
+            "ANDROID_WX_APPSECRET=e54ada7b9f2d739c09465550d480d5cc",
+            "ANDROID_QQ_APP_ID=1103858139",
+            "ANDROID_QQ_APP_SECRET=bleQFY3yye1DK4Ju",
+            "IOS_WECHAT_APPKEY=wxebab39f6523e1392",
+            "IOS_WECHAT_APPSECRET=90be5f72a14d3f4ecf8deb23f05fb548",
+            "IOS_QQ_APPKEY=1105764271",
+            "IOS_WECHAT_URLSCHEMES=wxebab39f6523e1392",
+            "IOS_QQ_URLSCHEMES=tencent1105764271"
+        ]
+    },
+    {
+        "name": "友空间语音能力插件",
+        "cordovaName": "upesn-plugin-voicetotext",
+        "type": "cordova",
+        "userId": "cordova",
+        "parameters": [
+            "IOS_APPID=56dd183f",
+            "ANDROID_IFLYTEK_APPID=5a72fb43"
+            ],
+        "description": "包含友空间语音识别、转换能力"
+    },
+    {
+        "name": "友空间webviewbridge",
+        "cordovaName": "upesn-plugin-webviewbridge",
+        "type": "cordova",
+        "userId": "cordova",
+        "description": "包含友空间JsBridge能力",
+        "parameters": [
+            "ANDROID_AMAP_APP_KEY=5352a68b538b1202363d76d1c3b62b74",
+            "ANDROID_GOOGLE_MAP_API_KEY=AIzaSyBMQ69-6dWwu9yw6GUwTkdkssn-dHaElww",
+            "IOS_APPKEYFORGAODEMAP=20c7683099350ae0819f1010d704f67c"
+        ]
+    }
+]
