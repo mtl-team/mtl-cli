@@ -2,15 +2,15 @@
     {
         "name": "友空间PDA扫描插件",
         "cordovaName": "upesn-plugin-pdascan",
-        "type": "cordova",
-        "userId": "cordova",
+        "type": "customUpesn",
+        "userId": "customUpesn",
         "description": "包含友空间PDA扫描能力"
     },
     {
         "name": "友空间分享插件",
         "cordovaName": "upesn-plugin-share",
-        "type": "cordova",
-        "userId": "cordova",
+        "type": "customUpesn",
+        "userId": "customUpesn",
         "description": "友空间分享能力",
         "parameters": [
             "ANDROID_UMENG_APPKEY=55f3be8267e58e4f600028b3",
@@ -28,8 +28,8 @@
     {
         "name": "友空间语音能力插件",
         "cordovaName": "upesn-plugin-voicetotext",
-        "type": "cordova",
-        "userId": "cordova",
+        "type": "customUpesn",
+        "userId": "customUpesn",
         "parameters": [
             "IOS_APPID=56dd183f",
             "ANDROID_IFLYTEK_APPID=5a72fb43"
@@ -39,8 +39,8 @@
     {
         "name": "友空间webviewbridge",
         "cordovaName": "upesn-plugin-webviewbridge",
-        "type": "cordova",
-        "userId": "cordova",
+        "type": "customUpesn",
+        "userId": "customUpesn",
         "description": "包含友空间JsBridge能力",
         "parameters": [
             "ANDROID_AMAP_APP_KEY=5352a68b538b1202363d76d1c3b62b74",
