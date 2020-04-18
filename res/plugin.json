@@ -63,7 +63,12 @@
         "parameters": [
             "APPKEY=27849543",
             "APPSECRET=982cb690e885c242ff1db939143fa97e",
-            "CHANNELID_ANDROID=10011"
+            "CHANNELID_ANDROID=10011" ,
+            "HUAWEI_APPID=value" ,
+            "FCM_SENDID=value" ,
+            "FCM_APPLICATIONID=value" ,
+            "XIAOMI_XIAOMIID=value" ,
+            "XIAOMI_XIAOMIKEY=value" 
         ]
     },
     {
