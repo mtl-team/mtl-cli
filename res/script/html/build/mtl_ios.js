@@ -14,7 +14,7 @@ mtldev.buildIOS(config, function(res) {
     return;
   }
   if (res.data.app) {
-    mtlLog(`app 生成目录， ${res.data.app} 安装到手机, `); //如果有app 输出APP
+    mtlLog(`app 生成目录， ${res.data.app} 安装到手机。 `); //如果有app 输出APP
   } else {
     mtlLog(fs.readFileSync(res.data.log, "utf-8")); //打印日志//打印日志
   }

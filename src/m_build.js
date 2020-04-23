@@ -40,7 +40,7 @@ function callback(res) {
   if (!res.data.app) {
     utils.consoleLog(fse.readFileSync(res.data.log, "utf-8")); //打印日志
   } else {
-    utils.consoleLog(`app 生成目录: ${res.data.app} 安装到手机, `); //如果有app 输出APP
+    utils.consoleLog(`app 生成目录: ${res.data.app} 安装到手机。 `); //如果有app 输出APP
   }
 
 }

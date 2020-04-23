@@ -31,7 +31,7 @@ function build (){
     if (!res.data.app) {
       mtlLog(fs.readFileSync(res.data.log, "utf-8")); //打印日志
     } else {
-      mtlLog(`app 生成目录，可以使用 adb install ${res.data.app} 安装到手机, `); //如果有app 输出APP
+      mtlLog(`app 生成目录，可以使用 adb install ${res.data.app} 安装到手机。 `); //如果有app 输出APP
     }
   });
 }
