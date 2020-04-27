@@ -115,6 +115,7 @@ const defConfig = {
   },
   userInfo: {
     userName: "ump",
+    userId: "32",
     passWord: "",
     appCode: ""
   },
