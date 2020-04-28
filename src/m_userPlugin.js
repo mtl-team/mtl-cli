@@ -7,7 +7,7 @@ const promptList = [
   {
     type: "list",
     message: "请选择你要添加的插件:",
-    name: "cordovaName",
+    name: "pluginId",
     choices: allPluginFile,
     filter: function (val) {
       return val;
@@ -46,7 +46,6 @@ function selectPlugin(plugins) {
       value: {
         id,
         name: item.name || cordovaName,
-        cordovaName,
         owner,
         parameters: JSON.parse(item.parameters.toString()) || [],
         description: item.description || ""
@@ -58,9 +57,9 @@ function selectPlugin(plugins) {
   // console.log("_newPlugins: ", _newPlugins);
   promptList[0].choices = _newPlugins;
   promptList[0].message = "请选择你要添加的插件:",
-    promptList[0].name = "cordovaName",
+    promptList[0].name = "pluginId",
     inquirer.prompt(promptList).then(answers => {
-      let name = answers.cordovaName;
+      let name = answers.pluginId;
       utils.consoleLog(name);
       let ret = mtldev.setMTLPlugin(name);
       utils.consoleLog(ret);

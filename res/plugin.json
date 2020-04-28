@@ -1,7 +1,7 @@
 [
     {
         "name": "人脸验证插件",
-        "cordovaName": "mtl-plugin-faceverify",
+        "pluginId": "mtl-plugin-faceverify",
         "type": "mtl",
         "userId": "mtl",
         "description": "包含了人脸验证、人脸识别等",
@@ -14,7 +14,7 @@
     },
     {
         "name": "地理位置",
-        "cordovaName": "mtl-plugin-bdlocation",
+        "pluginId": "mtl-plugin-bdlocation",
         "type": "mtl",
         "userId": "mtl",
         "description": "定位、打开地图查看指定坐标位置",
@@ -24,14 +24,14 @@
     },
     {
         "name": "多端协同",
-        "cordovaName": "mtl-plugin-terminal",
+        "pluginId": "mtl-plugin-terminal",
         "type": "mtl",
         "userId": "mtl",
         "description": "同时登录多个设备，通过PC可以操作手机进行拍照、定位，并把照片回传到PC端，同时还支持PC端、iPad端、TV端和手机端互相进行通信，创新产品，新一代的人机交互方式"
     },
     {
         "name": "友盟分享",
-        "cordovaName": "mtl-plugin-umeng",
+        "pluginId": "mtl-plugin-umeng",
         "type": "mtl",
         "userId": "mtl",
         "description": "提供了多平台的分享",
@@ -44,7 +44,7 @@
     },
     {
         "name": "小友智能语音",
-        "cordovaName": "mtl-plugin-vui",
+        "pluginId": "mtl-plugin-vui",
         "type": "mtl",
         "userId": "mtl",
         "description": "小友智能语音",
@@ -56,7 +56,7 @@
     },
     {
         "name": "阿里推送通知",
-        "cordovaName": "mtl-plugin-alinotification",
+        "pluginId": "mtl-plugin-alinotification",
         "type": "mtl",
         "userId": "mtl",
         "description": "阿里移动推送（Alibaba Cloud Mobile Push）是基于大数据的移动智能推送服务，帮助App快速集成移动推送的功能，在实现高效、精确、实时的移动推送的同时，极大地降低了开发成本",
@@ -73,7 +73,7 @@
     },
     {
         "name": "MTLRFID Plugin",
-        "cordovaName": "mtl-plugin-rfid",
+        "pluginId": "mtl-plugin-rfid",
         "type": "mtl",
         "userId": "mtl",
         "description": "MTLRFID Plugin"

@@ -8,7 +8,7 @@ const promptList = [
   {
     type: "list",
     message: "请选择你要添加的插件:",
-    name: "cordovaName",
+    name: "pluginId",
     choices: allPluginFile,
     filter: function(val) {
       return val;
@@ -21,7 +21,7 @@ function addPlugin(pluginName) {
   }
 
   if (pluginName) {
-    mtldev.serchPlugins({ cordovaName: pluginName }, res => {
+    mtldev.serchPlugins({ pluginId: pluginName }, res => {
       if (res.code == 200) {
         let plugins = res.data.plugins || [];
         selectPlugin(plugins);
@@ -71,13 +71,12 @@ function selectPlugin(plugins) {
   utils.consoleLog(`plugins size : ${plugins.length}`);
   if (!plugins || plugins.length <= 0) return utils.consoleLog("没有可用模板");
   let _newPlugins = plugins.map(item => {
-    let { cordovaName, cordovaName: id, userId: owner } = item;
+    let { pluginId, pluginId: id, userId: owner } = item;
     const newItem = {
-      name: cordovaName,
+      name: pluginId,
       value: {
         id,
-        name: item.name || cordovaName,
-        cordovaName,
+        name: item.name || pluginId,
         owner,
         parameters: item.parameters || [],
         description: item.description || ""
@@ -90,9 +89,9 @@ function selectPlugin(plugins) {
   console.log("_newPlugins: ", _newPlugins);
   promptList[0].choices = _newPlugins;
   promptList[0].message ="请选择你要添加的插件:",
-  promptList[0].name = "cordovaName",
+  promptList[0].name = "pluginId",
   inquirer.prompt(promptList).then(answers => {
-    let name = answers.cordovaName;
+    let name = answers.pluginId;
     utils.consoleLog(name);
     let ret = mtldev.setMTLPlugin(name);
     utils.consoleLog(ret);

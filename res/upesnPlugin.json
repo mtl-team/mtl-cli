@@ -1,14 +1,14 @@
 [
     {
         "name": "友空间PDA扫描插件",
-        "cordovaName": "upesn-plugin-pdascan",
+        "pluginId": "upesn-plugin-pdascan",
         "type": "customUpesn",
         "userId": "customUpesn",
         "description": "包含友空间PDA扫描能力"
     },
     {
         "name": "友空间分享插件",
-        "cordovaName": "upesn-plugin-share",
+        "pluginId": "upesn-plugin-share",
         "type": "customUpesn",
         "userId": "customUpesn",
         "description": "友空间分享能力",
@@ -27,7 +27,7 @@
     },
     {
         "name": "友空间语音能力插件",
-        "cordovaName": "upesn-plugin-voicetotext",
+        "pluginId": "upesn-plugin-voicetotext",
         "type": "customUpesn",
         "userId": "customUpesn",
         "parameters": [
@@ -38,7 +38,7 @@
     },
     {
         "name": "友空间webviewbridge",
-        "cordovaName": "upesn-plugin-webviewbridge",
+        "pluginId": "upesn-plugin-webviewbridge",
         "type": "customUpesn",
         "userId": "customUpesn",
         "description": "包含友空间JsBridge能力",
