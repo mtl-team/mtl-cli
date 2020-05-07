@@ -62,13 +62,13 @@ program
     mPlugin.addPlugin(pName);
   });
 
-  program
-  .command("add-userplugin")
-  .alias("a-up") // 命令简写
-  .description("在插件列表中，选择需要添加的插件。")
-  .action(function(pName) {
-    mUserPlugin.addUserPlugin(pName);
-  });
+  // program
+  // .command("add-userplugin")
+  // .alias("a-up") // 命令简写
+  // .description("在插件列表中，选择需要添加的插件。")
+  // .action(function(pName) {
+  //   mUserPlugin.addUserPlugin(pName);
+  // });
 
   program
   .command("login")
