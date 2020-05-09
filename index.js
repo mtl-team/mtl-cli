@@ -23,7 +23,7 @@ program.version(require("./package").version);
 // create 开发者中心   c
 program
   .command("create [appname] [template]")
-  .alias("c") // 命令简写
+  // .alias("c") // 命令简写
   .description("根据模板创建本地项目开发。")
   .action(function(appname, template) {
     mCreate.createApp(appname, template);
@@ -39,7 +39,7 @@ program
 
 program
   .command("config [key] [value]")
-  .alias("conf") // 命令简写
+  // .alias("conf") // 命令简写
   .description("设置mtl-cli环境变量")
   .action(function(key, value) {
     mConfig.config(key, value);
@@ -72,7 +72,7 @@ program
 
   program
   .command("login")
-  .alias("l") // 命令简写
+  // .alias("l") // 命令简写
   .description("登录云构建server。")
   .action(function() {
     mLogin.login();
@@ -106,7 +106,7 @@ program
 
 program
   .command("build [platform]") // iOS | Android | WX | EApp 。
-  .alias("b") // 命令简写
+  // .alias("b") // 命令简写
   .description("编译MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 EApp ")
   .action(function(platform) {
     // 执行命令的的函数
@@ -117,7 +117,7 @@ program
 // 运行安装
 program
   .command("start [platform]") // iOS | Android | WX | EApp
-  .alias("s") // 命令简写
+  // .alias("s") // 命令简写
   .description("运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 EApp ")
   .action(function(platform) {
     // 执行命令的的函数
@@ -126,7 +126,7 @@ program
 
 program
   .command("debug [platform]") // iOS | Android | WX | EApp 。
-  .alias("d") // 命令简写
+  // .alias("d") // 命令简写
   .description("运行调试MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd 。")
   .action(function(platform) {
     // 执行命令的的函数
@@ -135,7 +135,7 @@ program
 
 program
   .command("preview [platform]") // iOS | Android | WX | dd 。
-  .alias("p") // 命令简写
+  // .alias("p") // 命令简写
   .description(
     "运行演示MTL项目，平台为：1 iOS | 2 Android | 3 WX | 4 dd | 5 Upesn  。"
   )
