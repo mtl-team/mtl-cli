@@ -3,10 +3,13 @@
 const program = require("commander");
 
 var mCreate = require("./src/m_create"); //已修改
+
 var mConfig = require("./src/mtl_config"); //配置未修改
 var mPage = require("./src/m_page"); //已修改
 var mPlugin = require("./src/m_plugin"); //已修改
 var mUserPlugin = require("./src/m_userPlugin"); //已修改
+var mCreatePlugin = require("./src/m_createPlugin"); //已修改
+
 var mLogin = require("./src/m_login"); //已修改
 const mtlProjectConfig = require("./src/m_project_config"); //统一修改mtlProjectConfig
 var mBuild = require("./src/m_build"); //已修改
@@ -60,6 +63,14 @@ program
   .description("在插件列表中，选择需要添加的插件。")
   .action(function(pName) {
     mPlugin.addPlugin(pName);
+  });
+
+  program
+  .command("createPlugin  [tplname] [source]  ")
+  .alias("createp") // 命令简写
+  .description("创建helloWord模板插件。")
+  .action(function(source) {
+    mCreatePlugin.createPlugin(source);
   });
 
   // program
