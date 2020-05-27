@@ -4,6 +4,7 @@ const allUPesnPluginFile = require("../res/upesnPlugin.json");
 const utils = require("./m_util.js");
 const mtldev = require("mtl-dev-sdk");
 const fse = require('fs-extra');
+const shell = require("shelljs");
 const promptList = [
   {
     type: "list",
@@ -94,10 +95,13 @@ function selectPlugin(plugins) {
   promptList[0].name = "pluginId",
   inquirer.prompt(promptList).then(answers => {
     let name = answers.pluginId;
-    // utils.consoleLog(name);
+    // utils.consoleLog("---answers.pluginId:"+JSON.stringify(name));
+    // 下载插件的JS文件到工程中 ，做用户调试使用
+    let retJS =  mtldev.downloadPluginJS(name,shell.pwd().toString());
+    // utils.consoleLog("--retJS--:"+JSON.stringify(retJS));
     let ret = mtldev.setMTLPlugin(name);
-    utils.consoleLog(ret);
-    utils.consoleLog("操作完成");
+    // utils.consoleLog(ret);
+    // utils.consoleLog("操作完成");
   });
 }
 
