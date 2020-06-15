@@ -16,7 +16,7 @@ var mBuild = require("./src/m_build"); //已修改
 var mDebug = require("./src/m_debug");//已修改
 var mPreview = require("./src/m_preview");//已修改
 var mHelp = require("./src/mtl_help");
-
+var mSetUpgrade = require("./src/m_upgrade");
 const {evalJs,isMtlProject} = require("./src/m_util");
 const update = require("./src/update");
 //第一时间检测是否有最新版本给出提升自行升级或者是热更新模板
@@ -38,6 +38,14 @@ program
   .description("设置对工程源码进行云构建打包方式： 1 源码上传 | 2 git   ")
   .action(function() {
     mSetBuildType.setBuildType();
+  });
+
+  program
+  .command("set-upgrade")
+  .alias("s-ug") // 命令简写
+  .description("设置对APP升级方式：promptUpgrade 提示升级 | forceUpgrade 强制升级   ")
+  .action(function() {
+    mSetUpgrade.setUpgrade();
   });
 
 program
