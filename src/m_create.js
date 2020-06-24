@@ -111,8 +111,10 @@ const defConfig = {
     uploadUrl:
       "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/file/uploadToOSS",
     downloadUrl:
-      "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download"
-  },
+      "https://mdoctor.yonyoucloud.com/mtldebugger/mtl/stream/download",
+    upesnConfigHost:
+      "http://mdf-mobile-infrastructure.daily.app.yyuap.com"   
+    },
   userInfo: {
     userName: "ump",
     userId: "32",
