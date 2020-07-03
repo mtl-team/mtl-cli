@@ -74,7 +74,7 @@ program
   });
 
   program
-  .command("createPlugin  [tplname] [source]  ")
+  .command("createPlugin [source]  ")
   .alias("createp") // 命令简写
   .description("创建helloWord模板插件。")
   .action(function(source) {
