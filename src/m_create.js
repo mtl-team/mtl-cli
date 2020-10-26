@@ -48,7 +48,8 @@ async function createApp(an, tl) {
 function getProjectOptionByTl(tl, projects, an) {
   let options = {
     ...defConfig,
-    projectName: an
+    projectName: an,
+    appName:an
   };
   if (tl) {
     downloadProject(tl, options);
