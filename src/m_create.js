@@ -77,7 +77,7 @@ function downloadProject(tl, options) {
   if (code == 200) {
     utils.consoleLog(`工程创建完成： ${options.projectName}`);
 
-    cpScript(join(workspace,options.projectName));
+    // cpScript(join(workspace,options.projectName));
     utils.consoleLog("脚本更新完成");
     fse.removeSync(join(workspace,options.projectName,".git"));
   } else {
